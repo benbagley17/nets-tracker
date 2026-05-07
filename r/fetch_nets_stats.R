@@ -1,3 +1,4 @@
+
 # ============================================================
 # Brooklyn Nets Milestone & Streak Tracker
 # Data Fetch Script — powered by hoopR
@@ -123,38 +124,36 @@ MEDIA_ALERTS <- list(
 )
 
 # ── FETCH FUNCTIONS ───────────────────────────────────────────
-# All fetches use withTimeout to prevent hanging on slow API responses
-
-TIMEOUT_SECS <- 30  # abort any single API call after 30 seconds
 
 safe_fetch <- function(expr, label) {
-  tryCatch(
-    withCallingHandlers(
-      R.utils::withTimeout(expr, timeout = TIMEOUT_SECS, onTimeout = "error"),
-      message = function(m) invokeRestart("muffleMessage")
-    ),
-    error = function(e) {
-      cli_alert_warning("  {label}: {conditionMessage(e)}")
-      NULL
-    }
-  )
+  tryCatch({
+    expr
+  }, error = function(e) {
+    cli_alert_warning("  {label} failed: {conditionMessage(e)}")
+    NULL
+  }, warning = function(w) {
+    cli_alert_warning("  {label} warning: {conditionMessage(w)}")
+    NULL
+  })
 }
 
 fetch_season_player_stats <- function(season) {
-  cli_alert("Fetching {season} season totals (all players in one call)...")
-  result <- safe_fetch(
+  cli_alert("Fetching {season} season totals...")
+  # Try the league dashboard — if it times out or fails, return NULL gracefully
+  # Career stats per player are the reliable fallback
+  safe_fetch(
     hoopR::nba_leaguedashplayerstats(
       season      = season,
       season_type = "Regular Season",
       per_mode    = "Totals"
     ),
     label = "season stats"
-  )
-  if (is.null(result)) return(NULL)
-  # hoopR returns a list; the player stats are in the first element
-  if (is.data.frame(result)) return(result)
-  if (is.list(result) && length(result) > 0) return(result[[1]])
-  NULL
+  ) |> (\(r) {
+    if (is.null(r)) return(NULL)
+    if (is.data.frame(r)) return(r)
+    if (is.list(r) && length(r) > 0) return(r[[1]])
+    NULL
+  })()
 }
 
 fetch_player_career_stats <- function(player_id_espn) {
@@ -300,7 +299,7 @@ calc_double_doubles <- function(game_log) {
 cli_h2("Fetching season-wide stats")
 season_stats <- fetch_season_player_stats(CURRENT_SEASON)
 if (is.null(season_stats)) {
-  cli_alert_warning("Season stats unavailable — milestones will use career-prior fallbacks")
+  cli_alert_warning("Season dashboard unavailable — will derive pace from career endpoint season totals")
 } else {
   cli_alert_success("Season stats fetched: {nrow(season_stats)} players")
 }
