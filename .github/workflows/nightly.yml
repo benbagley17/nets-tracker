@@ -47,6 +47,7 @@ jobs:
             "lubridate",
             "cli",
             "tibble"
+            "R.utils"
           ))
 
       - name: Run fetch script
