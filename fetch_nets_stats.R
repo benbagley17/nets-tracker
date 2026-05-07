@@ -1,0 +1,73 @@
+name: Fetch Nets Stats & Deploy
+
+on:
+  # Run nightly at 2 AM ET (7 AM UTC) — safely after west coast games end
+  schedule:
+    - cron: '0 7 * * *'
+
+  # Also run on any push to main (so a manual data refresh is just a git push)
+  push:
+    branches: [main]
+
+  # Allow manual trigger from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to commit live_stats.json back to repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.3'
+          use-public-rspm: true  # fast pre-built binaries, no compilation
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: r-pkgs-${{ hashFiles('r/fetch_nets_stats.R') }}
+          restore-keys: r-pkgs-
+
+      - name: Install R dependencies
+        shell: Rscript {0}
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+          pak::pak(c(
+            "sportsdataverse/hoopR",
+            "dplyr",
+            "jsonlite",
+            "purrr",
+            "lubridate",
+            "cli",
+            "tibble"
+          ))
+
+      - name: Run fetch script
+        shell: Rscript {0}
+        run: |
+          source("r/fetch_nets_stats.R")
+
+      - name: Commit updated live_stats.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/live_stats.json
+          # Only commit if the file actually changed
+          git diff --staged --quiet || git commit -m "chore: update live_stats.json [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          git push
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: false
+          commit_message: "deploy: ${{ github.sha }} [$(date -u '+%Y-%m-%d %H:%M UTC')]"
