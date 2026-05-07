@@ -31,7 +31,8 @@ cli_alert_info("Run time: {Sys.time()}")
 
 # ── CONFIG ────────────────────────────────────────────────────
 
-CURRENT_SEASON <- hoopR::most_recent_nba_season()
+CURRENT_SEASON <- 2025   # 2024-25 season (hoopR uses the year the season ends)
+# Switch to hoopR::most_recent_nba_season() once 2026-27 season begins in October
 NETS_ESPN_ID   <- "17"   # ESPN team ID for Brooklyn Nets
 
 # Output path resolution — works in GitHub Actions, RStudio, and plain Rscript
@@ -122,48 +123,64 @@ MEDIA_ALERTS <- list(
 )
 
 # ── FETCH FUNCTIONS ───────────────────────────────────────────
+# All fetches use withTimeout to prevent hanging on slow API responses
+
+TIMEOUT_SECS <- 30  # abort any single API call after 30 seconds
+
+safe_fetch <- function(expr, label) {
+  tryCatch(
+    withCallingHandlers(
+      R.utils::withTimeout(expr, timeout = TIMEOUT_SECS, onTimeout = "error"),
+      message = function(m) invokeRestart("muffleMessage")
+    ),
+    error = function(e) {
+      cli_alert_warning("  {label}: {conditionMessage(e)}")
+      NULL
+    }
+  )
+}
 
 fetch_season_player_stats <- function(season) {
-  cli_alert("Fetching {season} season player stats...")
-  tryCatch({
-    # nba_player_stats returns all players for the season
-    stats <- hoopR::nba_leaguedashplayerstats(
-      season = hoopR::most_recent_nba_season(),
+  cli_alert("Fetching {season} season totals (all players in one call)...")
+  result <- safe_fetch(
+    hoopR::nba_leaguedashplayerstats(
+      season      = season,
       season_type = "Regular Season",
-      per_mode = "Totals"
-    )
-    stats$PlayerStats
-  }, error = function(e) {
-    cli_alert_danger("Season stats fetch failed: {e$message}")
-    NULL
-  })
+      per_mode    = "Totals"
+    ),
+    label = "season stats"
+  )
+  if (is.null(result)) return(NULL)
+  # hoopR returns a list; the player stats are in the first element
+  if (is.data.frame(result)) return(result)
+  if (is.list(result) && length(result) > 0) return(result[[1]])
+  NULL
 }
 
 fetch_player_career_stats <- function(player_id_espn) {
-  cli_alert("  Fetching career stats for ESPN ID {player_id_espn}...")
-  tryCatch({
+  safe_fetch(
     hoopR::nba_playercareerstats(
       player_id = player_id_espn,
-      per_mode = "Totals"
-    )
-  }, error = function(e) {
-    cli_alert_warning("  Career stats failed for {player_id_espn}: {e$message}")
-    NULL
-  })
+      per_mode  = "Totals"
+    ),
+    label = paste("career stats", player_id_espn)
+  )
 }
 
 fetch_player_game_log <- function(player_id_espn, season) {
-  cli_alert("  Fetching game log for ESPN ID {player_id_espn}...")
-  tryCatch({
+  result <- safe_fetch(
     hoopR::nba_playergamelog(
       player_id   = player_id_espn,
-      season      = hoopR::most_recent_nba_season(),
+      season      = season,
       season_type = "Regular Season"
-    )$PlayerGameLog
-  }, error = function(e) {
-    cli_alert_warning("  Game log failed for {player_id_espn}: {e$message}")
-    NULL
-  })
+    ),
+    label = paste("game log", player_id_espn)
+  )
+  if (is.null(result)) return(NULL)
+  if (is.data.frame(result)) return(result)
+  if (is.list(result) && "PlayerGameLog" %in% names(result)) return(result$PlayerGameLog)
+  if (is.list(result) && length(result) > 0) return(result[[1]])
+  NULL
 }
 
 # ── STAT EXTRACTION ───────────────────────────────────────────
@@ -282,6 +299,11 @@ calc_double_doubles <- function(game_log) {
 
 cli_h2("Fetching season-wide stats")
 season_stats <- fetch_season_player_stats(CURRENT_SEASON)
+if (is.null(season_stats)) {
+  cli_alert_warning("Season stats unavailable — milestones will use career-prior fallbacks")
+} else {
+  cli_alert_success("Season stats fetched: {nrow(season_stats)} players")
+}
 
 cli_h2("Fetching per-player career stats & game logs")
 
@@ -289,7 +311,7 @@ player_data <- list()
 
 for (i in seq_len(nrow(NETS_ROSTER))) {
   p <- NETS_ROSTER[i, ]
-  cli_h3("{p$full_name} ({p$espn_id})")
+  cli_alert("Fetching {p$full_name}...")
 
   career   <- fetch_player_career_stats(p$espn_id)
   game_log <- fetch_player_game_log(p$espn_id, CURRENT_SEASON)
@@ -308,7 +330,15 @@ for (i in seq_len(nrow(NETS_ROSTER))) {
     } else NULL
   )
 
-  Sys.sleep(0.4)  # be polite to the API
+  status <- dplyr::case_when(
+    !is.null(career) & !is.null(game_log) ~ "career + game log",
+    !is.null(career)                       ~ "career only",
+    !is.null(game_log)                     ~ "game log only",
+    TRUE                                   ~ "no data (will use fallback)"
+  )
+  cli_alert_info("  {p$full_name}: {status}, GP={gp_season}")
+
+  Sys.sleep(0.2)  # reduced from 0.4 — be polite but not slow
 }
 
 # ── COMPUTE MILESTONES ────────────────────────────────────────
