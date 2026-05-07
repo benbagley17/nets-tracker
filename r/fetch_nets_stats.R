@@ -296,13 +296,8 @@ calc_double_doubles <- function(game_log) {
 
 # ── MAIN FETCH LOOP ───────────────────────────────────────────
 
-cli_h2("Fetching season-wide stats")
-season_stats <- fetch_season_player_stats(CURRENT_SEASON)
-if (is.null(season_stats)) {
-  cli_alert_warning("Season dashboard unavailable — will derive pace from career endpoint season totals")
-} else {
-  cli_alert_success("Season stats fetched: {nrow(season_stats)} players")
-}
+cli_h2("Skipping bulk season stats — using career endpoint per player")
+season_stats <- NULL
 
 cli_h2("Fetching per-player career stats & game logs")
 
