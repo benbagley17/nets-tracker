@@ -46,7 +46,7 @@ jobs:
             "purrr",
             "lubridate",
             "cli",
-            "tibble"
+            "tibble",
             "R.utils"
           ))
 
