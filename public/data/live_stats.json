@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-05-09T10:34:58Z",
+    "generated_at": "2026-05-10T11:19:24Z",
     "season": 2025,
     "source": "hoopR / ESPN NBA API",
     "nets_espn_id": "17",
     "total_milestones": 10,
-    "total_streaks": 3
+    "total_streaks": 0
   },
   "roster": [
     {
@@ -336,63 +336,5 @@
       "gp_season": 0
     }
   ],
-  "streaks": [
-    {
-      "id": "claxton-10reb-streak",
-      "player": "claxton",
-      "type": "streak",
-      "category": "Rebounding",
-      "statType": "Consec. Games 10+ Rebounds",
-      "current": 0,
-      "target": 9,
-      "unit": "games",
-      "remaining": null,
-      "gamesAway": null,
-      "urgency": "upcoming",
-      "seasonBest": 0,
-      "franchiseRecord": 9,
-      "franchiseHolder": "Brook Lopez (2015)",
-      "threshold": 10,
-      "mediaAlert": "FRANCHISE RECORD WATCH: Brook Lopez's 9-game streak of 10+ rebound games (2015) is within reach. Alert beat writers immediately if streak hits 7+.",
-      "isActive": false
-    },
-    {
-      "id": "porter-20pt-streak",
-      "player": "porter",
-      "type": "streak",
-      "category": "Scoring",
-      "statType": "Consec. Games 20+ Points",
-      "current": 0,
-      "target": 11,
-      "unit": "games",
-      "remaining": null,
-      "gamesAway": null,
-      "urgency": "upcoming",
-      "seasonBest": 0,
-      "franchiseRecord": 11,
-      "franchiseHolder": "Vince Carter (2008)",
-      "threshold": 20,
-      "mediaAlert": "FRANCHISE RECORD WATCH: Vince Carter's 11-game 20+ point streak (2008). Porter averaged 24.2 ppg this season. Track carefully when healthy next year.",
-      "isActive": false
-    },
-    {
-      "id": "demin-5ast-streak",
-      "player": "demin",
-      "type": "streak",
-      "category": "Assists",
-      "statType": "Consec. Games 5+ Assists",
-      "current": 0,
-      "target": 5,
-      "unit": "games",
-      "remaining": null,
-      "gamesAway": null,
-      "urgency": "upcoming",
-      "seasonBest": 0,
-      "franchiseRecord": null,
-      "franchiseHolder": null,
-      "threshold": 5,
-      "mediaAlert": "Dëmin's playmaking consistency is a key development metric. Track his 5+ assist streaks as a barometer of his NBA growth curve.",
-      "isActive": false
-    }
-  ]
+  "streaks": []
 }
