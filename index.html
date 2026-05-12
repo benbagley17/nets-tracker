@@ -25,114 +25,136 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
 
+  /* HEADER */
   header {
     border-bottom:1px solid var(--border);
     padding:0 40px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    height:72px;
-    position:sticky;
-    top:0;
-    z-index:100;
-    background:rgba(10,10,10,0.92);
-    backdrop-filter:blur(12px);
+    display:flex; align-items:center; justify-content:space-between;
+    height:68px; position:sticky; top:0; z-index:100;
+    background:rgba(10,10,10,0.94); backdrop-filter:blur(12px);
   }
   .logo { display:flex; align-items:baseline; gap:12px; }
-  .logo-brk { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:3px; }
-  .logo-sub { font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; }
-  .header-right { display:flex; align-items:center; gap:16px; }
-  .data-badge { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); letter-spacing:1px; display:flex; align-items:center; gap:6px; }
+  .logo-brk { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:3px; }
+  .logo-sub { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; }
+  .header-right { display:flex; align-items:center; gap:14px; }
+  .data-badge { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); display:flex; align-items:center; gap:6px; }
   .data-badge .dot { width:6px; height:6px; border-radius:50%; background:var(--achieved); animation:pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
+  /* SUMMARY STRIP */
   .summary-strip { display:flex; border-bottom:1px solid var(--border); overflow-x:auto; }
-  .summary-tile { flex:1; min-width:100px; padding:18px 28px; border-right:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+  .summary-tile { flex:1; min-width:90px; padding:16px 24px; border-right:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
   .summary-tile:last-child { border-right:none; }
   .summary-tile:hover { background:var(--gray-1); }
   .summary-tile.active { background:var(--gray-2); }
-  .summary-count { font-family:'Bebas Neue',sans-serif; font-size:34px; line-height:1; margin-bottom:3px; }
-  .summary-label { font-size:11px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; font-weight:500; }
+  .summary-count { font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:1; margin-bottom:2px; }
+  .summary-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; font-weight:500; }
   .tile-urgent .summary-count   { color:var(--urgent); }
   .tile-close .summary-count    { color:var(--close); }
   .tile-upcoming .summary-count { color:var(--upcoming); }
   .tile-achieved .summary-count { color:var(--achieved); }
 
-  .controls { padding:16px 40px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
-  .controls-label { font-size:11px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; }
-  .filter-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:5px 12px; border-radius:3px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; }
+  /* CONTROLS */
+  .filter-row { padding:12px 40px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .controls-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; min-width:52px; }
+  .filter-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:4px 11px; border-radius:3px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
   .filter-btn:hover { border-color:var(--gray-5); color:var(--white); }
   .filter-btn.active { background:var(--white); border-color:var(--white); color:var(--black); font-weight:600; }
-  .divider { width:1px; height:18px; background:var(--border); }
+  .row-divider { width:1px; height:16px; background:var(--border); }
 
-  main { padding:28px 40px; display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:14px; }
+  /* VIEW TOGGLE */
+  .view-toggle { display:flex; gap:6px; margin-left:auto; }
+  .view-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:4px 12px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; letter-spacing:1px; transition:all 0.15s; }
+  .view-btn.active { border-color:var(--gray-5); color:var(--white); }
 
+  /* GRID */
+  main { padding:24px 40px; display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:14px; }
+
+  /* MILESTONE CARD */
   .card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; transition:transform 0.15s,border-color 0.15s; cursor:pointer; }
-  .card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.14); }
+  .card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.13); }
   .card-accent { height:3px; }
   .card.urgent .card-accent   { background:var(--urgent); }
   .card.close .card-accent    { background:var(--close); }
   .card.upcoming .card-accent { background:var(--upcoming); }
   .card.achieved .card-accent { background:var(--achieved); }
-
-  .card-header { padding:16px 20px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-  .card-player { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; line-height:1; }
-  .card-stat-type { font-size:11px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
-  .urgency-badge { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:3px 8px; border-radius:3px; white-space:nowrap; flex-shrink:0; }
+  .card-header { padding:14px 18px 10px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .card-player { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; line-height:1; }
+  .card-stat-type { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
+  .urgency-badge { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; padding:3px 7px; border-radius:3px; white-space:nowrap; flex-shrink:0; }
   .card.urgent .urgency-badge   { background:rgba(232,71,63,0.15);  color:var(--urgent); }
   .card.close .urgency-badge    { background:rgba(232,151,63,0.15); color:var(--close); }
   .card.upcoming .urgency-badge { background:rgba(74,158,255,0.15); color:var(--upcoming); }
   .card.achieved .urgency-badge { background:rgba(63,207,142,0.15); color:var(--achieved); }
-
-  .card-progress { padding:0 20px 14px; }
-  .progress-nums { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
-  .progress-current { font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:1; }
-  .progress-target { font-family:'DM Mono',monospace; font-size:12px; color:var(--gray-5); }
+  .card-progress { padding:0 18px 12px; }
+  .progress-nums { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px; }
+  .progress-current { font-family:'Bebas Neue',sans-serif; font-size:28px; line-height:1; }
+  .progress-target { font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
   .progress-bar-track { height:4px; background:var(--gray-2); border-radius:2px; overflow:hidden; }
   .progress-bar-fill { height:100%; border-radius:2px; width:0%; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
   .card.urgent .progress-bar-fill   { background:var(--urgent); }
   .card.close .progress-bar-fill    { background:var(--close); }
   .card.upcoming .progress-bar-fill { background:var(--upcoming); }
   .card.achieved .progress-bar-fill { background:var(--achieved); }
-  .progress-footer { display:flex; justify-content:space-between; margin-top:7px; font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
-
-  .card-details { display:none; padding:0 20px 16px; border-top:1px solid var(--border); margin-top:2px; }
+  .progress-footer { display:flex; justify-content:space-between; margin-top:6px; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
+  .card-details { display:none; padding:0 18px 14px; border-top:1px solid var(--border); }
   .card.expanded .card-details { display:block; }
-  .media-alert { padding:12px; background:var(--gray-1); border-radius:4px; border-left:3px solid var(--gray-3); margin-top:12px; }
-  .media-alert-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; margin-bottom:7px; }
-  .media-alert-text { font-size:13px; line-height:1.6; color:var(--gray-6); }
-  .card-actions { display:flex; gap:8px; margin-top:10px; }
-  .btn-slack { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:6px 12px; border-radius:3px; font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
+  .media-alert { padding:11px 12px; background:var(--gray-1); border-radius:4px; border-left:3px solid var(--gray-3); margin-top:11px; }
+  .media-alert-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .media-alert-text { font-size:12px; line-height:1.6; color:var(--gray-6); }
+  .card-actions { margin-top:10px; }
+  .btn-slack { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
   .btn-slack:hover { border-color:var(--achieved); color:var(--achieved); }
 
-  .slack-panel { position:fixed; right:0; top:72px; bottom:0; width:320px; background:var(--gray-1); border-left:1px solid var(--border); padding:24px 22px; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1); z-index:90; overflow-y:auto; }
-  .slack-panel.open { transform:translateX(0); }
-  .slack-panel-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; margin-bottom:6px; }
-  .slack-panel-sub { font-size:12px; color:var(--gray-5); margin-bottom:22px; line-height:1.5; }
-  .slack-label { font-size:11px; color:var(--gray-5); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; display:block; }
-  .slack-input { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:9px 11px; border-radius:4px; font-family:'DM Mono',monospace; font-size:12px; margin-bottom:14px; outline:none; transition:border-color 0.15s; }
-  .slack-input:focus { border-color:var(--gray-5); }
-  .slack-select { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:8px 10px; border-radius:4px; font-family:'DM Mono',monospace; font-size:12px; margin-bottom:14px; outline:none; }
-  .slack-save { width:100%; background:var(--white); color:var(--black); border:none; padding:10px; border-radius:4px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-bottom:8px; transition:opacity 0.15s; }
-  .slack-save:hover { opacity:0.85; }
-  .slack-status { font-family:'DM Mono',monospace; font-size:11px; color:var(--achieved); display:none; margin-bottom:14px; }
-  .slack-test { width:100%; }
+  /* ROSTER CARD */
+  .roster-card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; padding:16px 18px; }
+  .roster-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .roster-number { font-family:'Bebas Neue',sans-serif; font-size:13px; color:var(--gray-5); min-width:24px; }
+  .roster-name { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; }
+  .roster-pos { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-left:auto; }
+  .roster-note { font-size:11px; color:var(--close); margin-bottom:10px; font-style:italic; }
+  .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .stat-cell { background:var(--gray-1); border-radius:3px; padding:8px 10px; }
+  .stat-cell-val { font-family:'Bebas Neue',sans-serif; font-size:20px; line-height:1; }
+  .stat-cell-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:1px; margin-top:2px; }
+  .roster-milestones { margin-top:10px; }
+  .roster-milestone-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-top:1px solid var(--border); font-size:11px; }
+  .roster-milestone-stat { color:var(--gray-5); font-family:'DM Mono',monospace; font-size:10px; }
+  .roster-milestone-progress { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-6); }
+  .roster-milestone-games { font-family:'DM Mono',monospace; font-size:10px; }
+  .games-urgent   { color:var(--urgent); }
+  .games-close    { color:var(--close); }
+  .games-upcoming { color:var(--upcoming); }
+  .games-achieved { color:var(--achieved); }
 
-  .slack-open-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:6px 12px; border-radius:3px; font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
+  /* SLACK PANEL */
+  .slack-panel { position:fixed; right:0; top:68px; bottom:0; width:300px; background:var(--gray-1); border-left:1px solid var(--border); padding:22px 20px; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1); z-index:90; overflow-y:auto; }
+  .slack-panel.open { transform:translateX(0); }
+  .slack-panel-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; margin-bottom:6px; }
+  .slack-panel-sub { font-size:11px; color:var(--gray-5); margin-bottom:20px; line-height:1.5; }
+  .slack-label { font-size:10px; color:var(--gray-5); letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; display:block; }
+  .slack-input { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:8px 10px; border-radius:4px; font-family:'DM Mono',monospace; font-size:11px; margin-bottom:12px; outline:none; transition:border-color 0.15s; }
+  .slack-input:focus { border-color:var(--gray-5); }
+  .slack-select { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:8px 10px; border-radius:4px; font-family:'DM Mono',monospace; font-size:11px; margin-bottom:12px; outline:none; }
+  .slack-save { width:100%; background:var(--white); color:var(--black); border:none; padding:9px; border-radius:4px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-bottom:8px; transition:opacity 0.15s; }
+  .slack-save:hover { opacity:0.85; }
+  .slack-status { font-family:'DM Mono',monospace; font-size:10px; color:var(--achieved); display:none; margin-bottom:12px; }
+
+  .slack-open-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
   .slack-open-btn:hover { border-color:var(--gray-5); color:var(--white); }
 
   .empty-state { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--gray-5); }
-  .empty-state-icon { font-size:40px; margin-bottom:14px; opacity:0.4; }
+  .empty-icon { font-size:36px; margin-bottom:12px; opacity:0.4; }
 
-  footer { padding:20px 40px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
+  footer { padding:18px 40px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
 
   #loading { display:flex; align-items:center; justify-content:center; height:60vh; font-family:'DM Mono',monospace; font-size:12px; color:var(--gray-5); letter-spacing:2px; }
 
   @media(max-width:700px){
-    header{padding:0 20px;}
-    main{padding:16px 20px;grid-template-columns:1fr;}
-    .controls{padding:14px 20px;}
-    .summary-tile{padding:14px 16px;}
+    header{padding:0 16px;}
+    main{padding:14px 16px;grid-template-columns:1fr;}
+    .filter-row{padding:10px 16px;}
+    .summary-tile{padding:12px 14px;}
     .slack-panel{width:100%;}
   }
 </style>
@@ -149,10 +171,11 @@
       <span class="dot"></span>
       <span id="data-timestamp">Loading...</span>
     </div>
-    <button class="slack-open-btn" onclick="toggleSlack()">⚡ Slack Alerts</button>
+    <button class="slack-open-btn" onclick="toggleSlack()">⚡ Slack</button>
   </div>
 </header>
 
+<!-- URGENCY STRIP -->
 <div class="summary-strip">
   <div class="summary-tile tile-all active" onclick="setUrgency('all')">
     <div class="summary-count" id="count-all">—</div>
@@ -176,10 +199,29 @@
   </div>
 </div>
 
-<div class="controls" id="player-filters">
+<!-- STAT TYPE ROW -->
+<div class="filter-row" id="stat-filters">
+  <span class="controls-label">Stat</span>
+  <button class="filter-btn active" onclick="setStat('all',this)">All</button>
+  <button class="filter-btn" onclick="setStat('Points',this)">Points</button>
+  <button class="filter-btn" onclick="setStat('Rebounding',this)">Rebounds</button>
+  <button class="filter-btn" onclick="setStat('Assists',this)">Assists</button>
+  <button class="filter-btn" onclick="setStat('Blocks',this)">Blocks</button>
+  <button class="filter-btn" onclick="setStat('Steals',this)">Steals</button>
+  <button class="filter-btn" onclick="setStat('Three-Pointers',this)">3PM</button>
+  <button class="filter-btn" onclick="setStat('Free Throws',this)">FTM</button>
+  <button class="filter-btn" onclick="setStat('Games',this)">Games</button>
+</div>
+
+<!-- PLAYER ROW -->
+<div class="filter-row" id="player-filters">
   <span class="controls-label">Player</span>
   <button class="filter-btn active" onclick="setPlayer('all',this)">All</button>
-  <div class="divider"></div>
+  <div class="row-divider"></div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="view-milestones" onclick="setView('milestones')">Milestones</button>
+    <button class="view-btn" id="view-roster" onclick="setView('roster')">Roster</button>
+  </div>
 </div>
 
 <div id="loading">LOADING DATA...</div>
@@ -190,6 +232,7 @@
   <span id="footer-source"></span>
 </footer>
 
+<!-- SLACK PANEL -->
 <div class="slack-panel" id="slack-panel">
   <div class="slack-panel-title">Slack Alerts</div>
   <div class="slack-panel-sub">Get notified when a milestone enters your alert window. Each alert fires once per session.</div>
@@ -205,18 +248,26 @@
   <button class="slack-save" onclick="saveSlack()">Save Configuration</button>
   <div class="slack-status" id="slack-status">✓ Saved</div>
   <label class="slack-label">Test</label>
-  <button class="btn-slack slack-test" onclick="testSlack()">Send test message to Slack</button>
+  <button class="btn-slack" style="width:100%" onclick="testSlack()">Send test message</button>
 </div>
 
 <script>
   let allMilestones = [];
+  let allRoster = [];
   let PLAYER_NAMES = {};
   let activeUrgency = 'all';
-  let activePlayer = 'all';
-  let sentAlerts = new Set(JSON.parse(localStorage.getItem('sentAlerts') || '[]'));
+  let activePlayer  = 'all';
+  let activeStat    = 'all';
+  let activeView    = 'milestones';
+  let sentAlerts    = new Set(JSON.parse(localStorage.getItem('sentAlerts') || '[]'));
 
   const URGENCY_ORDER = { urgent:0, close:1, upcoming:2, achieved:3 };
   const URGENCY_LABEL = { urgent:'🔴 Urgent', close:'🟡 Close', upcoming:'🔵 Upcoming', achieved:'✅ Achieved' };
+
+  const STAT_DISPLAY = {
+    PTS:'PTS', TRB:'REB', ORB:'OREB', AST:'AST',
+    STL:'STL', BLK:'BLK', FG3M:'3PM', FTM:'FTM', GP:'GP'
+  };
 
   async function loadData() {
     try {
@@ -225,6 +276,7 @@
       const data = await res.json();
 
       (data.roster || []).forEach(p => { PLAYER_NAMES[p.id] = p.name; });
+      allRoster     = data.roster || [];
       allMilestones = data.milestones || [];
 
       const ts = data.meta && data.meta.generated_at;
@@ -251,14 +303,16 @@
 
   function buildPlayerFilters() {
     const container = document.getElementById('player-filters');
-    const players = [...new Set(allMilestones.map(m => m.player))];
+    const divider   = container.querySelector('.row-divider');
+    const players   = [...new Set(allRoster.map(p => p.id))];
     players.forEach(pid => {
       const btn = document.createElement('button');
       btn.className = 'filter-btn';
       const name = PLAYER_NAMES[pid] || pid;
-      btn.textContent = name.split(' ').slice(-1)[0]; // last name only
+      btn.textContent = name.split(' ').slice(-1)[0];
+      btn.title = name;
       btn.onclick = () => setPlayer(pid, btn);
-      container.appendChild(btn);
+      container.insertBefore(btn, divider);
     });
   }
 
@@ -271,6 +325,13 @@
     renderGrid();
   }
 
+  function setStat(s, btn) {
+    activeStat = s;
+    document.querySelectorAll('#stat-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
   function setPlayer(pid, btn) {
     activePlayer = pid;
     document.querySelectorAll('#player-filters .filter-btn').forEach(b => b.classList.remove('active'));
@@ -278,38 +339,47 @@
     renderGrid();
   }
 
+  function setView(v) {
+    activeView = v;
+    document.getElementById('view-milestones').classList.toggle('active', v === 'milestones');
+    document.getElementById('view-roster').classList.toggle('active', v === 'roster');
+    renderGrid();
+  }
+
   function getFiltered() {
     return allMilestones.filter(m => {
       const uOk = activeUrgency === 'all' || m.urgency === activeUrgency;
-      const pOk = activePlayer === 'all' || m.player === activePlayer;
-      return uOk && pOk;
+      const pOk = activePlayer  === 'all' || m.player  === activePlayer;
+      const sOk = activeStat    === 'all' || m.category === activeStat;
+      return uOk && pOk && sOk;
     });
   }
 
   function updateCounts() {
     const c = { urgent:0, close:0, upcoming:0, achieved:0 };
     allMilestones.forEach(m => { if (c[m.urgency] !== undefined) c[m.urgency]++; });
-    document.getElementById('count-all').textContent = allMilestones.length;
-    document.getElementById('count-urgent').textContent = c.urgent;
-    document.getElementById('count-close').textContent = c.close;
-    document.getElementById('count-upcoming').textContent = c.upcoming;
-    document.getElementById('count-achieved').textContent = c.achieved;
+    document.getElementById('count-all').textContent     = allMilestones.length;
+    document.getElementById('count-urgent').textContent  = c.urgent;
+    document.getElementById('count-close').textContent   = c.close;
+    document.getElementById('count-upcoming').textContent= c.upcoming;
+    document.getElementById('count-achieved').textContent= c.achieved;
   }
 
   function renderGrid() {
     const grid = document.getElementById('grid');
+    if (activeView === 'roster') { renderRoster(grid); return; }
+
     const list = getFiltered().sort((a,b) =>
       (URGENCY_ORDER[a.urgency] ?? 4) - (URGENCY_ORDER[b.urgency] ?? 4) ||
       (a.gamesAway ?? 9999) - (b.gamesAway ?? 9999)
     );
 
     if (!list.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">◎</div><div>No milestones match this filter.</div></div>';
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">◎</div><div>No milestones match this filter.</div></div>';
       return;
     }
 
     grid.innerHTML = list.map(m => {
-      const name = PLAYER_NAMES[m.player] || m.player;
       const pct  = Math.min(100, Math.round(m.current / m.target * 100));
       const gamesTxt = m.urgency === 'achieved'
         ? 'Already achieved'
@@ -318,7 +388,7 @@
         <div class="card-accent"></div>
         <div class="card-header">
           <div>
-            <div class="card-player">${name}</div>
+            <div class="card-player">${m.playerName || m.player}</div>
             <div class="card-stat-type">${m.statType}</div>
           </div>
           <div class="urgency-badge">${URGENCY_LABEL[m.urgency] || m.urgency}</div>
@@ -337,10 +407,6 @@
           </div>
         </div>
         <div class="card-details">
-          <div class="media-alert">
-            <div class="media-alert-label">📋 Media Alert Copy</div>
-            <div class="media-alert-text">${m.mediaAlert || '—'}</div>
-          </div>
           <div class="card-actions">
             <button class="btn-slack" onclick="event.stopPropagation();sendSlackAlert('${m.id}',true)">↗ Test Slack Alert</button>
           </div>
@@ -353,6 +419,55 @@
         bar.style.width = bar.dataset.pct + '%';
       });
     });
+  }
+
+  function renderRoster(grid) {
+    const filtered = activePlayer === 'all'
+      ? allRoster
+      : allRoster.filter(p => p.id === activePlayer);
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">◎</div><div>No players match.</div></div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const s = p.stats || {};
+      const playerMilestones = allMilestones
+        .filter(m => m.player === p.id && (activeStat === 'all' || m.category === activeStat))
+        .sort((a,b) => (URGENCY_ORDER[a.urgency]??4)-(URGENCY_ORDER[b.urgency]??4) || (a.gamesAway??9999)-(b.gamesAway??9999));
+
+      const statCells = Object.entries(STAT_DISPLAY).map(([key, label]) =>
+        `<div class="stat-cell">
+          <div class="stat-cell-val">${(s[key] || 0).toLocaleString()}</div>
+          <div class="stat-cell-label">${label}</div>
+        </div>`
+      ).join('');
+
+      const milestoneRows = playerMilestones.slice(0, 9).map(m => {
+        const gamesTxt = m.urgency === 'achieved' ? '✅' :
+          m.gamesAway != null ? m.gamesAway + 'g' : '—';
+        const gClass = 'games-' + m.urgency;
+        return `<div class="roster-milestone-row">
+          <span class="roster-milestone-stat">${STAT_DISPLAY[m.statKey] || m.statKey}</span>
+          <span class="roster-milestone-progress">${m.current.toLocaleString()} → ${m.target.toLocaleString()}</span>
+          <span class="roster-milestone-games ${gClass}">${gamesTxt}</span>
+        </div>`;
+      }).join('');
+
+      const noteHtml = p.note ? `<div class="roster-note">${p.note}</div>` : '';
+
+      return `<div class="roster-card">
+        <div class="roster-header">
+          <span class="roster-number">#${p.number}</span>
+          <span class="roster-name">${p.name}</span>
+          <span class="roster-pos">${p.pos}</span>
+        </div>
+        ${noteHtml}
+        <div class="stat-grid">${statCells}</div>
+        ${milestoneRows ? `<div class="roster-milestones">${milestoneRows}</div>` : ''}
+      </div>`;
+    }).join('');
   }
 
   function toggleCard(id) {
@@ -394,10 +509,10 @@
     const wh = localStorage.getItem('slackWebhook');
     if (!wh) { alert('Configure a Slack webhook first.'); return; }
     const m    = allMilestones.find(x => x.id === id);
-    const name = PLAYER_NAMES[m && m.player] || (m && m.player) || id;
+    const name = (m && m.playerName) || (m && m.player) || id;
     const text = isTest
-      ? `🏀 *TEST — ${name}* | ${m.statType}\n${m.current.toLocaleString()} / ${m.target.toLocaleString()} — ${m.gamesAway ?? '?'} games away\n\n_${m.mediaAlert || ''}_`
-      : `🚨 *MILESTONE ALERT — ${name}*\n${m.statType}: ${m.current.toLocaleString()} / ${m.target.toLocaleString()}\n📅 ${m.gamesAway ?? '?'} games into 2026-27\n\n_${m.mediaAlert || ''}_`;
+      ? `🏀 *TEST — ${name}* | ${m.statType}\n${m.current.toLocaleString()} / ${m.target.toLocaleString()} — ${m.gamesAway ?? '?'} games away`
+      : `🚨 *MILESTONE ALERT — ${name}*\n${m.statType}: ${m.current.toLocaleString()} / ${m.target.toLocaleString()}\n📅 ${m.gamesAway ?? '?'} games into 2026-27`;
     postSlack(wh, { text });
     if (!isTest) {
       sentAlerts.add(id);
