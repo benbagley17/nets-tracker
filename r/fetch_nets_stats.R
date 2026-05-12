@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
   library(cli)
   library(tibble)
   library(dplyr)
+  library(rvest)
 })
 
 `%||%` <- function(a, b) if (!is.null(a)) a else b
