@@ -235,7 +235,7 @@ MILESTONE_DEFS <- tribble(
   "agbaji-300-3pm",                "agbaji",    "milestone", "Three-Pointers", "Career 3-Pointers Made",     "FG3M",    300L,    "3PM",  80.0,
   # SHARPE
   "sharpe-2000-pts",               "sharpe",    "milestone", "Points",         "Career Points",              "PTS",     2000L,   "PTS",  540.0,
-  "sharpe-200-blk",                "sharpe",    "milestone", "Blocks",         "Career Blocks",              "BLK",     200L,    "BLK",  30.0,
+  "sharpe-200-blk",                "sharpe",    "milestone", "Blocks",         "Career Blocks",              "BLK",     200L,    "BLK",  30.0
 )
 
 MEDIA_ALERTS <- list(
