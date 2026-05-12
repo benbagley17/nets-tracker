@@ -10,6 +10,9 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+milestone_results <- Filter(Negate(is.null), milestone_results)
+  
 OFFSEASON_MODE <- TRUE  # Set FALSE in October when 2026-27 season starts
 
 cli_h1("Nets Milestone Tracker — Data Fetch")
@@ -306,9 +309,6 @@ for (i in seq_len(nrow(MILESTONE_DEFS))) {
   status <- if (remaining == 0L) "ACHIEVED" else paste0(games_away %||% "?", " games into 2026-27")
   cli_alert_success("  {m$id}: {current}/{m$target} ({urgency}) — {status}")
 }
-
-`%||%` <- function(a, b) if (!is.null(a)) a else b
-milestone_results <- Filter(Negate(is.null), milestone_results)
 
 # ── ROSTER OUTPUT ─────────────────────────────────────────────
 
