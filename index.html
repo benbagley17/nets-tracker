@@ -1002,83 +1002,84 @@
     const date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
     const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 
-    /* ── SECTION 1: CLIMBING ALERTS ── */
-    const urgencyColor = { urgent:'#e8473f', close:'#e8973f', upcoming:'#4a9eff' };
-    const urgencyLabel = { urgent:'URGENT', close:'CLOSE', upcoming:'UPCOMING' };
+    /* urgent climbing alerts only */
+    const urgentChases = allChases.filter(c => c.urgency === 'urgent');
 
-    const climbingRows = allChases.map(c => {
-      const col = urgencyColor[c.urgency];
-      const lbl = urgencyLabel[c.urgency];
-      const gapStr = c.stat === '3PT%'
-        ? (c.gap * 100).toFixed(1) + ' pct pts'
-        : c.gap.toLocaleString();
+    /* urgent milestones only */
+    const urgentMilestones = allMilestones
+      .filter(m => m.urgency === 'urgent')
+      .sort((a,b) => (a.gamesAway??9999)-(b.gamesAway??9999));
+
+    const RED = '#e8473f';
+
+    const climbRows = urgentChases.map(c => {
       const pct = (c.pctGap * 100).toFixed(1);
+      const rows = [...CAREER_DATA[c.stat]].sort((a,b)=>b[1]-a[1]);
+      const progress = (() => {
+        const below = rows[c.currentRank];
+        const base  = below ? below[1] : 0;
+        const range = c.targetVal - base;
+        return range > 0 ? Math.min(100, Math.round((c.currentVal - base) / range * 100)) : 99;
+      })();
       return `<tr>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span>
-          <strong>${c.player}</strong>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.5px;">${c.player}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-top:1px;">${STAT_FULL_SHORT[c.stat]}</div>
         </td>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;color:#555;font-size:12px;">${STAT_FULL_SHORT[c.stat]}</td>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;font-family:monospace;font-size:13px;">${fmtClimbVal(c.stat,c.currentVal)} <span style="color:#999;font-size:11px;">${ordinal(c.currentRank)}</span></td>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;color:#999;font-size:12px;">→</td>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;font-family:monospace;font-size:13px;">${fmtClimbVal(c.stat,c.targetVal)} <span style="color:#999;font-size:11px;">${c.targetName} (${ordinal(c.targetRank)})</span></td>
-        <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;text-align:right;">
-          <span style="background:${col}20;color:${col};font-size:10px;font-family:monospace;padding:2px 7px;border-radius:3px;letter-spacing:1px;">${lbl} · ${pct}%</span>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:20%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;">${fmtClimbVal(c.stat,c.currentVal)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">${ordinal(c.currentRank)} all-time</div>
+        </td>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:36%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">Progress to ${c.targetName}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:${RED};">${pct}% gap</span>
+          </div>
+          <div style="height:4px;background:#f0f0f0;border-radius:2px;">
+            <div style="height:4px;background:${RED};border-radius:2px;width:${progress}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+          </div>
+        </td>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:#bbb;">${fmtClimbVal(c.stat,c.targetVal)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;">${ordinal(c.targetRank)} all-time</div>
         </td>
       </tr>`;
     }).join('');
 
-    /* ── SECTION 2: ACTIVE MILESTONES ── */
-    const milestoneRows = allMilestones
-      .filter(m => m.urgency !== 'achieved')
-      .sort((a,b) => (URGENCY_ORDER[a.urgency]??4)-(URGENCY_ORDER[b.urgency]??4) || (a.gamesAway??9999)-(b.gamesAway??9999))
-      .map(m => {
-        const col = urgencyColor[m.urgency] || '#888';
-        const lbl = urgencyLabel[m.urgency] || m.urgency.toUpperCase();
-        const pct = Math.min(100, Math.round(m.current/m.target*100));
-        const barFill = `<div style="height:3px;background:#e8e6e0;border-radius:2px;width:100%;margin-top:4px;"><div style="height:3px;background:${col};border-radius:2px;width:${pct}%;"></div></div>`;
-        return `<tr>
-          <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;">
-            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span>
-            <strong>${m.playerName||m.player}</strong>
-          </td>
-          <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;color:#555;font-size:12px;">${m.statType}</td>
-          <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;">
-            <span style="font-family:monospace;font-size:13px;">${m.current.toLocaleString()}</span>
-            <span style="color:#999;font-size:11px;"> / ${m.target.toLocaleString()}</span>
-            ${barFill}
-          </td>
-          <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;color:#999;font-size:12px;">${m.remaining.toLocaleString()} to go</td>
-          <td style="padding:9px 12px;border-bottom:1px solid #e8e6e0;text-align:right;">
-            <span style="background:${col}20;color:${col};font-size:10px;font-family:monospace;padding:2px 7px;border-radius:3px;letter-spacing:1px;">${lbl}</span>
-          </td>
-        </tr>`;
-      }).join('');
-
-    /* ── SECTION 3: LEADERBOARD SNAPSHOT — top 5 per stat ── */
-    const lbStats = ['PTS','TRB','AST','STL','BLK','FG3M','FTM','GP','MP','ORB','3PT%'];
-    const lbTables = lbStats.map(stat => {
-      const rows = [...CAREER_DATA[stat]].sort((a,b)=>b[1]-a[1]).slice(0,5);
-      const chaseMap = {};
-      allChases.filter(c=>c.stat===stat).forEach(c=>{ chaseMap[c.player]=c.urgency; });
-      const tableRows = rows.map((r,i) => {
-        const active = isActive(r[0]);
-        const col = chaseMap[r[0]] ? urgencyColor[chaseMap[r[0]]] : null;
-        const pip = col ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${col};margin-right:5px;vertical-align:middle;"></span>` : '';
-        return `<tr>
-          <td style="padding:5px 8px;color:#999;font-size:11px;width:20px;">${i+1}</td>
-          <td style="padding:5px 8px;font-size:12px;">${pip}${r[0]}${active?'<span style="font-size:9px;color:#3fcf8e;margin-left:5px;font-family:monospace;">●</span>':''}</td>
-          <td style="padding:5px 8px;text-align:right;font-family:monospace;font-size:12px;font-weight:600;">${fmtVal(stat,r[1])}</td>
-        </tr>`;
-      }).join('');
-      return `<div style="break-inside:avoid;margin-bottom:16px;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;color:#0a0a0a;border-bottom:2px solid #0a0a0a;padding-bottom:4px;margin-bottom:0;">${STAT_FULL_SHORT[stat]}</div>
-        <table style="width:100%;border-collapse:collapse;">${tableRows}</table>
-      </div>`;
+    const msRows = urgentMilestones.map(m => {
+      const pct = Math.min(100, Math.round(m.current/m.target*100));
+      return `<tr>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.5px;">${m.playerName||m.player}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-top:1px;">${m.statType}</div>
+        </td>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:20%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;">${m.current.toLocaleString()}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">${m.remaining.toLocaleString()} remaining</div>
+        </td>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:36%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">Progress to ${m.target.toLocaleString()}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:${RED};">${pct}%</span>
+          </div>
+          <div style="height:4px;background:#f0f0f0;border-radius:2px;">
+            <div style="height:4px;background:${RED};border-radius:2px;width:${pct}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+          </div>
+        </td>
+        <td style="padding:11px 14px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:#bbb;">${m.target.toLocaleString()}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;">target</div>
+        </td>
+      </tr>`;
     }).join('');
 
-    /* ── ASSEMBLE DOCUMENT ── */
-    const noData = s => `<p style="color:#aaa;font-size:12px;font-style:italic;padding:12px 0;">${s}</p>`;
+    const noItems = `<tr><td colspan="4" style="padding:18px 14px;font-family:'DM Mono',monospace;font-size:11px;color:#bbb;font-style:italic;">None at urgent threshold.</td></tr>`;
+
+    const sectionHead = (title, count) => `
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 0;padding-bottom:8px;border-bottom:2px solid #0a0a0a;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">${title}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;">${count} item${count!==1?'s':''}</div>
+      </div>`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -1088,52 +1089,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:14px;padding:48px 52px;}
-  @media print{
-    body{padding:28px 36px;}
-    .no-print{display:none!important;}
-    @page{margin:18mm 16mm;size:A4;}
-  }
-  h1{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;line-height:1;}
-  h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #e8e6e0;}
+  body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:14px;padding:44px 52px;max-width:900px;margin:0 auto;}
   table{width:100%;border-collapse:collapse;}
-  th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888;padding:8px 12px;text-align:left;border-bottom:2px solid #e8e6e0;}
-  .green{color:#3fcf8e;}
+  @media print{
+    body{padding:24px 32px;}
+    .no-print{display:none!important;}
+    @page{margin:14mm 14mm;size:A4 landscape;}
+  }
 </style>
 </head>
 <body>
-<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #0a0a0a;">
-  <div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#888;margin-bottom:8px;">Brooklyn Nets · Media Intelligence</div>
-    <h1>Upcoming<br>Milestones</h1>
-  </div>
-  <div style="text-align:right;">
-    <div style="font-family:'DM Mono',monospace;font-size:11px;color:#888;">${date}</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:#ccc;margin-top:4px;">benbagley17.github.io/nets-tracker</div>
-  </div>
+
+<button class="no-print" onclick="window.print()" style="float:right;margin-top:4px;padding:7px 18px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;">⬡ Print / Save PDF</button>
+
+<div style="margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #0a0a0a;">
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:6px;">Brooklyn Nets · Media Intelligence · ${date}</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;line-height:1;">Upcoming Milestones</div>
+  <div style="font-family:'DM Mono',monospace;font-size:10px;color:#e8473f;letter-spacing:2px;margin-top:6px;text-transform:uppercase;">Urgent alerts only · within 5% threshold</div>
 </div>
 
-<button class="no-print" onclick="window.print()" style="margin-bottom:28px;padding:8px 20px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:3px;">⬡ Print / Save as PDF</button>
+${sectionHead('Climbing the Record Books', urgentChases.length)}
+<table style="margin-top:2px;">
+  <thead><tr>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;border-bottom:1px solid #e0e0e0;">Gap to next rank</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
+  </tr></thead>
+  <tbody>${climbRows || noItems}</tbody>
+</table>
 
-<h2>Climbing Alerts</h2>
-<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:12px;letter-spacing:1px;">Active players chasing all-time franchise records · within 25% of next rank</div>
-${allChases.length ? `<table><thead><tr><th>Player</th><th>Stat</th><th>Current</th><th></th><th>Chasing</th><th style="text-align:right;">Status</th></tr></thead><tbody>${climbingRows}</tbody></table>` : noData('No climbing alerts at current thresholds.')}
+${sectionHead('Franchise Milestones', urgentMilestones.length)}
+<table style="margin-top:2px;">
+  <thead><tr>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;border-bottom:1px solid #e0e0e0;">Progress</th>
+    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
+  </tr></thead>
+  <tbody>${msRows || noItems}</tbody>
+</table>
 
-<h2>Active Milestones</h2>
-<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:12px;letter-spacing:1px;">Pending franchise milestones from live tracker</div>
-${allMilestones.filter(m=>m.urgency!=='achieved').length ? `<table><thead><tr><th>Player</th><th>Milestone</th><th>Progress</th><th>Remaining</th><th style="text-align:right;">Status</th></tr></thead><tbody>${milestoneRows}</tbody></table>` : noData('No active milestones loaded — live_stats.json not connected.')}
-
-<h2>Career Leaderboard Snapshot</h2>
-<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:16px;letter-spacing:1px;">Top 5 all-time per stat · <span class="green">●</span> = active player · colored dot = climbing alert</div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px 28px;">${lbTables}</div>
-
-<div style="margin-top:40px;padding-top:14px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:#ccc;letter-spacing:1px;">
-  <span>BROOKLYN NETS · MEDIA INTELLIGENCE · ${date.toUpperCase()}</span>
-  <span>UPCOMING MILESTONES REPORT</span>
+<div style="margin-top:36px;padding-top:12px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:#ccc;letter-spacing:1px;">
+  <span>BROOKLYN NETS · MEDIA INTELLIGENCE</span>
+  <span>benbagley17.github.io/nets-tracker</span>
 </div>
+
 </body></html>`;
 
-    const w = window.open('','_blank');
+    const w = window.open('', '_blank');
     w.document.write(html);
     w.document.close();
   }
