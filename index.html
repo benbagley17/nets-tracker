@@ -41,6 +41,23 @@
   .data-badge .dot { width:6px; height:6px; border-radius:50%; background:var(--achieved); animation:pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
+  /* TOP NAV TABS */
+  .nav-tabs {
+    display:flex; border-bottom:1px solid var(--border);
+    background:rgba(10,10,10,0.94); position:sticky; top:68px; z-index:90;
+  }
+  .nav-tab {
+    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    padding:14px 24px; cursor:pointer; background:transparent; border:none;
+    color:var(--gray-5); border-bottom:2px solid transparent; transition:all 0.15s;
+  }
+  .nav-tab:hover { color:var(--white); }
+  .nav-tab.active { color:var(--white); border-bottom:2px solid var(--white); }
+
+  /* PAGE SECTIONS */
+  .page-section { display:none; }
+  .page-section.active { display:block; }
+
   /* SUMMARY STRIP */
   .summary-strip { display:flex; border-bottom:1px solid var(--border); overflow-x:auto; }
   .summary-tile { flex:1; min-width:90px; padding:16px 24px; border-right:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
@@ -127,6 +144,55 @@
   .games-upcoming { color:var(--upcoming); }
   .games-achieved { color:var(--achieved); }
 
+  /* LEADERBOARD STYLES */
+  .lb-shell { padding:28px 40px; }
+  .lb-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; align-items:center; }
+  .lb-controls .controls-label { min-width:auto; }
+  .lb-stat-btn {
+    background:transparent; border:1px solid var(--gray-3); color:var(--gray-6);
+    padding:5px 13px; border-radius:3px; font-family:'DM Mono',monospace; font-size:11px;
+    letter-spacing:1px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+  }
+  .lb-stat-btn:hover { border-color:var(--gray-5); color:var(--white); }
+  .lb-stat-btn.active { background:var(--white); border-color:var(--white); color:var(--black); }
+
+  .lb-table-wrap { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .lb-table { width:100%; border-collapse:collapse; }
+  .lb-table thead tr { border-bottom:1px solid var(--border); }
+  .lb-table th {
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--gray-5); padding:12px 18px; text-align:left; font-weight:400;
+  }
+  .lb-table th.val-col { text-align:right; }
+  .lb-table td { padding:11px 18px; border-bottom:1px solid var(--border); font-size:14px; }
+  .lb-table tbody tr:last-child td { border-bottom:none; }
+  .lb-table tbody tr:hover { background:var(--gray-1); }
+  .lb-rank {
+    font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gray-4);
+    width:42px; text-align:center; padding-left:10px;
+  }
+  .lb-rank.top3 { color:var(--gray-6); }
+  .lb-player { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.5px; }
+  .lb-season { font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
+  .lb-val {
+    font-family:'Bebas Neue',sans-serif; font-size:22px; text-align:right;
+    padding-right:24px; color:var(--white);
+  }
+  .lb-active-badge {
+    display:inline-block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px;
+    padding:2px 6px; border-radius:3px; margin-left:8px; vertical-align:middle;
+    background:rgba(63,207,142,0.12); color:var(--achieved); border:1px solid rgba(63,207,142,0.25);
+  }
+  .lb-note { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-top:12px; }
+  .lb-section-title {
+    font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px;
+    margin-bottom:6px; color:var(--white);
+  }
+  .lb-section-sub {
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5);
+    letter-spacing:1px; margin-bottom:20px;
+  }
+
   /* SLACK PANEL */
   .slack-panel { position:fixed; right:0; top:68px; bottom:0; width:300px; background:var(--gray-1); border-left:1px solid var(--border); padding:22px 20px; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1); z-index:90; overflow-y:auto; }
   .slack-panel.open { transform:translateX(0); }
@@ -139,7 +205,6 @@
   .slack-save { width:100%; background:var(--white); color:var(--black); border:none; padding:9px; border-radius:4px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-bottom:8px; transition:opacity 0.15s; }
   .slack-save:hover { opacity:0.85; }
   .slack-status { font-family:'DM Mono',monospace; font-size:10px; color:var(--achieved); display:none; margin-bottom:12px; }
-
   .slack-open-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
   .slack-open-btn:hover { border-color:var(--gray-5); color:var(--white); }
 
@@ -156,6 +221,8 @@
     .filter-row{padding:10px 16px;}
     .summary-tile{padding:12px 14px;}
     .slack-panel{width:100%;}
+    .lb-shell{padding:16px;}
+    .nav-tab{padding:12px 14px;font-size:10px;}
   }
 </style>
 </head>
@@ -175,57 +242,136 @@
   </div>
 </header>
 
-<!-- URGENCY STRIP -->
-<div class="summary-strip">
-  <div class="summary-tile tile-all active" onclick="setUrgency('all')">
-    <div class="summary-count" id="count-all">—</div>
-    <div class="summary-label">All</div>
+<!-- TOP NAV -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="switchSection('milestones',this)">Milestones</button>
+  <button class="nav-tab" onclick="switchSection('career',this)">Career Top 20</button>
+  <button class="nav-tab" onclick="switchSection('season',this)">Single-Season Top 10</button>
+</nav>
+
+<!-- ═══════════════════════ MILESTONES SECTION ═══════════════════════ -->
+<div class="page-section active" id="section-milestones">
+
+  <div class="summary-strip">
+    <div class="summary-tile tile-all active" onclick="setUrgency('all')">
+      <div class="summary-count" id="count-all">—</div>
+      <div class="summary-label">All</div>
+    </div>
+    <div class="summary-tile tile-urgent" onclick="setUrgency('urgent')">
+      <div class="summary-count" id="count-urgent">—</div>
+      <div class="summary-label">Urgent</div>
+    </div>
+    <div class="summary-tile tile-close" onclick="setUrgency('close')">
+      <div class="summary-count" id="count-close">—</div>
+      <div class="summary-label">Close</div>
+    </div>
+    <div class="summary-tile tile-upcoming" onclick="setUrgency('upcoming')">
+      <div class="summary-count" id="count-upcoming">—</div>
+      <div class="summary-label">Upcoming</div>
+    </div>
+    <div class="summary-tile tile-achieved" onclick="setUrgency('achieved')">
+      <div class="summary-count" id="count-achieved">—</div>
+      <div class="summary-label">Achieved</div>
+    </div>
   </div>
-  <div class="summary-tile tile-urgent" onclick="setUrgency('urgent')">
-    <div class="summary-count" id="count-urgent">—</div>
-    <div class="summary-label">Urgent</div>
+
+  <div class="filter-row" id="stat-filters">
+    <span class="controls-label">Stat</span>
+    <button class="filter-btn active" onclick="setStat('all',this)">All</button>
+    <button class="filter-btn" onclick="setStat('Points',this)">Points</button>
+    <button class="filter-btn" onclick="setStat('Rebounding',this)">Rebounds</button>
+    <button class="filter-btn" onclick="setStat('Assists',this)">Assists</button>
+    <button class="filter-btn" onclick="setStat('Blocks',this)">Blocks</button>
+    <button class="filter-btn" onclick="setStat('Steals',this)">Steals</button>
+    <button class="filter-btn" onclick="setStat('Three-Pointers',this)">3PM</button>
+    <button class="filter-btn" onclick="setStat('Free Throws',this)">FTM</button>
+    <button class="filter-btn" onclick="setStat('Games',this)">Games</button>
   </div>
-  <div class="summary-tile tile-close" onclick="setUrgency('close')">
-    <div class="summary-count" id="count-close">—</div>
-    <div class="summary-label">Close</div>
+
+  <div class="filter-row" id="player-filters">
+    <span class="controls-label">Player</span>
+    <button class="filter-btn active" onclick="setPlayer('all',this)">All</button>
+    <div class="row-divider"></div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="view-milestones" onclick="setView('milestones')">Milestones</button>
+      <button class="view-btn" id="view-roster" onclick="setView('roster')">Roster</button>
+    </div>
   </div>
-  <div class="summary-tile tile-upcoming" onclick="setUrgency('upcoming')">
-    <div class="summary-count" id="count-upcoming">—</div>
-    <div class="summary-label">Upcoming</div>
-  </div>
-  <div class="summary-tile tile-achieved" onclick="setUrgency('achieved')">
-    <div class="summary-count" id="count-achieved">—</div>
-    <div class="summary-label">Achieved</div>
+
+  <div id="loading">LOADING DATA...</div>
+  <main id="grid" style="display:none"></main>
+
+</div>
+
+<!-- ═══════════════════════ CAREER TOP 20 SECTION ═══════════════════════ -->
+<div class="page-section" id="section-career">
+  <div class="lb-shell">
+    <div class="lb-section-title">All-Time Franchise Leaders</div>
+    <div class="lb-section-sub">Top 20 in franchise history (NJN/BRK) · Active players marked · Min. 300 3PM for 3PT%</div>
+    <div class="lb-controls">
+      <span class="controls-label">Stat</span>
+      <button class="lb-stat-btn active" onclick="selectCareerStat('PTS',this)">Points</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('TRB',this)">Rebounds</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('ORB',this)">Off. Reb.</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('AST',this)">Assists</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('STL',this)">Steals</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('BLK',this)">Blocks</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('FG3M',this)">3PM</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('FTM',this)">FTM</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('GP',this)">Games</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('MP',this)">Minutes</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('3PT%',this)">3PT%</button>
+    </div>
+    <div class="lb-table-wrap">
+      <table class="lb-table" id="career-table">
+        <thead>
+          <tr>
+            <th style="width:42px">#</th>
+            <th>Player</th>
+            <th class="val-col" id="career-val-header">PTS</th>
+          </tr>
+        </thead>
+        <tbody id="career-tbody"></tbody>
+      </table>
+    </div>
+    <div class="lb-note" id="career-note"></div>
   </div>
 </div>
 
-<!-- STAT TYPE ROW -->
-<div class="filter-row" id="stat-filters">
-  <span class="controls-label">Stat</span>
-  <button class="filter-btn active" onclick="setStat('all',this)">All</button>
-  <button class="filter-btn" onclick="setStat('Points',this)">Points</button>
-  <button class="filter-btn" onclick="setStat('Rebounding',this)">Rebounds</button>
-  <button class="filter-btn" onclick="setStat('Assists',this)">Assists</button>
-  <button class="filter-btn" onclick="setStat('Blocks',this)">Blocks</button>
-  <button class="filter-btn" onclick="setStat('Steals',this)">Steals</button>
-  <button class="filter-btn" onclick="setStat('Three-Pointers',this)">3PM</button>
-  <button class="filter-btn" onclick="setStat('Free Throws',this)">FTM</button>
-  <button class="filter-btn" onclick="setStat('Games',this)">Games</button>
-</div>
-
-<!-- PLAYER ROW -->
-<div class="filter-row" id="player-filters">
-  <span class="controls-label">Player</span>
-  <button class="filter-btn active" onclick="setPlayer('all',this)">All</button>
-  <div class="row-divider"></div>
-  <div class="view-toggle">
-    <button class="view-btn active" id="view-milestones" onclick="setView('milestones')">Milestones</button>
-    <button class="view-btn" id="view-roster" onclick="setView('roster')">Roster</button>
+<!-- ═══════════════════════ SINGLE-SEASON TOP 10 SECTION ═══════════════════════ -->
+<div class="page-section" id="section-season">
+  <div class="lb-shell">
+    <div class="lb-section-title">Single-Season Leaders</div>
+    <div class="lb-section-sub">Top 10 single seasons in franchise history (NJN/BRK) · Active players marked</div>
+    <div class="lb-controls">
+      <span class="controls-label">Stat</span>
+      <button class="lb-stat-btn active" onclick="selectSeasonStat('PTS',this)">Points</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('TRB',this)">Rebounds</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('ORB',this)">Off. Reb.</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('AST',this)">Assists</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('STL',this)">Steals</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('BLK',this)">Blocks</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('FG3M',this)">3PM</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('FTM',this)">FTM</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('MP',this)">Minutes</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('3PT%',this)">3PT%</button>
+    </div>
+    <div class="lb-table-wrap">
+      <table class="lb-table" id="season-table">
+        <thead>
+          <tr>
+            <th style="width:42px">#</th>
+            <th>Player</th>
+            <th style="width:90px;font-size:9px">Season</th>
+            <th class="val-col" id="season-val-header">PTS</th>
+          </tr>
+        </thead>
+        <tbody id="season-tbody"></tbody>
+      </table>
+    </div>
+    <div class="lb-note" id="season-note"></div>
   </div>
 </div>
-
-<div id="loading">LOADING DATA...</div>
-<main id="grid" style="display:none"></main>
 
 <footer>
   <span>Brooklyn Nets · Media Intelligence · 2026-27</span>
@@ -252,6 +398,116 @@
 </div>
 
 <script>
+  /* ─── LEADERBOARD DATA ─── */
+  const ACTIVE_PLAYERS = ['Nic Claxton','Cam Thomas','Day\'Ron Sharpe','Terance Mann','Michael Porter Jr.','Jalen Wilson','Noah Clowney','Ziaire Williams'];
+
+  const CAREER_DATA = {
+    PTS: [['Brook Lopez',10444],['Buck Williams',10440],['Vince Carter',8834],['Richard Jefferson',8507],['Jason Kidd',7373],['Kerry Kittles',7096],['Derrick Coleman',6930],['Chris Morris',6762],['Mike Gminski',6415],['Otis Birdsong',5968],['Keith Van Horn',5700],['Albert King',5595],['Joe Harris',5007],['Spencer Dinwiddie',4953],['Kendall Gill',4932],['Darwin Cook',4699],['Kenny Anderson',4655],['Deron Williams',4609],['Kenyon Martin',4269],['Joe Johnson',4240]],
+    TRB: [['Buck Williams',7576],['Brook Lopez',4005],['Derrick Coleman',3690],['Mike Gminski',3671],['Jayson Williams',3328],['Nic Claxton',2875],['Chris Morris',2918],['Richard Jefferson',2627],['Keith Van Horn',2398],['Jason Collins',2323],['Sam Bowie',2304],['George Johnson',2182],['Vince Carter',2152],['Kenyon Martin',2147],['Kris Humphries',2100],['Kerry Kittles',1951],['Albert King',1895],['Armen Gilliam',1826],['Jan van Breda Kolff',1778],['Aaron Williams',1585]],
+    ORB: [['Buck Williams',2588],['Jayson Williams',1484],['Chris Morris',1290],['Mike Gminski',1231],['Derrick Coleman',1148],['Chris Dudley',873],['Nic Claxton',855],['Sam Bowie',743],['George Johnson',712],['Jason Collins',789],['Keith Van Horn',671],['Kris Humphries',666],['Albert King',655],['Armen Gilliam',630],['Richard Jefferson',629],['Jarrett Allen',589],['Aaron Williams',571],['Kenyon Martin',547],['Kerry Kittles',512],['Jan van Breda Kolff',500]],
+    AST: [['Jason Kidd',4620],['Kenny Anderson',2363],['Deron Williams',2078],['Spencer Dinwiddie',1985],['Darwin Cook',1970],['Vince Carter',1762],['Richard Jefferson',1486],['Devin Harris',1473],['Michael Ray Richardson',1410],['Stephon Marbury',1398],['Otis Birdsong',1361],['Kerry Kittles',1275],['Mookie Blaylock',1143],['Eddie Jordan',1113],['Derrick Coleman',1093],['Kelvin Ransey',1090],['Lester Conner',1047],['Chris Morris',1015],['Foots Walker',996],['Joe Johnson',993]],
+    STL: [['Jason Kidd',950],['Darwin Cook',875],['Kerry Kittles',803],['Chris Morris',784],['Kendall Gill',652],['Buck Williams',599],['Eddie Jordan',562],['Michael Ray Richardson',552],['Kenny Anderson',476],['Richard Jefferson',438],['Vince Carter',435],['Otis Birdsong',427],['Mookie Blaylock',421],['Lester Conner',390],['Albert King',383],['Jan van Breda Kolff',363],['Kenyon Martin',361],['Lucious Harris',346],['Brook Lopez',328],['Derrick Coleman',320]],
+    BLK: [['Brook Lopez',972],['George Johnson',863],['Buck Williams',696],['Nic Claxton',611],['Mike Gminski',599],['Derrick Coleman',559],['Chris Morris',468],['Chris Dudley',466],['Sam Bowie',459],['Shawn Bradley',410],['Kenyon Martin',386],['Darryl Dawkins',385],['Jan van Breda Kolff',329],['P.J. Brown',328],['Jarrett Allen',319],['Jason Collins',305],['Aaron Williams',297],['Jayson Williams',275],['Kris Humphries',224],['Roy Hinson',223]],
+    FG3M: [['Joe Harris',984],['Jason Kidd',813],['Vince Carter',638],['Kerry Kittles',687],['Deron Williams',485],['Kyrie Irving',438],['Joe Johnson',516],['Spencer Dinwiddie',560],["D'Angelo Russell",381],['Cameron Johnson',355],['Cam Thomas',348],['Chris Morris',368],['Keith Van Horn',335],['Allen Crabbe',299],['Bojan Bogdanovic',319],['Caris LeVert',294],['Mikal Bridges',288],['Patty Mills',276],['Stephon Marbury',234],["Royce O'Neale",260]],
+    FTM: [['Buck Williams',2476],['Richard Jefferson',2349],['Brook Lopez',2219],['Vince Carter',1944],['Derrick Coleman',1859],['Mike Gminski',1657],['Jason Kidd',1352],['Spencer Dinwiddie',1207],['Chris Morris',1178],['Keith Van Horn',1153],['Devin Harris',1149],['Kenny Anderson',1098],['Kendall Gill',1061],['Deron Williams',994],['Stephon Marbury',957],['Kerry Kittles',907],['Darryl Dawkins',877],['Albert King',874],['Armen Gilliam',853],['Kevin Durant',849]],
+    GP:  [['Buck Williams',635],['Brook Lopez',562],['Mike Gminski',550],['Jason Collins',532],['Chris Morris',510],['Jason Kidd',506],['Kerry Kittles',496],['Richard Jefferson',489],['Darwin Cook',464],['Lucious Harris',456],['Jan van Breda Kolff',434],['Joe Harris',432],['Albert King',410],["Mike O'Koren",392],['Nic Claxton',380],['Otis Birdsong',375],['Vince Carter',374],['Jayson Williams',373],['Spencer Dinwiddie',348],['Derrick Coleman',348]],
+    MP:  [['Buck Williams',23100],['Jason Kidd',18733],['Brook Lopez',18118],['Richard Jefferson',17499],['Kerry Kittles',16686],['Chris Morris',15274],['Vince Carter',14157],['Mike Gminski',13638],['Jason Collins',12664],['Derrick Coleman',12449],['Joe Harris',11620],['Darwin Cook',11593],['Otis Birdsong',11324],['Kendall Gill',11203],['Keith Van Horn',10881],['Albert King',10393],['Jan van Breda Kolff',10155],['Spencer Dinwiddie',10003],['Kenny Anderson',9962],['Nic Claxton',9944]],
+    '3PT%': [['Joe Harris',.440],['Drazen Petrovic',.437],['Seth Curry',.427],['Bobby Simmons',.422],['Keyon Dooling',.403],['Kevin Durant',.400],['Kyrie Irving',.396],['Anthony Morrow',.396],['Patty Mills',.393],['Cameron Johnson',.387],['Landry Shamet',.387],['Bostjan Nachbar',.384],["Royce O'Neale",.380],['Kerry Kittles',.378],['Joe Johnson',.378],['Allen Crabbe',.378],['Kevin Edwards',.377],['Mikal Bridges',.373],['Vince Carter',.370],['Bojan Bogdanovic',.366]]
+  };
+
+  const SEASON_DATA = {
+    PTS:  [['Rick Barry','1971-72',2518],['Julius Erving','1975-76',2462],['Julius Erving','1974-75',2343],['Julius Erving','1973-74',2299],['Vince Carter','2006-07',2070],['Levern Tart','1969-70',1935],['Vince Carter','2005-06',1911],['Bernard King','1977-78',1909],['Richard Jefferson','2007-08',1857],['Kendall Gill','1996-97',1789]],
+    TRB:  [['Billy Paultz','1971-72',1035],['Buck Williams','1982-83',1027],['Buck Williams','1986-87',1023],['Billy Paultz','1972-73',1015],['Buck Williams','1981-82',1005],['Buck Williams','1984-85',1005],['Buck Williams','1983-84',1000],['Buck Williams','1985-86',986],['Larry Kenon','1973-74',962],['Billy Paultz','1970-71',940]],
+    ORB:  [['Jayson Williams','1997-98',443],['Larry Kenon','1973-74',375],['Buck Williams','1982-83',365],['Buck Williams','1983-84',355],['Buck Williams','1981-82',347],['Chris Dudley','1991-92',343],['Jayson Williams','1995-96',342],['Kim Hughes','1975-76',341],['Julius Erving','1975-76',337],['Buck Williams','1985-86',329]],
+    AST:  [['Jason Kidd','2001-02',808],['Kevin Porter','1977-78',801],['Kenny Anderson','1993-94',784],['Jason Kidd','2006-07',736],['Jason Kidd','2002-03',711],['Kenny Anderson','1994-95',680],['Bill Melchionni','1970-71',672],['Jason Kidd','2005-06',672],['Bill Melchionni','1971-72',669],['Michael Ray Richardson','1984-85',669]],
+    STL:  [['Michael Ray Richardson','1984-85',243],['Eddie Jordan','1979-80',223],['Brian Taylor','1974-75',221],['Julius Erving','1975-76',207],['Eddie Jordan','1978-79',201],['Ray Williams','1981-82',199],['Darwin Cook','1982-83',194],['Julius Erving','1973-74',190],['Julius Erving','1974-75',186],['Lester Conner','1988-89',181]],
+    BLK:  [['George Johnson','1977-78',274],['George Johnson','1979-80',258],['George Johnson','1978-79',253],['Shawn Bradley','1995-96',250],['Billy Paultz','1972-73',214],['Julius Erving','1973-74',204],['Nic Claxton','2022-23',189],['Chris Dudley','1991-92',179],['Julius Erving','1975-76',160],['Shawn Bradley','1996-97',160]],
+    FG3M: [["D'Angelo Russell",'2018-19',234],['Patty Mills','2021-22',227],['Mikal Bridges','2023-24',220],['Joe Harris','2020-21',211],['Allen Crabbe','2017-18',201],['Joe Harris','2018-19',183],['Michael Porter Jr.','2025-26',176],['Joe Harris','2019-20',172],['Deron Williams','2012-13',169],["Royce O'Neale",'2022-23',163]],
+    FTM:  [['Rick Barry','1971-72',641],['Richard Jefferson','2007-08',542],['Julius Erving','1975-76',530],['Devin Harris','2008-09',496],['Julius Erving','1974-75',486],['Vince Carter','2005-06',480],['Richard Jefferson','2005-06',471],['Vince Carter','2006-07',462],['Julius Erving','1973-74',454],['Rick Barry','1970-71',451]],
+    MP:   [['Rick Barry','1971-72',3616],['Julius Erving','1974-75',3402],['Julius Erving','1973-74',3398],['Bill Melchionni','1971-72',3326],['Bill Melchionni','1970-71',3284],['Julius Erving','1975-76',3244],['Levern Tart','1969-70',3210],['Richard Jefferson','2007-08',3200],['Kendall Gill','1996-97',3199],['Buck Williams','1984-85',3182]],
+    '3PT%': [['Joe Harris','2020-21',.475],['Joe Harris','2018-19',.474],['Kevin Durant','2020-21',.450],['Drazen Petrovic','1992-93',.449],['Bobby Simmons','2008-09',.447],['Drazen Petrovic','1991-92',.444],['Jordan Farmar','2011-12',.440],['Eddie House','2006-07',.429],['Joe Harris','2022-23',.426],['Vince Carter','2004-05',.425]]
+  };
+
+  const STAT_FULL = {
+    PTS:'Points', TRB:'Total Rebounds', ORB:'Offensive Rebounds', AST:'Assists',
+    STL:'Steals', BLK:'Blocks', FG3M:'3-Pointers Made', FTM:'Free Throws Made',
+    GP:'Games Played', MP:'Minutes Played', '3PT%':'3-Point %'
+  };
+
+  const CAREER_NOTES = {
+    '3PT%': 'Min. 300 3-pointers made',
+    FG3M: 'Sorted by 3PM made',
+    TRB: 'Sorted by total rebounds'
+  };
+
+  function isActive(name) {
+    return ACTIVE_PLAYERS.some(a => a.toLowerCase() === name.toLowerCase());
+  }
+
+  function fmtVal(stat, v) {
+    if (stat === '3PT%') return (v * 100).toFixed(1) + '%';
+    if (stat === 'MP') return v.toLocaleString();
+    return v.toLocaleString();
+  }
+
+  let currentCareerStat = 'PTS';
+  function selectCareerStat(stat, btn) {
+    currentCareerStat = stat;
+    document.querySelectorAll('#section-career .lb-stat-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderCareerTable();
+  }
+
+  function renderCareerTable() {
+    const stat = currentCareerStat;
+    const rows = [...CAREER_DATA[stat]].sort((a, b) => b[1] - a[1]);
+    document.getElementById('career-val-header').textContent = STAT_FULL[stat] || stat;
+    document.getElementById('career-tbody').innerHTML = rows.map((r, i) => {
+      const active = isActive(r[0]);
+      const rankClass = i < 3 ? 'lb-rank top3' : 'lb-rank';
+      return `<tr>
+        <td class="${rankClass}">${i + 1}</td>
+        <td class="lb-player">${r[0]}${active ? '<span class="lb-active-badge">Active</span>' : ''}</td>
+        <td class="lb-val">${fmtVal(stat, r[1])}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('career-note').textContent = CAREER_NOTES[stat] || '';
+  }
+
+  let currentSeasonStat = 'PTS';
+  function selectSeasonStat(stat, btn) {
+    currentSeasonStat = stat;
+    document.querySelectorAll('#section-season .lb-stat-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderSeasonTable();
+  }
+
+  function renderSeasonTable() {
+    const stat = currentSeasonStat;
+    const rows = SEASON_DATA[stat];
+    document.getElementById('season-val-header').textContent = STAT_FULL[stat] || stat;
+    document.getElementById('season-tbody').innerHTML = rows.map((r, i) => {
+      const active = isActive(r[0]);
+      const rankClass = i < 3 ? 'lb-rank top3' : 'lb-rank';
+      return `<tr>
+        <td class="${rankClass}">${i + 1}</td>
+        <td class="lb-player">${r[0]}${active ? '<span class="lb-active-badge">Active</span>' : ''}</td>
+        <td class="lb-season">${r[1]}</td>
+        <td class="lb-val">${fmtVal(stat, r[2])}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('season-note').textContent = '';
+  }
+
+  /* ─── SECTION SWITCHING ─── */
+  function switchSection(name, btn) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  /* ─── MILESTONE LOGIC (unchanged) ─── */
   let allMilestones = [];
   let allRoster = [];
   let PLAYER_NAMES = {};
@@ -525,6 +781,9 @@
       .catch(e => console.warn('Slack error:', e));
   }
 
+  /* ─── INIT ─── */
+  renderCareerTable();
+  renderSeasonTable();
   loadData();
 </script>
 </body>
