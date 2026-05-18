@@ -470,7 +470,7 @@
 
 <script>
   /* ─── LEADERBOARD DATA ─── */
-  const ACTIVE_PLAYERS = ['Nic Claxton','Cam Thomas','Day\'Ron Sharpe','Terance Mann','Michael Porter Jr.','Jalen Wilson','Noah Clowney','Ziaire Williams'];
+  const ACTIVE_PLAYERS = ['Nic Claxton','Day\'Ron Sharpe','Terance Mann','Michael Porter Jr.','Jalen Wilson','Noah Clowney','Ziaire Williams'];
 
   const CAREER_DATA = {
     PTS: [['Brook Lopez',10444],['Buck Williams',10440],['Vince Carter',8834],['Richard Jefferson',8507],['Jason Kidd',7373],['Kerry Kittles',7096],['Derrick Coleman',6930],['Chris Morris',6762],['Mike Gminski',6415],['Otis Birdsong',5968],['Keith Van Horn',5700],['Albert King',5595],['Joe Harris',5007],['Spencer Dinwiddie',4953],['Kendall Gill',4932],['Darwin Cook',4699],['Kenny Anderson',4655],['Deron Williams',4609],['Kenyon Martin',4269],['Joe Johnson',4240]],
@@ -1001,14 +1001,17 @@
   function openPrintView() {
     const date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
     const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+    const EXCLUDED = ['cam thomas'];
 
-    /* urgent climbing alerts only */
-    const urgentChases = allChases.filter(c => c.urgency === 'urgent');
+    /* urgent climbing alerts only — exclude removed players, sort alphabetically */
+    const urgentChases = allChases
+      .filter(c => c.urgency === 'urgent' && !EXCLUDED.includes(c.player.toLowerCase()))
+      .sort((a,b) => a.player.localeCompare(b.player));
 
-    /* urgent milestones only */
+    /* urgent milestones only — exclude removed players, sort alphabetically */
     const urgentMilestones = allMilestones
-      .filter(m => m.urgency === 'urgent')
-      .sort((a,b) => (a.gamesAway??9999)-(b.gamesAway??9999));
+      .filter(m => m.urgency === 'urgent' && !EXCLUDED.includes((m.playerName||m.player).toLowerCase()))
+      .sort((a,b) => (a.playerName||a.player).localeCompare(b.playerName||b.player));
 
     const RED = '#e8473f';
 
@@ -1022,63 +1025,64 @@
         return range > 0 ? Math.min(100, Math.round((c.currentVal - base) / range * 100)) : 99;
       })();
       return `<tr>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.5px;">${c.player}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-top:1px;">${STAT_FULL_SHORT[c.stat]}</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;">${c.player}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-top:1px;">${STAT_FULL_SHORT[c.stat]}</div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:20%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;">${fmtClimbVal(c.stat,c.currentVal)}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">${ordinal(c.currentRank)} all-time</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;">${fmtClimbVal(c.stat,c.currentVal)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">${ordinal(c.currentRank)} all-time</div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:36%;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">Progress to ${c.targetName}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:10px;color:${RED};">${pct}% gap</span>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">→ ${c.targetName}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:${RED};">${pct}% gap</span>
           </div>
-          <div style="height:4px;background:#f0f0f0;border-radius:2px;">
-            <div style="height:4px;background:${RED};border-radius:2px;width:${progress}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+          <div style="height:3px;background:#f0f0f0;border-radius:2px;">
+            <div style="height:3px;background:${RED};border-radius:2px;width:${progress}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
           </div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:#bbb;">${fmtClimbVal(c.stat,c.targetVal)}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;">${ordinal(c.targetRank)} all-time</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;color:#bbb;">${fmtClimbVal(c.stat,c.targetVal)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#aaa;">${ordinal(c.targetRank)} all-time</div>
         </td>
       </tr>`;
     }).join('');
 
     const msRows = urgentMilestones.map(m => {
       const pct = Math.min(100, Math.round(m.current/m.target*100));
+      const name = m.playerName||m.player;
       return `<tr>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.5px;">${m.playerName||m.player}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-top:1px;">${m.statType}</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;">${name}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-top:1px;">${m.statType}</div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:20%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;">${m.current.toLocaleString()}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">${m.remaining.toLocaleString()} remaining</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;">${m.current.toLocaleString()}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">${m.remaining.toLocaleString()} remaining</div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;width:36%;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">Progress to ${m.target.toLocaleString()}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:10px;color:${RED};">${pct}%</span>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">Progress to ${m.target.toLocaleString()}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:${RED};">${pct}%</span>
           </div>
-          <div style="height:4px;background:#f0f0f0;border-radius:2px;">
-            <div style="height:4px;background:${RED};border-radius:2px;width:${pct}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+          <div style="height:3px;background:#f0f0f0;border-radius:2px;">
+            <div style="height:3px;background:${RED};border-radius:2px;width:${pct}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
           </div>
         </td>
-        <td style="padding:11px 14px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:#bbb;">${m.target.toLocaleString()}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;">target</div>
+        <td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;color:#bbb;">${m.target.toLocaleString()}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#aaa;">target</div>
         </td>
       </tr>`;
     }).join('');
 
-    const noItems = `<tr><td colspan="4" style="padding:18px 14px;font-family:'DM Mono',monospace;font-size:11px;color:#bbb;font-style:italic;">None at urgent threshold.</td></tr>`;
+    const noItems = `<tr><td colspan="4" style="padding:14px 10px;font-family:'DM Mono',monospace;font-size:10px;color:#bbb;font-style:italic;">None at urgent threshold.</td></tr>`;
 
     const sectionHead = (title, count) => `
-      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 0;padding-bottom:8px;border-bottom:2px solid #0a0a0a;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">${title}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;">${count} item${count!==1?'s':''}</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 0;padding-bottom:6px;border-bottom:2px solid #0a0a0a;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;">${title}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:1px;">${count} item${count!==1?'s':''}</div>
       </div>`;
 
     const html = `<!DOCTYPE html>
@@ -1089,32 +1093,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:14px;padding:44px 52px;max-width:900px;margin:0 auto;}
+  body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:13px;padding:36px 44px;max-width:720px;margin:0 auto;}
   table{width:100%;border-collapse:collapse;}
   @media print{
-    body{padding:24px 32px;}
+    body{padding:20px 28px;max-width:100%;}
     .no-print{display:none!important;}
-    @page{margin:14mm 14mm;size:A4 landscape;}
+    @page{margin:12mm 14mm;size:A4 portrait;}
   }
 </style>
 </head>
 <body>
 
-<button class="no-print" onclick="window.print()" style="float:right;margin-top:4px;padding:7px 18px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;">⬡ Print / Save PDF</button>
+<button class="no-print" onclick="window.print()" style="float:right;margin-top:2px;padding:6px 16px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;">⬡ Print / Save PDF</button>
 
-<div style="margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #0a0a0a;">
-  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:6px;">Brooklyn Nets · Media Intelligence · ${date}</div>
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;line-height:1;">Upcoming Milestones</div>
-  <div style="font-family:'DM Mono',monospace;font-size:10px;color:#e8473f;letter-spacing:2px;margin-top:6px;text-transform:uppercase;">Urgent alerts only · within 5% threshold</div>
+<div style="margin-bottom:20px;padding-bottom:16px;border-bottom:3px solid #0a0a0a;">
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:5px;">Brooklyn Nets · Media Intelligence · ${date}</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:4px;line-height:1;">Upcoming Milestones</div>
+  <div style="font-family:'DM Mono',monospace;font-size:9px;color:#e8473f;letter-spacing:2px;margin-top:5px;text-transform:uppercase;">Urgent alerts only · within 5% threshold · alphabetical</div>
 </div>
 
 ${sectionHead('Climbing the Record Books', urgentChases.length)}
 <table style="margin-top:2px;">
   <thead><tr>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;border-bottom:1px solid #e0e0e0;">Gap to next rank</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;border-bottom:1px solid #e0e0e0;">Gap to next rank</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
   </tr></thead>
   <tbody>${climbRows || noItems}</tbody>
 </table>
@@ -1122,15 +1126,15 @@ ${sectionHead('Climbing the Record Books', urgentChases.length)}
 ${sectionHead('Franchise Milestones', urgentMilestones.length)}
 <table style="margin-top:2px;">
   <thead><tr>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;border-bottom:1px solid #e0e0e0;">Progress</th>
-    <th style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:8px 14px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;border-bottom:1px solid #e0e0e0;">Progress</th>
+    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
   </tr></thead>
   <tbody>${msRows || noItems}</tbody>
 </table>
 
-<div style="margin-top:36px;padding-top:12px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:#ccc;letter-spacing:1px;">
+<div style="margin-top:28px;padding-top:10px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:8px;color:#ccc;letter-spacing:1px;">
   <span>BROOKLYN NETS · MEDIA INTELLIGENCE</span>
   <span>benbagley17.github.io/nets-tracker</span>
 </div>
