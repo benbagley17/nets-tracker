@@ -1000,90 +1000,15 @@
   /* ─── PRINT / EXPORT ─── */
   function openPrintView() {
     const date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-    const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
     const EXCLUDED = ['cam thomas'];
 
-    /* urgent climbing alerts only — exclude removed players, sort alphabetically */
-    const urgentChases = allChases
-      .filter(c => c.urgency === 'urgent' && !EXCLUDED.includes(c.player.toLowerCase()))
-      .sort((a,b) => a.player.localeCompare(b.player));
-
-    /* urgent milestones only — exclude removed players, sort alphabetically */
-    const urgentMilestones = allMilestones
-      .filter(m => m.urgency === 'urgent' && !EXCLUDED.includes((m.playerName||m.player).toLowerCase()))
-      .sort((a,b) => (a.playerName||a.player).localeCompare(b.playerName||b.player));
-
-    const RED = '#e8473f';
-
-    const climbRows = urgentChases.map(c => {
-      const pct = (c.pctGap * 100).toFixed(1);
-      const rows = [...CAREER_DATA[c.stat]].sort((a,b)=>b[1]-a[1]);
-      const progress = (() => {
-        const below = rows[c.currentRank];
-        const base  = below ? below[1] : 0;
-        const range = c.targetVal - base;
-        return range > 0 ? Math.min(100, Math.round((c.currentVal - base) / range * 100)) : 99;
-      })();
-      return `<tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;">${c.player}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-top:1px;">${STAT_FULL_SHORT[c.stat]}</div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;">${fmtClimbVal(c.stat,c.currentVal)}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">${ordinal(c.currentRank)} all-time</div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">→ ${c.targetName}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:9px;color:${RED};">${pct}% gap</span>
-          </div>
-          <div style="height:3px;background:#f0f0f0;border-radius:2px;">
-            <div style="height:3px;background:${RED};border-radius:2px;width:${progress}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
-          </div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;color:#bbb;">${fmtClimbVal(c.stat,c.targetVal)}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#aaa;">${ordinal(c.targetRank)} all-time</div>
-        </td>
-      </tr>`;
-    }).join('');
-
-    const msRows = urgentMilestones.map(m => {
-      const pct = Math.min(100, Math.round(m.current/m.target*100));
-      const name = m.playerName||m.player;
-      return `<tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;">${name}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-top:1px;">${m.statType}</div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;">${m.current.toLocaleString()}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">${m.remaining.toLocaleString()} remaining</div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">Progress to ${m.target.toLocaleString()}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:9px;color:${RED};">${pct}%</span>
-          </div>
-          <div style="height:3px;background:#f0f0f0;border-radius:2px;">
-            <div style="height:3px;background:${RED};border-radius:2px;width:${pct}%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
-          </div>
-        </td>
-        <td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1;color:#bbb;">${m.target.toLocaleString()}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#aaa;">target</div>
-        </td>
-      </tr>`;
-    }).join('');
-
-    const noItems = `<tr><td colspan="4" style="padding:14px 10px;font-family:'DM Mono',monospace;font-size:10px;color:#bbb;font-style:italic;">None at urgent threshold.</td></tr>`;
-
-    const sectionHead = (title, count) => `
-      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 0;padding-bottom:6px;border-bottom:2px solid #0a0a0a;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;">${title}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:1px;">${count} item${count!==1?'s':''}</div>
-      </div>`;
+    /* serialise data needed by the print window */
+    const printChases = allChases
+      .filter(c => !EXCLUDED.includes(c.player.toLowerCase()))
+      .map(c => ({...c}));
+    const printMilestones = allMilestones
+      .filter(m => !EXCLUDED.includes((m.playerName||m.player).toLowerCase()))
+      .map(m => ({...m}));
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -1095,16 +1020,40 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:13px;padding:36px 44px;max-width:720px;margin:0 auto;}
   table{width:100%;border-collapse:collapse;}
+  .toolbar{background:#f7f7f5;border:1px solid #e8e6e0;border-radius:5px;padding:14px 16px;margin-bottom:22px;}
+  .toolbar-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:10px;}
+  .toggle-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .toggle-item{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:3px;cursor:pointer;border:1px solid #e8e6e0;background:#fff;transition:opacity 0.15s;}
+  .toggle-item.off{opacity:0.4;}
+  .toggle-item input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#0a0a0a;flex-shrink:0;}
+  .toggle-label{font-family:'DM Mono',monospace;font-size:10px;color:#0a0a0a;flex:1;}
+  .toggle-stat{font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-left:auto;}
+  .toolbar-actions{display:flex;gap:8px;align-items:center;}
+  .select-all{font-family:'DM Mono',monospace;font-size:9px;color:#888;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;}
+  .print-btn{margin-left:auto;padding:6px 16px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;}
+  .section-divider{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 0;padding-bottom:6px;border-bottom:2px solid #0a0a0a;}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;}
+  .section-count{font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:1px;}
+  .no-items{padding:14px 10px;font-family:'DM Mono',monospace;font-size:10px;color:#bbb;font-style:italic;}
   @media print{
+    .toolbar{display:none!important;}
     body{padding:20px 28px;max-width:100%;}
-    .no-print{display:none!important;}
     @page{margin:12mm 14mm;size:A4 portrait;}
   }
 </style>
 </head>
 <body>
 
-<button class="no-print" onclick="window.print()" style="float:right;margin-top:2px;padding:6px 16px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;">⬡ Print / Save PDF</button>
+<div class="toolbar">
+  <div class="toolbar-title">Choose which alerts appear in the PDF — all are urgent (within 5%)</div>
+  <div class="toggle-list" id="toggle-climb"></div>
+  <div class="toggle-list" id="toggle-ms"></div>
+  <div class="toolbar-actions">
+    <button class="select-all" onclick="selectAll(true)">Select all</button>
+    <button class="select-all" onclick="selectAll(false)">Deselect all</button>
+    <button class="print-btn" onclick="window.print()">⬡ Print / Save PDF</button>
+  </div>
+</div>
 
 <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:3px solid #0a0a0a;">
   <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:5px;">Brooklyn Nets · Media Intelligence · ${date}</div>
@@ -1112,33 +1061,172 @@
   <div style="font-family:'DM Mono',monospace;font-size:9px;color:#e8473f;letter-spacing:2px;margin-top:5px;text-transform:uppercase;">Urgent alerts only · within 5% threshold · alphabetical</div>
 </div>
 
-${sectionHead('Climbing the Record Books', urgentChases.length)}
-<table style="margin-top:2px;">
-  <thead><tr>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;border-bottom:1px solid #e0e0e0;">Gap to next rank</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
-  </tr></thead>
-  <tbody>${climbRows || noItems}</tbody>
-</table>
-
-${sectionHead('Franchise Milestones', urgentMilestones.length)}
-<table style="margin-top:2px;">
-  <thead><tr>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Player</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1px solid #e0e0e0;">Current</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;border-bottom:1px solid #e0e0e0;">Progress</th>
-    <th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:right;border-bottom:1px solid #e0e0e0;">Target</th>
-  </tr></thead>
-  <tbody>${msRows || noItems}</tbody>
-</table>
+<div id="climb-section"></div>
+<div id="ms-section"></div>
 
 <div style="margin-top:28px;padding-top:10px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:8px;color:#ccc;letter-spacing:1px;">
   <span>BROOKLYN NETS · MEDIA INTELLIGENCE</span>
   <span>benbagley17.github.io/nets-tracker</span>
 </div>
 
+<script>
+  const CHASES     = ${JSON.stringify(printChases)};
+  const MILESTONES = ${JSON.stringify(printMilestones)};
+  const CAREER     = ${JSON.stringify(CAREER_DATA)};
+  const STAT_NAMES = ${JSON.stringify(STAT_FULL_SHORT)};
+
+  const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+  const fmtV = (stat,v) => stat==='3PT%' ? (v*100).toFixed(1)+'%' : v.toLocaleString();
+  const RED = '#e8473f';
+
+  /* state: which items are enabled — keyed by id */
+  const enabled = {};
+
+  const urgentChases = CHASES.filter(c=>c.urgency==='urgent').sort((a,b)=>a.player.localeCompare(b.player));
+  const urgentMs     = MILESTONES.filter(m=>m.urgency==='urgent').sort((a,b)=>(a.playerName||a.player).localeCompare(b.playerName||b.player));
+
+  /* give each item a stable id */
+  urgentChases.forEach((c,i) => { c._id='cl'+i; enabled[c._id]=true; });
+  urgentMs.forEach((m,i)     => { m._id='ms'+i; enabled[m._id]=true; });
+
+  function buildToggles() {
+    const climbEl = document.getElementById('toggle-climb');
+    const msEl    = document.getElementById('toggle-ms');
+
+    if(urgentChases.length) {
+      climbEl.insertAdjacentHTML('beforebegin','<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Climbing the record books</div>');
+      climbEl.innerHTML = urgentChases.map(c =>
+        '<label class="toggle-item" id="lbl-'+c._id+'">'
+        +'<input type="checkbox" checked onchange="toggle(\''+c._id+'\',this.checked)">'
+        +'<span class="toggle-label">'+c.player+'</span>'
+        +'<span class="toggle-stat">'+STAT_NAMES[c.stat]+' · '+fmtV(c.stat,c.currentVal)+' → '+fmtV(c.stat,c.targetVal)+'</span>'
+        +'</label>'
+      ).join('');
+    }
+
+    if(urgentMs.length) {
+      msEl.insertAdjacentHTML('beforebegin','<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin:10px 0 4px;">Franchise milestones</div>');
+      msEl.innerHTML = urgentMs.map(m =>
+        '<label class="toggle-item" id="lbl-'+m._id+'">'
+        +'<input type="checkbox" checked onchange="toggle(\''+m._id+'\',this.checked)">'
+        +'<span class="toggle-label">'+(m.playerName||m.player)+'</span>'
+        +'<span class="toggle-stat">'+m.statType+' · '+m.current.toLocaleString()+' → '+m.target.toLocaleString()+'</span>'
+        +'</label>'
+      ).join('');
+    }
+
+    if(!urgentChases.length && !urgentMs.length) {
+      climbEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:10px;color:#bbb;font-style:italic;">No urgent alerts found.</div>';
+    }
+  }
+
+  function toggle(id, on) {
+    enabled[id] = on;
+    const lbl = document.getElementById('lbl-'+id);
+    if(lbl) lbl.classList.toggle('off', !on);
+    render();
+  }
+
+  function selectAll(on) {
+    Object.keys(enabled).forEach(id => { enabled[id]=on; });
+    document.querySelectorAll('.toggle-item input').forEach(cb => cb.checked=on);
+    document.querySelectorAll('.toggle-item').forEach(lbl => lbl.classList.toggle('off',!on));
+    render();
+  }
+
+  function thHead(cols) {
+    return '<thead><tr>'+cols.map(c=>'<th style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:'+(c.right?'right':'left')+';border-bottom:1px solid #e0e0e0;">'+c.label+'</th>').join('')+'</tr></thead>';
+  }
+
+  function sectionHead(title, count) {
+    return '<div class="section-divider"><div class="section-title">'+title+'</div><div class="section-count">'+count+' item'+(count!==1?'s':'')+'</div></div>';
+  }
+
+  const noItems = '<div class="no-items">None selected.</div>';
+
+  function render() {
+    /* CLIMBING */
+    const chases = urgentChases.filter(c=>enabled[c._id]);
+    const climbRows = chases.map(c => {
+      const pct  = (c.pctGap*100).toFixed(1);
+      const rows = [...CAREER[c.stat]].sort((a,b)=>b[1]-a[1]);
+      const below = rows[c.currentRank];
+      const base  = below ? below[1] : 0;
+      const range = c.targetVal - base;
+      const prog  = range>0 ? Math.min(100,Math.round((c.currentVal-base)/range*100)) : 99;
+      return '<tr>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:15px;">'+c.player+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+STAT_NAMES[c.stat]+'</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;">'+fmtV(c.stat,c.currentVal)+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+ordinal(c.currentRank)+' all-time</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">'
+          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
+            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:#888;">→ '+c.targetName+'</span>'
+            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:'+RED+';">'+pct+'% gap</span>'
+          +'</div>'
+          +'<div style="height:3px;background:#f0f0f0;border-radius:2px;">'
+            +'<div style="height:3px;background:'+RED+';border-radius:2px;width:'+prog+'%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>'
+          +'</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;color:#bbb;">'+fmtV(c.stat,c.targetVal)+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#aaa;">'+ordinal(c.targetRank)+' all-time</div>'
+        +'</td>'
+      +'</tr>';
+    }).join('');
+
+    document.getElementById('climb-section').innerHTML = urgentChases.length
+      ? sectionHead('Climbing the Record Books', chases.length)
+        + (chases.length
+            ? '<table style="margin-top:2px;">'+thHead([{label:'Player'},{label:'Current'},{label:'Gap to next rank'},{label:'Target',right:true}])+'<tbody>'+climbRows+'</tbody></table>'
+            : noItems)
+      : '';
+
+    /* MILESTONES */
+    const milestones = urgentMs.filter(m=>enabled[m._id]);
+    const msRows = milestones.map(m => {
+      const pct  = Math.min(100,Math.round(m.current/m.target*100));
+      const name = m.playerName||m.player;
+      return '<tr>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:15px;">'+name+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+m.statType+'</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;">'+m.current.toLocaleString()+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+m.remaining.toLocaleString()+' remaining</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">'
+          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
+            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:#888;">Progress to '+m.target.toLocaleString()+'</span>'
+            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:'+RED+';">'+pct+'%</span>'
+          +'</div>'
+          +'<div style="height:3px;background:#f0f0f0;border-radius:2px;">'
+            +'<div style="height:3px;background:'+RED+';border-radius:2px;width:'+pct+'%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>'
+          +'</div>'
+        +'</td>'
+        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;color:#bbb;">'+m.target.toLocaleString()+'</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#aaa;">target</div>'
+        +'</td>'
+      +'</tr>';
+    }).join('');
+
+    document.getElementById('ms-section').innerHTML = urgentMs.length
+      ? sectionHead('Franchise Milestones', milestones.length)
+        + (milestones.length
+            ? '<table style="margin-top:2px;">'+thHead([{label:'Player'},{label:'Current'},{label:'Progress'},{label:'Target',right:true}])+'<tbody>'+msRows+'</tbody></table>'
+            : noItems)
+      : '';
+  }
+
+  buildToggles();
+  render();
+<\/script>
 </body></html>`;
 
     const w = window.open('', '_blank');
