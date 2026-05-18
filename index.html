@@ -613,14 +613,14 @@
 
       buildPlayerFilters();
       updateCounts();
-      renderGrid();
       checkSlackAlerts();
-
+    } catch(e) {
+      console.warn('live_stats.json unavailable:', e.message);
+      document.getElementById('data-timestamp').textContent = 'Live data unavailable';
+    } finally {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('grid').style.display = 'grid';
-    } catch(e) {
-      document.getElementById('loading').textContent = 'Failed to load data — ' + e.message;
-      console.error(e);
+      renderGrid();
     }
   }
 
