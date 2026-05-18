@@ -144,7 +144,43 @@
   .games-upcoming { color:var(--upcoming); }
   .games-achieved { color:var(--achieved); }
 
-  /* LEADERBOARD STYLES */
+  /* CLIMBING CARDS */
+  .climb-card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; transition:transform 0.15s,border-color 0.15s; }
+  .climb-card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.13); }
+  .climb-card .card-accent { height:3px; }
+  .climb-card.urgent .card-accent { background:var(--urgent); }
+  .climb-card.close  .card-accent { background:var(--close); }
+  .climb-card.upcoming .card-accent { background:var(--upcoming); }
+  .climb-header { padding:14px 18px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .climb-player { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; line-height:1; }
+  .climb-stat-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
+  .climb-body { padding:12px 18px 14px; }
+  .climb-vs { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+  .climb-cur { font-family:'Bebas Neue',sans-serif; font-size:28px; line-height:1; }
+  .climb-cur-rank { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-left:6px; }
+  .climb-target-block { text-align:right; }
+  .climb-target-val { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; color:var(--gray-5); }
+  .climb-target-name { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-top:2px; }
+  .climb-target-rank { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-4); }
+  .climb-bar-track { height:4px; background:var(--gray-2); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+  .climb-bar-fill { height:100%; border-radius:2px; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .climb-card.urgent  .climb-bar-fill { background:var(--urgent); }
+  .climb-card.close   .climb-bar-fill { background:var(--close); }
+  .climb-card.upcoming .climb-bar-fill { background:var(--upcoming); }
+  .climb-footer { display:flex; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
+  .climb-gap-label { }
+  .climb-pct { }
+  .climb-card.urgent  .climb-pct { color:var(--urgent); }
+  .climb-card.close   .climb-pct { color:var(--close); }
+  .climb-card.upcoming .climb-pct { color:var(--upcoming); }
+
+  /* LEADERBOARD CLIMBING INDICATOR */
+  .lb-climb-pip { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; flex-shrink:0; }
+  .lb-climb-pip.urgent  { background:var(--urgent); }
+  .lb-climb-pip.close   { background:var(--close); }
+  .lb-climb-pip.upcoming { background:var(--upcoming); }
+
+
   .lb-shell { padding:28px 40px; }
   .lb-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; align-items:center; }
   .lb-controls .controls-label { min-width:auto; }
@@ -245,6 +281,7 @@
 <!-- TOP NAV -->
 <nav class="nav-tabs">
   <button class="nav-tab active" onclick="switchSection('milestones',this)">Milestones</button>
+  <button class="nav-tab" onclick="switchSection('climbing',this)">Climbing <span id="climbing-count" style="font-size:9px;opacity:0.7"></span></button>
   <button class="nav-tab" onclick="switchSection('career',this)">Career Top 20</button>
   <button class="nav-tab" onclick="switchSection('season',this)">Single-Season Top 10</button>
 </nav>
@@ -301,6 +338,36 @@
   <div id="loading">LOADING DATA...</div>
   <main id="grid" style="display:none"></main>
 
+</div>
+
+<!-- ═══════════════════════ CLIMBING SECTION ═══════════════════════ -->
+<div class="page-section" id="section-climbing">
+
+  <div class="summary-strip" id="climbing-strip">
+    <div class="summary-tile tile-urgent active" onclick="setClimbFilter('all',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-all">—</div>
+      <div class="summary-label">All Chases</div>
+    </div>
+    <div class="summary-tile tile-urgent" onclick="setClimbFilter('urgent',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-urgent">—</div>
+      <div class="summary-label">Urgent</div>
+    </div>
+    <div class="summary-tile tile-close" onclick="setClimbFilter('close',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-close">—</div>
+      <div class="summary-label">Close</div>
+    </div>
+    <div class="summary-tile tile-upcoming" onclick="setClimbFilter('upcoming',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-upcoming">—</div>
+      <div class="summary-label">Upcoming</div>
+    </div>
+  </div>
+
+  <div class="filter-row" id="climbing-player-filters">
+    <span class="controls-label">Player</span>
+    <button class="filter-btn active" onclick="setClimbPlayer('all',this)">All</button>
+  </div>
+
+  <main id="climbing-grid" style="padding-top:20px"></main>
 </div>
 
 <!-- ═══════════════════════ CAREER TOP 20 SECTION ═══════════════════════ -->
@@ -781,7 +848,188 @@
       .catch(e => console.warn('Slack error:', e));
   }
 
+  /* ─── CLIMBING LOGIC ─── */
+  const URGENT_PCT   = 0.05;
+  const CLOSE_PCT    = 0.10;
+  const UPCOMING_PCT = 0.25;
+
+  const STAT_FULL_SHORT = {
+    PTS:'Points', TRB:'Rebounds', ORB:'Off. Rebounds', AST:'Assists',
+    STL:'Steals', BLK:'Blocks', FG3M:'3-Pointers Made', FTM:'Free Throws Made',
+    GP:'Games Played', MP:'Minutes Played', '3PT%':'3PT%'
+  };
+
+  let climbFilter = 'all';
+  let climbPlayer = 'all';
+  let allChases   = [];
+
+  function computeChases() {
+    allChases = [];
+    Object.keys(CAREER_DATA).forEach(stat => {
+      const rows = [...CAREER_DATA[stat]].sort((a,b) => b[1]-a[1]);
+      rows.forEach((row, idx) => {
+        const [name, val] = row;
+        if (!isActive(name)) return;
+        if (idx === 0) return;
+        const [targetName, targetVal] = rows[idx - 1];
+        const gap    = targetVal - val;
+        const pctGap = gap / targetVal;
+        let urgency  = null;
+        if (pctGap <= URGENT_PCT)   urgency = 'urgent';
+        else if (pctGap <= CLOSE_PCT)   urgency = 'close';
+        else if (pctGap <= UPCOMING_PCT) urgency = 'upcoming';
+        if (!urgency) return;
+        allChases.push({ player:name, stat, currentVal:val, currentRank:idx+1, targetVal, targetName, targetRank:idx, gap, pctGap, urgency });
+      });
+    });
+    allChases.sort((a,b) => URGENCY_ORDER[a.urgency]-URGENCY_ORDER[b.urgency] || a.pctGap-b.pctGap);
+  }
+
+  function buildClimbingPlayerFilters() {
+    const container = document.getElementById('climbing-player-filters');
+    [...container.querySelectorAll('.filter-btn:not(:first-child)')].forEach(b => b.remove());
+    const players = [...new Set(allChases.map(c => c.player))];
+    players.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = name.split(' ').slice(-1)[0];
+      btn.title = name;
+      btn.onclick = () => setClimbPlayer(name, btn);
+      container.appendChild(btn);
+    });
+  }
+
+  function setClimbFilter(f, el) {
+    climbFilter = f;
+    document.querySelectorAll('#climbing-strip .summary-tile').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderClimbing();
+  }
+
+  function setClimbPlayer(p, btn) {
+    climbPlayer = p;
+    document.querySelectorAll('#climbing-player-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderClimbing();
+  }
+
+  function updateClimbCounts() {
+    const counts = { urgent:0, close:0, upcoming:0 };
+    allChases.forEach(c => counts[c.urgency]++);
+    const total = allChases.length;
+    document.getElementById('climb-count-all').textContent      = total;
+    document.getElementById('climb-count-urgent').textContent   = counts.urgent;
+    document.getElementById('climb-count-close').textContent    = counts.close;
+    document.getElementById('climb-count-upcoming').textContent = counts.upcoming;
+    const navCount = document.getElementById('climbing-count');
+    if (navCount) navCount.textContent = total ? '(' + total + ')' : '';
+  }
+
+  function fmtClimbVal(stat, v) {
+    if (stat === '3PT%') return (v * 100).toFixed(1) + '%';
+    return v.toLocaleString();
+  }
+
+  function renderClimbing() {
+    const grid = document.getElementById('climbing-grid');
+    let chases = allChases;
+    if (climbFilter !== 'all') chases = chases.filter(c => c.urgency === climbFilter);
+    if (climbPlayer !== 'all') chases = chases.filter(c => c.player === climbPlayer);
+
+    if (!chases.length) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◎</div><div>No active chases match this filter.</div></div>';
+      return;
+    }
+
+    const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+
+    grid.innerHTML = chases.map(c => {
+      const rows = [...CAREER_DATA[c.stat]].sort((a,b) => b[1]-a[1]);
+      const belowEntry = rows[c.currentRank];
+      const baseVal  = belowEntry ? belowEntry[1] : 0;
+      const range    = c.targetVal - baseVal;
+      const progress = range > 0 ? Math.min(100, Math.round((c.currentVal - baseVal) / range * 100)) : 99;
+      const gapStr   = c.stat === '3PT%'
+        ? (c.gap * 100).toFixed(1) + ' pct pts behind'
+        : c.gap.toLocaleString() + ' behind';
+      const pctStr   = (c.pctGap * 100).toFixed(1) + '% gap';
+
+      return `<div class="climb-card ${c.urgency}">
+        <div class="card-accent"></div>
+        <div class="climb-header">
+          <div>
+            <div class="climb-player">${c.player}</div>
+            <div class="climb-stat-label">${STAT_FULL_SHORT[c.stat]} · All-Time Franchise</div>
+          </div>
+          <div class="urgency-badge">${URGENCY_LABEL[c.urgency]}</div>
+        </div>
+        <div class="climb-body">
+          <div class="climb-vs">
+            <div>
+              <span class="climb-cur">${fmtClimbVal(c.stat, c.currentVal)}</span>
+              <span class="climb-cur-rank">${ordinal(c.currentRank)} all-time</span>
+            </div>
+            <div class="climb-target-block">
+              <div class="climb-target-val">${fmtClimbVal(c.stat, c.targetVal)}</div>
+              <div class="climb-target-name">${c.targetName}</div>
+              <div class="climb-target-rank">${ordinal(c.targetRank)} all-time</div>
+            </div>
+          </div>
+          <div class="climb-bar-track">
+            <div class="climb-bar-fill" style="width:${progress}%"></div>
+          </div>
+          <div class="climb-footer">
+            <span class="climb-gap-label">${gapStr}</span>
+            <span class="climb-pct">${pctStr}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ─── SECTION SWITCHING ─── */
+  function switchSection(name, btn) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  /* ─── CAREER TABLE (with climbing pips) ─── */
+  let currentCareerStat = 'PTS';
+  function selectCareerStat(stat, btn) {
+    currentCareerStat = stat;
+    document.querySelectorAll('#section-career .lb-stat-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderCareerTable();
+  }
+
+  function renderCareerTable() {
+    const stat = currentCareerStat;
+    const rows = [...CAREER_DATA[stat]].sort((a,b) => b[1]-a[1]);
+    document.getElementById('career-val-header').textContent = STAT_FULL[stat] || stat;
+    const chaseMap = {};
+    allChases.filter(c => c.stat === stat).forEach(c => { chaseMap[c.player] = c.urgency; });
+    document.getElementById('career-tbody').innerHTML = rows.map((r,i) => {
+      const active    = isActive(r[0]);
+      const rankClass = i < 3 ? 'lb-rank top3' : 'lb-rank';
+      const pip       = chaseMap[r[0]]
+        ? `<span class="lb-climb-pip ${chaseMap[r[0]]}"></span>`
+        : '';
+      return `<tr>
+        <td class="${rankClass}">${i+1}</td>
+        <td class="lb-player">${pip}${r[0]}${active ? '<span class="lb-active-badge">Active</span>' : ''}</td>
+        <td class="lb-val">${fmtVal(stat, r[1])}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('career-note').textContent = CAREER_NOTES[stat] || '';
+  }
+
   /* ─── INIT ─── */
+  computeChases();
+  buildClimbingPlayerFilters();
+  updateClimbCounts();
+  renderClimbing();
   renderCareerTable();
   renderSeasonTable();
   loadData();
