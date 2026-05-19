@@ -244,7 +244,34 @@
   .slack-open-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
   .slack-open-btn:hover { border-color:var(--gray-5); color:var(--white); }
 
-  .empty-state { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--gray-5); }
+  /* PDF MODAL */
+  .pdf-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center; }
+  .pdf-overlay.open { display:flex; }
+  .pdf-modal { background:var(--gray-1); border:1px solid var(--border); border-radius:8px; width:540px; max-width:calc(100vw - 32px); max-height:85vh; display:flex; flex-direction:column; overflow:hidden; }
+  .pdf-modal-head { padding:18px 22px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .pdf-modal-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; }
+  .pdf-modal-close { background:none; border:none; color:var(--gray-5); font-size:18px; cursor:pointer; line-height:1; padding:4px; }
+  .pdf-modal-close:hover { color:var(--white); }
+  .pdf-modal-body { padding:18px 22px; overflow-y:auto; flex:1; }
+  .pdf-section-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gray-5); margin-bottom:8px; margin-top:18px; }
+  .pdf-section-label:first-child { margin-top:0; }
+  .pdf-toggle-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; }
+  .pdf-toggle { display:flex; align-items:center; gap:7px; padding:5px 10px; border:1px solid var(--gray-3); border-radius:3px; cursor:pointer; transition:all 0.15s; user-select:none; }
+  .pdf-toggle:hover { border-color:var(--gray-5); }
+  .pdf-toggle.on { border-color:var(--white); background:rgba(255,255,255,0.06); }
+  .pdf-toggle input { display:none; }
+  .pdf-toggle-dot { width:8px; height:8px; border-radius:50%; background:var(--gray-4); flex-shrink:0; transition:background 0.15s; }
+  .pdf-toggle.on .pdf-toggle-dot { background:var(--white); }
+  .pdf-toggle-text { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-6); letter-spacing:0.5px; }
+  .pdf-toggle.on .pdf-toggle-text { color:var(--white); }
+  .pdf-thresh-block { margin-top:10px; }
+  .pdf-thresh-stat-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:1px; margin-bottom:5px; text-transform:uppercase; }
+  .pdf-modal-foot { padding:14px 22px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .pdf-foot-note { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); }
+  .pdf-generate-btn { background:var(--white); color:var(--black); border:none; padding:9px 22px; border-radius:3px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; transition:opacity 0.15s; }
+  .pdf-generate-btn:hover { opacity:0.85; }
+
+
   .empty-icon { font-size:36px; margin-bottom:12px; opacity:0.4; }
 
   footer { padding:18px 40px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
@@ -277,10 +304,38 @@
       <span class="dot"></span>
       <span id="data-timestamp">Loading...</span>
     </div>
-    <button class="slack-open-btn" onclick="openPrintView()">⬡ Export</button>
+    <button class="slack-open-btn" onclick="openPdfModal()">⬡ Export PDF</button>
     <button class="slack-open-btn" onclick="toggleSlack()">⚡ Slack</button>
   </div>
 </header>
+
+<!-- PDF MODAL -->
+<div class="pdf-overlay" id="pdf-overlay" onclick="closePdfModal(event)">
+  <div class="pdf-modal">
+    <div class="pdf-modal-head">
+      <span class="pdf-modal-title">Create PDF</span>
+      <button class="pdf-modal-close" onclick="closePdfModal()">✕</button>
+    </div>
+    <div class="pdf-modal-body" id="pdf-modal-body">
+
+      <div class="pdf-section-label">Milestone Status</div>
+      <div class="pdf-toggle-row" id="pdf-status-toggles"></div>
+
+      <div class="pdf-section-label">Stat Type</div>
+      <div class="pdf-toggle-row" id="pdf-stat-toggles"></div>
+
+      <div class="pdf-thresh-block" id="pdf-thresh-block">
+        <div class="pdf-section-label">Thresholds</div>
+        <div id="pdf-thresh-inner"></div>
+      </div>
+
+    </div>
+    <div class="pdf-modal-foot">
+      <span class="pdf-foot-note" id="pdf-foot-note">Select filters above</span>
+      <button class="pdf-generate-btn" onclick="generatePdf()">Download PDF</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOP NAV -->
 <nav class="nav-tabs">
@@ -998,243 +1053,280 @@
   }
 
   /* ─── PRINT / EXPORT ─── */
-  function openPrintView() {
+  /* ─── PDF MODAL ─── */
+
+  const PDF_STATUSES = ['urgent','close','upcoming','achieved'];
+  const PDF_STATUS_LABELS = {urgent:'Urgent',close:'Close',upcoming:'Upcoming',achieved:'Achieved'};
+  const PDF_STATUS_COLORS = {urgent:'var(--urgent)',close:'var(--close)',upcoming:'var(--upcoming)',achieved:'var(--achieved)'};
+
+  const PDF_STATS = ['PTS','TRB','AST','BLK','STL','FG3M','FTM','GP'];
+  const PDF_STAT_LABELS = {PTS:'PTS',TRB:'REB',AST:'AST',BLK:'BLK',STL:'STL',FG3M:'3PM',FTM:'FTM',GP:'Games'};
+
+  // milestone thresholds per stat — derived from what live_stats.json typically contains
+  const PDF_THRESHOLDS = {
+    PTS:  [500,1000,2000,3000,4000,5000,6000,7000,8000,10000],
+    TRB:  [500,1000,2000,3000,4000,5000],
+    AST:  [250,500,1000,2000,3000,4000],
+    BLK:  [50,100,200,300,500,700,1000],
+    STL:  [50,100,200,300,500,700],
+    FG3M: [50,100,200,300,500,700,1000],
+    FTM:  [50,100,200,300,500,700,1000,2000],
+    GP:   [50,100,200,300,400,500,600],
+  };
+
+  // state
+  let pdfStatusOn  = {urgent:true, close:false, upcoming:false, achieved:false};
+  let pdfStatOn    = {PTS:true,TRB:true,AST:true,BLK:true,STL:true,FG3M:true,FTM:true,GP:true};
+  let pdfThreshOn  = {}; // key: "STAT-value" -> bool
+
+  function initPdfThresholds() {
+    PDF_STATS.forEach(stat => {
+      (PDF_THRESHOLDS[stat]||[]).forEach(t => {
+        pdfThreshOn[stat+'-'+t] = true;
+      });
+    });
+  }
+
+  function openPdfModal() {
+    buildPdfModal();
+    document.getElementById('pdf-overlay').classList.add('open');
+  }
+
+  function closePdfModal(e) {
+    if (e && e.target !== document.getElementById('pdf-overlay')) return;
+    document.getElementById('pdf-overlay').classList.remove('open');
+  }
+
+  function buildPdfModal() {
+    // Status toggles
+    const statusEl = document.getElementById('pdf-status-toggles');
+    statusEl.innerHTML = PDF_STATUSES.map(s => `
+      <label class="pdf-toggle ${pdfStatusOn[s]?'on':''}" onclick="togglePdfStatus('${s}',this)">
+        <div class="pdf-toggle-dot" style="${pdfStatusOn[s]?'background:'+PDF_STATUS_COLORS[s]:''}"></div>
+        <span class="pdf-toggle-text">${PDF_STATUS_LABELS[s]}</span>
+      </label>`).join('');
+
+    // Stat type toggles
+    const statEl = document.getElementById('pdf-stat-toggles');
+    statEl.innerHTML = PDF_STATS.map(s => `
+      <label class="pdf-toggle ${pdfStatOn[s]?'on':''}" onclick="togglePdfStat('${s}',this)">
+        <div class="pdf-toggle-dot"></div>
+        <span class="pdf-toggle-text">${PDF_STAT_LABELS[s]}</span>
+      </label>`).join('');
+
+    renderThresholdToggles();
+    updatePdfFootNote();
+  }
+
+  function renderThresholdToggles() {
+    const inner = document.getElementById('pdf-thresh-inner');
+    const activeStats = PDF_STATS.filter(s => pdfStatOn[s]);
+    if (!activeStats.length) { inner.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--gray-5);">No stat types selected.</div>'; return; }
+    inner.innerHTML = activeStats.map(stat => {
+      const thresholds = PDF_THRESHOLDS[stat] || [];
+      const chips = thresholds.map(t => {
+        const key = stat+'-'+t;
+        const on  = pdfThreshOn[key] !== false;
+        return `<label class="pdf-toggle ${on?'on':''}" onclick="togglePdfThresh('${key}',this)">
+          <div class="pdf-toggle-dot"></div>
+          <span class="pdf-toggle-text">${t.toLocaleString()}</span>
+        </label>`;
+      }).join('');
+      return `<div style="margin-bottom:10px;">
+        <div class="pdf-thresh-stat-label">${PDF_STAT_LABELS[stat]}</div>
+        <div class="pdf-toggle-row">${chips}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function togglePdfStatus(s, el) {
+    pdfStatusOn[s] = !pdfStatusOn[s];
+    el.classList.toggle('on', pdfStatusOn[s]);
+    const dot = el.querySelector('.pdf-toggle-dot');
+    dot.style.background = pdfStatusOn[s] ? PDF_STATUS_COLORS[s] : '';
+    updatePdfFootNote();
+  }
+
+  function togglePdfStat(s, el) {
+    pdfStatOn[s] = !pdfStatOn[s];
+    el.classList.toggle('on', pdfStatOn[s]);
+    renderThresholdToggles();
+    updatePdfFootNote();
+  }
+
+  function togglePdfThresh(key, el) {
+    pdfThreshOn[key] = !pdfThreshOn[key];
+    el.classList.toggle('on', pdfThreshOn[key]);
+    updatePdfFootNote();
+  }
+
+  function updatePdfFootNote() {
+    const statuses = PDF_STATUSES.filter(s=>pdfStatusOn[s]).map(s=>PDF_STATUS_LABELS[s]);
+    const stats    = PDF_STATS.filter(s=>pdfStatOn[s]).map(s=>PDF_STAT_LABELS[s]);
+    const note     = document.getElementById('pdf-foot-note');
+    if (!statuses.length || !stats.length) { note.textContent = 'Select at least one status and stat'; return; }
+    note.textContent = statuses.join(', ') + ' · ' + stats.join(', ');
+  }
+
+  function itemPassesPdfFilter(urgency, statKey, target) {
+    if (!pdfStatusOn[urgency]) return false;
+    if (!pdfStatOn[statKey])   return false;
+    const key = statKey + '-' + target;
+    // if threshold exists in our list, check toggle; otherwise allow through
+    if (pdfThreshOn.hasOwnProperty(key)) return pdfThreshOn[key];
+    return true;
+  }
+
+  function generatePdf() {
     const date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
     const EXCLUDED = ['cam thomas'];
+    const ordinal  = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 
-    /* serialise data needed by the print window */
-    const printChases = allChases
-      .filter(c => !EXCLUDED.includes(c.player.toLowerCase()))
-      .map(c => ({...c}));
-    const printMilestones = allMilestones
-      .filter(m => !EXCLUDED.includes((m.playerName||m.player).toLowerCase()))
-      .map(m => ({...m}));
+    // Filter milestones
+    const filteredMs = allMilestones.filter(m => {
+      if (EXCLUDED.includes((m.playerName||m.player).toLowerCase())) return false;
+      return itemPassesPdfFilter(m.urgency, m.statKey, m.target);
+    }).sort((a,b) => (a.playerName||a.player).localeCompare(b.playerName||b.player));
+
+    // Filter climbing alerts — stat key mapping
+    const CLIMB_STAT_MAP = {PTS:'PTS',TRB:'TRB',ORB:'ORB',AST:'AST',STL:'STL',BLK:'BLK',FG3M:'FG3M',FTM:'FTM',GP:'GP',MP:'MP','3PT%':'3PT%'};
+    const filteredChases = allChases.filter(c => {
+      if (EXCLUDED.includes(c.player.toLowerCase())) return false;
+      if (!pdfStatusOn[c.urgency]) return false;
+      // map climbing stat to PDF stat filter — ORB/MP/3PT% not in PDF_STATS so always pass stat filter
+      const mappedStat = PDF_STATS.includes(c.stat) ? c.stat : null;
+      if (mappedStat && !pdfStatOn[mappedStat]) return false;
+      return true;
+    }).sort((a,b) => a.player.localeCompare(b.player));
+
+    const STATUS_COLOR = {urgent:'#e8473f',close:'#e8973f',upcoming:'#4a9eff',achieved:'#3fcf8e'};
+    const STATUS_LABEL = {urgent:'URGENT',close:'CLOSE',upcoming:'UPCOMING',achieved:'ACHIEVED'};
+
+    // Build milestone rows
+    const msRows = filteredMs.map(m => {
+      const col = STATUS_COLOR[m.urgency] || '#888';
+      const lbl = STATUS_LABEL[m.urgency] || m.urgency.toUpperCase();
+      const pct = Math.min(100, Math.round(m.current/m.target*100));
+      const name = m.playerName||m.player;
+      return `<tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:22%;">
+          <div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:700;font-size:13px;">${name}</div>
+          <div style="font-size:10px;color:#888;margin-top:1px;">${m.statType}</div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:16%;">
+          <div style="font-size:18px;font-weight:700;line-height:1;">${m.current.toLocaleString()}</div>
+          <div style="font-size:10px;color:#888;">${m.remaining.toLocaleString()} left</div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:40%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="font-size:10px;color:#888;">→ ${m.target.toLocaleString()}</span>
+            <span style="font-size:10px;color:${col};font-weight:600;">${pct}%</span>
+          </div>
+          <div style="height:3px;background:#eee;border-radius:2px;">
+            <div style="height:3px;background:${col};border-radius:2px;width:${pct}%;"></div>
+          </div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;text-align:right;width:22%;">
+          <span style="background:${col}18;color:${col};font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;letter-spacing:0.5px;">${lbl}</span>
+        </td>
+      </tr>`;
+    }).join('');
+
+    // Build climbing rows
+    const climbRows = filteredChases.map(c => {
+      const col  = STATUS_COLOR[c.urgency] || '#888';
+      const lbl  = STATUS_LABEL[c.urgency] || c.urgency.toUpperCase();
+      const pct  = (c.pctGap*100).toFixed(1);
+      const rows = [...CAREER_DATA[c.stat]].sort((a,b)=>b[1]-a[1]);
+      const below = rows[c.currentRank];
+      const base  = below ? below[1] : 0;
+      const range = c.targetVal - base;
+      const prog  = range>0 ? Math.min(100,Math.round((c.currentVal-base)/range*100)) : 99;
+      const fmtV  = v => c.stat==='3PT%' ? (v*100).toFixed(1)+'%' : v.toLocaleString();
+      return `<tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:22%;">
+          <div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:700;font-size:13px;">${c.player}</div>
+          <div style="font-size:10px;color:#888;margin-top:1px;">${STAT_FULL_SHORT[c.stat]}</div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:16%;">
+          <div style="font-size:18px;font-weight:700;line-height:1;">${fmtV(c.currentVal)}</div>
+          <div style="font-size:10px;color:#888;">${ordinal(c.currentRank)} all-time</div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;width:40%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="font-size:10px;color:#888;">→ ${c.targetName} (${fmtV(c.targetVal)})</span>
+            <span style="font-size:10px;color:${col};font-weight:600;">${pct}% gap</span>
+          </div>
+          <div style="height:3px;background:#eee;border-radius:2px;">
+            <div style="height:3px;background:${col};border-radius:2px;width:${prog}%;"></div>
+          </div>
+        </td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f0f0f0;text-align:right;width:22%;">
+          <span style="background:${col}18;color:${col};font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;letter-spacing:0.5px;">${lbl}</span>
+        </td>
+      </tr>`;
+    }).join('');
+
+    const noItems = '<tr><td colspan="4" style="padding:12px 10px;font-size:11px;color:#bbb;font-style:italic;">No items match the selected filters.</td></tr>';
+
+    const sectionHead = (title, count) =>
+      `<div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 0 0;padding-bottom:5px;border-bottom:2px solid #0a0a0a;">
+        <div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;">${title}</div>
+        <div style="font-size:10px;color:#aaa;">${count} item${count!==1?'s':''}</div>
+      </div>`;
+
+    const thHead = () =>
+      `<thead><tr>
+        ${['Player','Current','Progress','Status'].map((l,i)=>`<th style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#aaa;padding:5px 10px;text-align:${i===3?'right':'left'};border-bottom:1px solid #e0e0e0;font-weight:400;">${l}</th>`).join('')}
+      </tr></thead>`;
+
+    const activeStatuses = PDF_STATUSES.filter(s=>pdfStatusOn[s]).map(s=>PDF_STATUS_LABELS[s]).join(', ');
 
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Upcoming Milestones — ${date}</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:#fff;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:13px;padding:36px 44px;max-width:720px;margin:0 auto;}
+  body{background:#fff;color:#0a0a0a;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;padding:32px 40px;max-width:700px;margin:0 auto;}
   table{width:100%;border-collapse:collapse;}
-  .toolbar{background:#f7f7f5;border:1px solid #e8e6e0;border-radius:5px;padding:14px 16px;margin-bottom:22px;}
-  .toolbar-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:10px;}
-  .toggle-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-  .toggle-item{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:3px;cursor:pointer;border:1px solid #e8e6e0;background:#fff;transition:opacity 0.15s;}
-  .toggle-item.off{opacity:0.4;}
-  .toggle-item input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#0a0a0a;flex-shrink:0;}
-  .toggle-label{font-family:'DM Mono',monospace;font-size:10px;color:#0a0a0a;flex:1;}
-  .toggle-stat{font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-left:auto;}
-  .toolbar-actions{display:flex;gap:8px;align-items:center;}
-  .select-all{font-family:'DM Mono',monospace;font-size:9px;color:#888;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;}
-  .print-btn{margin-left:auto;padding:6px 16px;background:#0a0a0a;color:#f5f3ee;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:3px;}
-  .section-divider{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 0;padding-bottom:6px;border-bottom:2px solid #0a0a0a;}
-  .section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;}
-  .section-count{font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:1px;}
-  .no-items{padding:14px 10px;font-family:'DM Mono',monospace;font-size:10px;color:#bbb;font-style:italic;}
-  @media print{
-    .toolbar{display:none!important;}
-    body{padding:20px 28px;max-width:100%;}
-    @page{margin:12mm 14mm;size:A4 portrait;}
-  }
+  @page{margin:12mm 14mm;size:A4 portrait;}
 </style>
 </head>
 <body>
-
-<div class="toolbar">
-  <div class="toolbar-title">Choose which alerts appear in the PDF — all are urgent (within 5%)</div>
-  <div class="toggle-list" id="toggle-climb"></div>
-  <div class="toggle-list" id="toggle-ms"></div>
-  <div class="toolbar-actions">
-    <button class="select-all" onclick="selectAll(true)">Select all</button>
-    <button class="select-all" onclick="selectAll(false)">Deselect all</button>
-    <button class="print-btn" onclick="window.print()">⬡ Print / Save PDF</button>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #0a0a0a;">
+  <div>
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:6px;">Brooklyn Nets · Media Intelligence · ${date}</div>
+    <div style="font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1.1;">Upcoming Milestones</div>
+    <div style="font-size:9px;color:#e8473f;letter-spacing:2px;margin-top:5px;text-transform:uppercase;">${activeStatuses} · alphabetical</div>
   </div>
+  <div style="text-align:right;font-size:9px;color:#ccc;letter-spacing:1px;">benbagley17.github.io/nets-tracker</div>
 </div>
 
-<div style="margin-bottom:20px;padding-bottom:16px;border-bottom:3px solid #0a0a0a;">
-  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:5px;">Brooklyn Nets · Media Intelligence · ${date}</div>
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:4px;line-height:1;">Upcoming Milestones</div>
-  <div style="font-family:'DM Mono',monospace;font-size:9px;color:#e8473f;letter-spacing:2px;margin-top:5px;text-transform:uppercase;">Urgent alerts only · within 5% threshold · alphabetical</div>
-</div>
+${sectionHead('Franchise Milestones', filteredMs.length)}
+<table style="margin-top:2px;">${thHead()}<tbody>${msRows||noItems}</tbody></table>
 
-<div id="climb-section"></div>
-<div id="ms-section"></div>
+${sectionHead('Climbing the Record Books', filteredChases.length)}
+<table style="margin-top:2px;">${thHead()}<tbody>${climbRows||noItems}</tbody></table>
 
-<div style="margin-top:28px;padding-top:10px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:8px;color:#ccc;letter-spacing:1px;">
+<div style="margin-top:24px;padding-top:8px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-size:8px;color:#ccc;letter-spacing:1px;">
   <span>BROOKLYN NETS · MEDIA INTELLIGENCE</span>
-  <span>benbagley17.github.io/nets-tracker</span>
+  <span>UPCOMING MILESTONES REPORT</span>
 </div>
-
-<script>
-  const CHASES     = ${JSON.stringify(printChases).replace(/<\/script>/gi,'<\\/script>')};
-  const MILESTONES = ${JSON.stringify(printMilestones).replace(/<\/script>/gi,'<\\/script>')};
-  const CAREER     = ${JSON.stringify(CAREER_DATA).replace(/<\/script>/gi,'<\\/script>')};
-  const STAT_NAMES = ${JSON.stringify(STAT_FULL_SHORT).replace(/<\/script>/gi,'<\\/script>')};
-
-  const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
-  const fmtV = (stat,v) => stat==='3PT%' ? (v*100).toFixed(1)+'%' : v.toLocaleString();
-  const RED = '#e8473f';
-
-  /* state: which items are enabled — keyed by id */
-  const enabled = {};
-
-  const urgentChases = CHASES.filter(c=>c.urgency==='urgent').sort((a,b)=>a.player.localeCompare(b.player));
-  const urgentMs     = MILESTONES.filter(m=>m.urgency==='urgent').sort((a,b)=>(a.playerName||a.player).localeCompare(b.playerName||b.player));
-
-  /* give each item a stable id */
-  urgentChases.forEach((c,i) => { c._id='cl'+i; enabled[c._id]=true; });
-  urgentMs.forEach((m,i)     => { m._id='ms'+i; enabled[m._id]=true; });
-
-  function buildToggles() {
-    const climbEl = document.getElementById('toggle-climb');
-    const msEl    = document.getElementById('toggle-ms');
-
-    if(urgentChases.length) {
-      climbEl.insertAdjacentHTML('beforebegin','<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Climbing the record books</div>');
-      climbEl.innerHTML = urgentChases.map(c =>
-        '<label class="toggle-item" id="lbl-'+c._id+'">'
-        +'<input type="checkbox" checked onchange="toggle(\''+c._id+'\',this.checked)">'
-        +'<span class="toggle-label">'+c.player+'</span>'
-        +'<span class="toggle-stat">'+STAT_NAMES[c.stat]+' · '+fmtV(c.stat,c.currentVal)+' → '+fmtV(c.stat,c.targetVal)+'</span>'
-        +'</label>'
-      ).join('');
-    }
-
-    if(urgentMs.length) {
-      msEl.insertAdjacentHTML('beforebegin','<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin:10px 0 4px;">Franchise milestones</div>');
-      msEl.innerHTML = urgentMs.map(m =>
-        '<label class="toggle-item" id="lbl-'+m._id+'">'
-        +'<input type="checkbox" checked onchange="toggle(\''+m._id+'\',this.checked)">'
-        +'<span class="toggle-label">'+(m.playerName||m.player)+'</span>'
-        +'<span class="toggle-stat">'+m.statType+' · '+m.current.toLocaleString()+' → '+m.target.toLocaleString()+'</span>'
-        +'</label>'
-      ).join('');
-    }
-
-    if(!urgentChases.length && !urgentMs.length) {
-      climbEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:10px;color:#bbb;font-style:italic;">No urgent alerts found.</div>';
-    }
-  }
-
-  function toggle(id, on) {
-    enabled[id] = on;
-    const lbl = document.getElementById('lbl-'+id);
-    if(lbl) lbl.classList.toggle('off', !on);
-    render();
-  }
-
-  function selectAll(on) {
-    Object.keys(enabled).forEach(id => { enabled[id]=on; });
-    document.querySelectorAll('.toggle-item input').forEach(cb => cb.checked=on);
-    document.querySelectorAll('.toggle-item').forEach(lbl => lbl.classList.toggle('off',!on));
-    render();
-  }
-
-  function thHead(cols) {
-    return '<thead><tr>'+cols.map(c=>'<th style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#aaa;padding:6px 10px;text-align:'+(c.right?'right':'left')+';border-bottom:1px solid #e0e0e0;">'+c.label+'</th>').join('')+'</tr></thead>';
-  }
-
-  function sectionHead(title, count) {
-    return '<div class="section-divider"><div class="section-title">'+title+'</div><div class="section-count">'+count+' item'+(count!==1?'s':'')+'</div></div>';
-  }
-
-  const noItems = '<div class="no-items">None selected.</div>';
-
-  function render() {
-    /* CLIMBING */
-    const chases = urgentChases.filter(c=>enabled[c._id]);
-    const climbRows = chases.map(c => {
-      const pct  = (c.pctGap*100).toFixed(1);
-      const rows = [...CAREER[c.stat]].sort((a,b)=>b[1]-a[1]);
-      const below = rows[c.currentRank];
-      const base  = below ? below[1] : 0;
-      const range = c.targetVal - base;
-      const prog  = range>0 ? Math.min(100,Math.round((c.currentVal-base)/range*100)) : 99;
-      return '<tr>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:15px;">'+c.player+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+STAT_NAMES[c.stat]+'</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;">'+fmtV(c.stat,c.currentVal)+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+ordinal(c.currentRank)+' all-time</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">'
-          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
-            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:#888;">→ '+c.targetName+'</span>'
-            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:'+RED+';">'+pct+'% gap</span>'
-          +'</div>'
-          +'<div style="height:3px;background:#f0f0f0;border-radius:2px;">'
-            +'<div style="height:3px;background:'+RED+';border-radius:2px;width:'+prog+'%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>'
-          +'</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;color:#bbb;">'+fmtV(c.stat,c.targetVal)+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#aaa;">'+ordinal(c.targetRank)+' all-time</div>'
-        +'</td>'
-      +'</tr>';
-    }).join('');
-
-    document.getElementById('climb-section').innerHTML = urgentChases.length
-      ? sectionHead('Climbing the Record Books', chases.length)
-        + (chases.length
-            ? '<table style="margin-top:2px;">'+thHead([{label:'Player'},{label:'Current'},{label:'Gap to next rank'},{label:'Target',right:true}])+'<tbody>'+climbRows+'</tbody></table>'
-            : noItems)
-      : '';
-
-    /* MILESTONES */
-    const milestones = urgentMs.filter(m=>enabled[m._id]);
-    const msRows = milestones.map(m => {
-      const pct  = Math.min(100,Math.round(m.current/m.target*100));
-      const name = m.playerName||m.player;
-      return '<tr>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:22%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:15px;">'+name+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+m.statType+'</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:18%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;">'+m.current.toLocaleString()+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#888;">'+m.remaining.toLocaleString()+' remaining</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;width:38%;">'
-          +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
-            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:#888;">Progress to '+m.target.toLocaleString()+'</span>'
-            +'<span style="font-family:DM Mono,monospace;font-size:9px;color:'+RED+';">'+pct+'%</span>'
-          +'</div>'
-          +'<div style="height:3px;background:#f0f0f0;border-radius:2px;">'
-            +'<div style="height:3px;background:'+RED+';border-radius:2px;width:'+pct+'%;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>'
-          +'</div>'
-        +'</td>'
-        +'<td style="padding:8px 10px;border-bottom:1px solid #efefef;text-align:right;width:22%;">'
-          +'<div style="font-family:Bebas Neue,sans-serif;font-size:19px;line-height:1;color:#bbb;">'+m.target.toLocaleString()+'</div>'
-          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:#aaa;">target</div>'
-        +'</td>'
-      +'</tr>';
-    }).join('');
-
-    document.getElementById('ms-section').innerHTML = urgentMs.length
-      ? sectionHead('Franchise Milestones', milestones.length)
-        + (milestones.length
-            ? '<table style="margin-top:2px;">'+thHead([{label:'Player'},{label:'Current'},{label:'Progress'},{label:'Target',right:true}])+'<tbody>'+msRows+'</tbody></table>'
-            : noItems)
-      : '';
-  }
-
-  buildToggles();
-  render();
-<\/script>
 </body></html>`;
 
     const blob = new Blob([html], {type:'text/html'});
     const url  = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'upcoming-milestones-' + new Date().toISOString().slice(0,10) + '.html';
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('pdf-overlay').classList.remove('open');
   }
-
   /* ─── INIT ─── */
+  initPdfThresholds();
   computeChases();
   buildClimbingPlayerFilters();
   updateClimbCounts();
