@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brooklyn Nets — Milestone Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f3ee;
+    --gray-1: #141414;
+    --gray-2: #1e1e1e;
+    --gray-3: #2a2a2a;
+    --gray-4: #444;
+    --gray-5: #888;
+    --gray-6: #bbb;
+    --urgent: #e8473f;
+    --close: #e8973f;
+    --upcoming: #4a9eff;
+    --achieved: #3fcf8e;
+    --border: rgba(255,255,255,0.07);
+    --card-bg: #111;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  /* HEADER */
+  header {
+    border-bottom:1px solid var(--border);
+    padding:0 40px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:68px; position:sticky; top:0; z-index:100;
+    background:rgba(10,10,10,0.94); backdrop-filter:blur(12px);
+  }
+  .logo { display:flex; align-items:baseline; gap:12px; }
+  .logo-brk { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:3px; }
+  .logo-sub { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; }
+  .header-right { display:flex; align-items:center; gap:14px; }
+  .data-badge { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); display:flex; align-items:center; gap:6px; }
+  .data-badge .dot { width:6px; height:6px; border-radius:50%; background:var(--achieved); animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* TOP NAV TABS */
+  .nav-tabs {
+    display:flex; border-bottom:1px solid var(--border);
+    background:rgba(10,10,10,0.94); position:sticky; top:68px; z-index:90;
+  }
+  .nav-tab {
+    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    padding:14px 24px; cursor:pointer; background:transparent; border:none;
+    color:var(--gray-5); border-bottom:2px solid transparent; transition:all 0.15s;
+  }
+  .nav-tab:hover { color:var(--white); }
+  .nav-tab.active { color:var(--white); border-bottom:2px solid var(--white); }
+
+  /* PAGE SECTIONS */
+  .page-section { display:none; }
+  .page-section.active { display:block; }
+
+  /* SUMMARY STRIP */
+  .summary-strip { display:flex; border-bottom:1px solid var(--border); overflow-x:auto; }
+  .summary-tile { flex:1; min-width:90px; padding:16px 24px; border-right:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+  .summary-tile:last-child { border-right:none; }
+  .summary-tile:hover { background:var(--gray-1); }
+  .summary-tile.active { background:var(--gray-2); }
+  .summary-count { font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:1; margin-bottom:2px; }
+  .summary-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; font-weight:500; }
+  .tile-urgent .summary-count   { color:var(--urgent); }
+  .tile-close .summary-count    { color:var(--close); }
+  .tile-upcoming .summary-count { color:var(--upcoming); }
+  .tile-achieved .summary-count { color:var(--achieved); }
+
+  /* CONTROLS */
+  .filter-row { padding:12px 40px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .controls-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; min-width:52px; }
+  .filter-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:4px 11px; border-radius:3px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .filter-btn:hover { border-color:var(--gray-5); color:var(--white); }
+  .filter-btn.active { background:var(--white); border-color:var(--white); color:var(--black); font-weight:600; }
+  .row-divider { width:1px; height:16px; background:var(--border); }
+
+  /* VIEW TOGGLE */
+  .view-toggle { display:flex; gap:6px; margin-left:auto; }
+  .view-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:4px 12px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; letter-spacing:1px; transition:all 0.15s; }
+  .view-btn.active { border-color:var(--gray-5); color:var(--white); }
+
+  /* GRID */
+  main { padding:24px 40px; display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:14px; }
+
+  /* MILESTONE CARD */
+  .card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; transition:transform 0.15s,border-color 0.15s; cursor:pointer; }
+  .card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.13); }
+  .card-accent { height:3px; }
+  .card.urgent .card-accent   { background:var(--urgent); }
+  .card.close .card-accent    { background:var(--close); }
+  .card.upcoming .card-accent { background:var(--upcoming); }
+  .card.achieved .card-accent { background:var(--achieved); }
+  .card-header { padding:14px 18px 10px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .card-player { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; line-height:1; }
+  .card-stat-type { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
+  .urgency-badge { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; padding:3px 7px; border-radius:3px; white-space:nowrap; flex-shrink:0; }
+  .card.urgent .urgency-badge   { background:rgba(232,71,63,0.15);  color:var(--urgent); }
+  .card.close .urgency-badge    { background:rgba(232,151,63,0.15); color:var(--close); }
+  .card.upcoming .urgency-badge { background:rgba(74,158,255,0.15); color:var(--upcoming); }
+  .card.achieved .urgency-badge { background:rgba(63,207,142,0.15); color:var(--achieved); }
+  .card-progress { padding:0 18px 12px; }
+  .progress-nums { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px; }
+  .progress-current { font-family:'Bebas Neue',sans-serif; font-size:28px; line-height:1; }
+  .progress-target { font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
+  .progress-bar-track { height:4px; background:var(--gray-2); border-radius:2px; overflow:hidden; }
+  .progress-bar-fill { height:100%; border-radius:2px; width:0%; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .card.urgent .progress-bar-fill   { background:var(--urgent); }
+  .card.close .progress-bar-fill    { background:var(--close); }
+  .card.upcoming .progress-bar-fill { background:var(--upcoming); }
+  .card.achieved .progress-bar-fill { background:var(--achieved); }
+  .progress-footer { display:flex; justify-content:space-between; margin-top:6px; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
+  .card-details { display:none; padding:0 18px 14px; border-top:1px solid var(--border); }
+  .card.expanded .card-details { display:block; }
+  .media-alert { padding:11px 12px; background:var(--gray-1); border-radius:4px; border-left:3px solid var(--gray-3); margin-top:11px; }
+  .media-alert-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .media-alert-text { font-size:12px; line-height:1.6; color:var(--gray-6); }
+  .card-actions { margin-top:10px; }
+  .btn-slack { background:transparent; border:1px solid var(--gray-3); color:var(--gray-6); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
+  .btn-slack:hover { border-color:var(--achieved); color:var(--achieved); }
+
+  /* ROSTER CARD */
+  .roster-card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; padding:16px 18px; }
+  .roster-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .roster-number { font-family:'Bebas Neue',sans-serif; font-size:13px; color:var(--gray-5); min-width:24px; }
+  .roster-name { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; }
+  .roster-pos { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-left:auto; }
+  .roster-note { font-size:11px; color:var(--close); margin-bottom:10px; font-style:italic; }
+  .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .stat-cell { background:var(--gray-1); border-radius:3px; padding:8px 10px; }
+  .stat-cell-val { font-family:'Bebas Neue',sans-serif; font-size:20px; line-height:1; }
+  .stat-cell-label { font-family:'DM Mono',monospace; font-size:9px; color:var(--gray-5); letter-spacing:1px; margin-top:2px; }
+  .roster-milestones { margin-top:10px; }
+  .roster-milestone-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-top:1px solid var(--border); font-size:11px; }
+  .roster-milestone-stat { color:var(--gray-5); font-family:'DM Mono',monospace; font-size:10px; }
+  .roster-milestone-progress { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-6); }
+  .roster-milestone-games { font-family:'DM Mono',monospace; font-size:10px; }
+  .games-urgent   { color:var(--urgent); }
+  .games-close    { color:var(--close); }
+  .games-upcoming { color:var(--upcoming); }
+  .games-achieved { color:var(--achieved); }
+
+  /* CLIMBING CARDS */
+  .climb-card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; transition:transform 0.15s,border-color 0.15s; }
+  .climb-card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.13); }
+  .climb-card .card-accent { height:3px; }
+  .climb-card.urgent .card-accent { background:var(--urgent); }
+  .climb-card.close  .card-accent { background:var(--close); }
+  .climb-card.upcoming .card-accent { background:var(--upcoming); }
+  .climb-header { padding:14px 18px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .climb-player { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; line-height:1; }
+  .climb-stat-label { font-size:10px; color:var(--gray-5); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
+  .climb-body { padding:12px 18px 14px; }
+  .climb-vs { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+  .climb-cur { font-family:'Bebas Neue',sans-serif; font-size:28px; line-height:1; }
+  .climb-cur-rank { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-left:6px; }
+  .climb-target-block { text-align:right; }
+  .climb-target-val { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; color:var(--gray-5); }
+  .climb-target-name { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-top:2px; }
+  .climb-target-rank { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-4); }
+  .climb-bar-track { height:4px; background:var(--gray-2); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+  .climb-bar-fill { height:100%; border-radius:2px; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .climb-card.urgent  .climb-bar-fill { background:var(--urgent); }
+  .climb-card.close   .climb-bar-fill { background:var(--close); }
+  .climb-card.upcoming .climb-bar-fill { background:var(--upcoming); }
+  .climb-footer { display:flex; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
+  .climb-gap-label { }
+  .climb-pct { }
+  .climb-card.urgent  .climb-pct { color:var(--urgent); }
+  .climb-card.close   .climb-pct { color:var(--close); }
+  .climb-card.upcoming .climb-pct { color:var(--upcoming); }
+
+  /* LEADERBOARD CLIMBING INDICATOR */
+  .lb-climb-pip { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; flex-shrink:0; }
+  .lb-climb-pip.urgent  { background:var(--urgent); }
+  .lb-climb-pip.close   { background:var(--close); }
+  .lb-climb-pip.upcoming { background:var(--upcoming); }
+
+
+  .lb-shell { padding:28px 40px; }
+  .lb-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; align-items:center; }
+  .lb-controls .controls-label { min-width:auto; }
+  .lb-stat-btn {
+    background:transparent; border:1px solid var(--gray-3); color:var(--gray-6);
+    padding:5px 13px; border-radius:3px; font-family:'DM Mono',monospace; font-size:11px;
+    letter-spacing:1px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+  }
+  .lb-stat-btn:hover { border-color:var(--gray-5); color:var(--white); }
+  .lb-stat-btn.active { background:var(--white); border-color:var(--white); color:var(--black); }
+
+  .lb-table-wrap { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .lb-table { width:100%; border-collapse:collapse; }
+  .lb-table thead tr { border-bottom:1px solid var(--border); }
+  .lb-table th {
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--gray-5); padding:12px 18px; text-align:left; font-weight:400;
+  }
+  .lb-table th.val-col { text-align:right; }
+  .lb-table td { padding:11px 18px; border-bottom:1px solid var(--border); font-size:14px; }
+  .lb-table tbody tr:last-child td { border-bottom:none; }
+  .lb-table tbody tr:hover { background:var(--gray-1); }
+  .lb-rank {
+    font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gray-4);
+    width:42px; text-align:center; padding-left:10px;
+  }
+  .lb-rank.top3 { color:var(--gray-6); }
+  .lb-player { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.5px; }
+  .lb-season { font-family:'DM Mono',monospace; font-size:11px; color:var(--gray-5); }
+  .lb-val {
+    font-family:'Bebas Neue',sans-serif; font-size:22px; text-align:right;
+    padding-right:24px; color:var(--white);
+  }
+  .lb-active-badge {
+    display:inline-block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px;
+    padding:2px 6px; border-radius:3px; margin-left:8px; vertical-align:middle;
+    background:rgba(63,207,142,0.12); color:var(--achieved); border:1px solid rgba(63,207,142,0.25);
+  }
+  .lb-note { font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); margin-top:12px; }
+  .lb-section-title {
+    font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px;
+    margin-bottom:6px; color:var(--white);
+  }
+  .lb-section-sub {
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5);
+    letter-spacing:1px; margin-bottom:20px;
+  }
+
+  /* SLACK PANEL */
+  .slack-panel { position:fixed; right:0; top:68px; bottom:0; width:300px; background:var(--gray-1); border-left:1px solid var(--border); padding:22px 20px; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1); z-index:90; overflow-y:auto; }
+  .slack-panel.open { transform:translateX(0); }
+  .slack-panel-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; margin-bottom:6px; }
+  .slack-panel-sub { font-size:11px; color:var(--gray-5); margin-bottom:20px; line-height:1.5; }
+  .slack-label { font-size:10px; color:var(--gray-5); letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; display:block; }
+  .slack-input { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:8px 10px; border-radius:4px; font-family:'DM Mono',monospace; font-size:11px; margin-bottom:12px; outline:none; transition:border-color 0.15s; }
+  .slack-input:focus { border-color:var(--gray-5); }
+  .slack-select { width:100%; background:var(--gray-2); border:1px solid var(--gray-3); color:var(--white); padding:8px 10px; border-radius:4px; font-family:'DM Mono',monospace; font-size:11px; margin-bottom:12px; outline:none; }
+  .slack-save { width:100%; background:var(--white); color:var(--black); border:none; padding:9px; border-radius:4px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-bottom:8px; transition:opacity 0.15s; }
+  .slack-save:hover { opacity:0.85; }
+  .slack-status { font-family:'DM Mono',monospace; font-size:10px; color:var(--achieved); display:none; margin-bottom:12px; }
+  .slack-open-btn { background:transparent; border:1px solid var(--gray-3); color:var(--gray-5); padding:5px 11px; border-radius:3px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.15s; }
+  .slack-open-btn:hover { border-color:var(--gray-5); color:var(--white); }
+
+  footer { padding:18px 40px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-5); }
+
+  #loading { display:flex; align-items:center; justify-content:center; height:60vh; font-family:'DM Mono',monospace; font-size:12px; color:var(--gray-5); letter-spacing:2px; }
+
+  @media print {
+    body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+  @media(max-width:700px){
+    header{padding:0 16px;}
+    main{padding:14px 16px;grid-template-columns:1fr;}
+    .filter-row{padding:10px 16px;}
+    .summary-tile{padding:12px 14px;}
+    .slack-panel{width:100%;}
+    .lb-shell{padding:16px;}
+    .nav-tab{padding:12px 14px;font-size:10px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-brk">BKN</span>
+    <span class="logo-sub">Milestone Tracker</span>
+  </div>
+  <div class="header-right">
+    <div class="data-badge">
+      <span class="dot"></span>
+      <span id="data-timestamp">Loading...</span>
+    </div>
+    <button class="slack-open-btn" onclick="openPdfTab()">⬡ Export PDF</button>
+    <button class="slack-open-btn" onclick="toggleSlack()">⚡ Slack</button>
+  </div>
+</header>
+
+
+<!-- TOP NAV -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="switchSection('milestones',this)">Milestones</button>
+  <button class="nav-tab" onclick="switchSection('climbing',this)">Climbing <span id="climbing-count" style="font-size:9px;opacity:0.7"></span></button>
+  <button class="nav-tab" onclick="switchSection('career',this)">Career Top 20</button>
+  <button class="nav-tab" onclick="switchSection('season',this)">Single-Season Top 10</button>
+</nav>
+
+<!-- ═══════════════════════ MILESTONES SECTION ═══════════════════════ -->
+<div class="page-section active" id="section-milestones">
+
+  <div class="summary-strip">
+    <div class="summary-tile tile-all active" onclick="setUrgency('all')">
+      <div class="summary-count" id="count-all">—</div>
+      <div class="summary-label">All</div>
+    </div>
+    <div class="summary-tile tile-urgent" onclick="setUrgency('urgent')">
+      <div class="summary-count" id="count-urgent">—</div>
+      <div class="summary-label">Urgent</div>
+    </div>
+    <div class="summary-tile tile-close" onclick="setUrgency('close')">
+      <div class="summary-count" id="count-close">—</div>
+      <div class="summary-label">Close</div>
+    </div>
+    <div class="summary-tile tile-upcoming" onclick="setUrgency('upcoming')">
+      <div class="summary-count" id="count-upcoming">—</div>
+      <div class="summary-label">Upcoming</div>
+    </div>
+    <div class="summary-tile tile-achieved" onclick="setUrgency('achieved')">
+      <div class="summary-count" id="count-achieved">—</div>
+      <div class="summary-label">Achieved</div>
+    </div>
+  </div>
+
+  <div class="filter-row" id="stat-filters">
+    <span class="controls-label">Stat</span>
+    <button class="filter-btn active" onclick="setStat('all',this)">All</button>
+    <button class="filter-btn" onclick="setStat('Points',this)">Points</button>
+    <button class="filter-btn" onclick="setStat('Rebounding',this)">Rebounds</button>
+    <button class="filter-btn" onclick="setStat('Assists',this)">Assists</button>
+    <button class="filter-btn" onclick="setStat('Blocks',this)">Blocks</button>
+    <button class="filter-btn" onclick="setStat('Steals',this)">Steals</button>
+    <button class="filter-btn" onclick="setStat('Three-Pointers',this)">3PM</button>
+    <button class="filter-btn" onclick="setStat('Free Throws',this)">FTM</button>
+    <button class="filter-btn" onclick="setStat('Games',this)">Games</button>
+  </div>
+
+  <div class="filter-row" id="player-filters">
+    <span class="controls-label">Player</span>
+    <button class="filter-btn active" onclick="setPlayer('all',this)">All</button>
+    <div class="row-divider"></div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="view-milestones" onclick="setView('milestones')">Milestones</button>
+      <button class="view-btn" id="view-roster" onclick="setView('roster')">Roster</button>
+    </div>
+  </div>
+
+  <div id="loading">LOADING DATA...</div>
+  <main id="grid" style="display:none"></main>
+
+</div>
+
+<!-- ═══════════════════════ CLIMBING SECTION ═══════════════════════ -->
+<div class="page-section" id="section-climbing">
+
+  <div class="summary-strip" id="climbing-strip">
+    <div class="summary-tile tile-urgent active" onclick="setClimbFilter('all',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-all">—</div>
+      <div class="summary-label">All Chases</div>
+    </div>
+    <div class="summary-tile tile-urgent" onclick="setClimbFilter('urgent',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-urgent">—</div>
+      <div class="summary-label">Urgent</div>
+    </div>
+    <div class="summary-tile tile-close" onclick="setClimbFilter('close',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-close">—</div>
+      <div class="summary-label">Close</div>
+    </div>
+    <div class="summary-tile tile-upcoming" onclick="setClimbFilter('upcoming',this)" style="cursor:pointer">
+      <div class="summary-count" id="climb-count-upcoming">—</div>
+      <div class="summary-label">Upcoming</div>
+    </div>
+  </div>
+
+  <div class="filter-row" id="climbing-player-filters">
+    <span class="controls-label">Player</span>
+    <button class="filter-btn active" onclick="setClimbPlayer('all',this)">All</button>
+  </div>
+
+  <main id="climbing-grid" style="padding-top:20px"></main>
+</div>
+
+<!-- ═══════════════════════ CAREER TOP 20 SECTION ═══════════════════════ -->
+<div class="page-section" id="section-career">
+  <div class="lb-shell">
+    <div class="lb-section-title">All-Time Franchise Leaders</div>
+    <div class="lb-section-sub">Top 20 in franchise history (NJN/BRK) · Active players marked · Min. 300 3PM for 3PT%</div>
+    <div class="lb-controls">
+      <span class="controls-label">Stat</span>
+      <button class="lb-stat-btn active" onclick="selectCareerStat('PTS',this)">Points</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('TRB',this)">Rebounds</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('ORB',this)">Off. Reb.</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('AST',this)">Assists</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('STL',this)">Steals</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('BLK',this)">Blocks</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('FG3M',this)">3PM</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('FTM',this)">FTM</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('GP',this)">Games</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('MP',this)">Minutes</button>
+      <button class="lb-stat-btn" onclick="selectCareerStat('3PT%',this)">3PT%</button>
+    </div>
+    <div class="lb-table-wrap">
+      <table class="lb-table" id="career-table">
+        <thead>
+          <tr>
+            <th style="width:42px">#</th>
+            <th>Player</th>
+            <th class="val-col" id="career-val-header">PTS</th>
+          </tr>
+        </thead>
+        <tbody id="career-tbody"></tbody>
+      </table>
+    </div>
+    <div class="lb-note" id="career-note"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SINGLE-SEASON TOP 10 SECTION ═══════════════════════ -->
+<div class="page-section" id="section-season">
+  <div class="lb-shell">
+    <div class="lb-section-title">Single-Season Leaders</div>
+    <div class="lb-section-sub">Top 10 single seasons in franchise history (NJN/BRK) · Active players marked</div>
+    <div class="lb-controls">
+      <span class="controls-label">Stat</span>
+      <button class="lb-stat-btn active" onclick="selectSeasonStat('PTS',this)">Points</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('TRB',this)">Rebounds</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('ORB',this)">Off. Reb.</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('AST',this)">Assists</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('STL',this)">Steals</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('BLK',this)">Blocks</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('FG3M',this)">3PM</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('FTM',this)">FTM</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('MP',this)">Minutes</button>
+      <button class="lb-stat-btn" onclick="selectSeasonStat('3PT%',this)">3PT%</button>
+    </div>
+    <div class="lb-table-wrap">
+      <table class="lb-table" id="season-table">
+        <thead>
+          <tr>
+            <th style="width:42px">#</th>
+            <th>Player</th>
+            <th style="width:90px;font-size:9px">Season</th>
+            <th class="val-col" id="season-val-header">PTS</th>
+          </tr>
+        </thead>
+        <tbody id="season-tbody"></tbody>
+      </table>
+    </div>
+    <div class="lb-note" id="season-note"></div>
+  </div>
+</div>
+
+<footer>
+  <span>Brooklyn Nets · Media Intelligence · 2026-27</span>
+  <span id="footer-source"></span>
+</footer>
+
+<!-- SLACK PANEL -->
+<div class="slack-panel" id="slack-panel">
+  <div class="slack-panel-title">Slack Alerts</div>
+  <div class="slack-panel-sub">Get notified when a milestone enters your alert window. Each alert fires once per session.</div>
+  <label class="slack-label">Webhook URL</label>
+  <input class="slack-input" id="slack-webhook" type="text" placeholder="https://hooks.slack.com/services/...">
+  <label class="slack-label">Alert threshold</label>
+  <select class="slack-select" id="slack-threshold">
+    <option value="5">5 games away</option>
+    <option value="10" selected>10 games away</option>
+    <option value="20">20 games away</option>
+    <option value="30">30 games away</option>
+  </select>
+  <button class="slack-save" onclick="saveSlack()">Save Configuration</button>
+  <div class="slack-status" id="slack-status">✓ Saved</div>
+  <label class="slack-label">Test</label>
+  <button class="btn-slack" style="width:100%" onclick="testSlack()">Send test message</button>
+</div>
+
+<script>
+  /* ─── LEADERBOARD DATA ─── */
+  const ACTIVE_PLAYERS = ['Nic Claxton','Day\'Ron Sharpe','Terance Mann','Michael Porter Jr.','Jalen Wilson','Noah Clowney','Ziaire Williams'];
+
+  const CAREER_DATA = {
+    PTS: [['Brook Lopez',10444],['Buck Williams',10440],['Vince Carter',8834],['Richard Jefferson',8507],['Jason Kidd',7373],['Kerry Kittles',7096],['Derrick Coleman',6930],['Chris Morris',6762],['Mike Gminski',6415],['Otis Birdsong',5968],['Keith Van Horn',5700],['Albert King',5595],['Joe Harris',5007],['Spencer Dinwiddie',4953],['Kendall Gill',4932],['Darwin Cook',4699],['Kenny Anderson',4655],['Deron Williams',4609],['Kenyon Martin',4269],['Joe Johnson',4240]],
+    TRB: [['Buck Williams',7576],['Brook Lopez',4005],['Derrick Coleman',3690],['Mike Gminski',3671],['Jayson Williams',3328],['Nic Claxton',2875],['Chris Morris',2918],['Richard Jefferson',2627],['Keith Van Horn',2398],['Jason Collins',2323],['Sam Bowie',2304],['George Johnson',2182],['Vince Carter',2152],['Kenyon Martin',2147],['Kris Humphries',2100],['Kerry Kittles',1951],['Albert King',1895],['Armen Gilliam',1826],['Jan van Breda Kolff',1778],['Aaron Williams',1585]],
+    ORB: [['Buck Williams',2588],['Jayson Williams',1484],['Chris Morris',1290],['Mike Gminski',1231],['Derrick Coleman',1148],['Chris Dudley',873],['Nic Claxton',855],['Sam Bowie',743],['George Johnson',712],['Jason Collins',789],['Keith Van Horn',671],['Kris Humphries',666],['Albert King',655],['Armen Gilliam',630],['Richard Jefferson',629],['Jarrett Allen',589],['Aaron Williams',571],['Kenyon Martin',547],['Kerry Kittles',512],['Jan van Breda Kolff',500]],
+    AST: [['Jason Kidd',4620],['Kenny Anderson',2363],['Deron Williams',2078],['Spencer Dinwiddie',1985],['Darwin Cook',1970],['Vince Carter',1762],['Richard Jefferson',1486],['Devin Harris',1473],['Michael Ray Richardson',1410],['Stephon Marbury',1398],['Otis Birdsong',1361],['Kerry Kittles',1275],['Mookie Blaylock',1143],['Eddie Jordan',1113],['Derrick Coleman',1093],['Kelvin Ransey',1090],['Lester Conner',1047],['Chris Morris',1015],['Foots Walker',996],['Joe Johnson',993]],
+    STL: [['Jason Kidd',950],['Darwin Cook',875],['Kerry Kittles',803],['Chris Morris',784],['Kendall Gill',652],['Buck Williams',599],['Eddie Jordan',562],['Michael Ray Richardson',552],['Kenny Anderson',476],['Richard Jefferson',438],['Vince Carter',435],['Otis Birdsong',427],['Mookie Blaylock',421],['Lester Conner',390],['Albert King',383],['Jan van Breda Kolff',363],['Kenyon Martin',361],['Lucious Harris',346],['Brook Lopez',328],['Derrick Coleman',320]],
+    BLK: [['Brook Lopez',972],['George Johnson',863],['Buck Williams',696],['Nic Claxton',611],['Mike Gminski',599],['Derrick Coleman',559],['Chris Morris',468],['Chris Dudley',466],['Sam Bowie',459],['Shawn Bradley',410],['Kenyon Martin',386],['Darryl Dawkins',385],['Jan van Breda Kolff',329],['P.J. Brown',328],['Jarrett Allen',319],['Jason Collins',305],['Aaron Williams',297],['Jayson Williams',275],['Kris Humphries',224],['Roy Hinson',223]],
+    FG3M: [['Joe Harris',984],['Jason Kidd',813],['Vince Carter',638],['Kerry Kittles',687],['Deron Williams',485],['Kyrie Irving',438],['Joe Johnson',516],['Spencer Dinwiddie',560],["D'Angelo Russell",381],['Cameron Johnson',355],['Cam Thomas',348],['Chris Morris',368],['Keith Van Horn',335],['Allen Crabbe',299],['Bojan Bogdanovic',319],['Caris LeVert',294],['Mikal Bridges',288],['Patty Mills',276],['Stephon Marbury',234],["Royce O'Neale",260]],
+    FTM: [['Buck Williams',2476],['Richard Jefferson',2349],['Brook Lopez',2219],['Vince Carter',1944],['Derrick Coleman',1859],['Mike Gminski',1657],['Jason Kidd',1352],['Spencer Dinwiddie',1207],['Chris Morris',1178],['Keith Van Horn',1153],['Devin Harris',1149],['Kenny Anderson',1098],['Kendall Gill',1061],['Deron Williams',994],['Stephon Marbury',957],['Kerry Kittles',907],['Darryl Dawkins',877],['Albert King',874],['Armen Gilliam',853],['Kevin Durant',849]],
+    GP:  [['Buck Williams',635],['Brook Lopez',562],['Mike Gminski',550],['Jason Collins',532],['Chris Morris',510],['Jason Kidd',506],['Kerry Kittles',496],['Richard Jefferson',489],['Darwin Cook',464],['Lucious Harris',456],['Jan van Breda Kolff',434],['Joe Harris',432],['Albert King',410],["Mike O'Koren",392],['Nic Claxton',380],['Otis Birdsong',375],['Vince Carter',374],['Jayson Williams',373],['Spencer Dinwiddie',348],['Derrick Coleman',348]],
+    MP:  [['Buck Williams',23100],['Jason Kidd',18733],['Brook Lopez',18118],['Richard Jefferson',17499],['Kerry Kittles',16686],['Chris Morris',15274],['Vince Carter',14157],['Mike Gminski',13638],['Jason Collins',12664],['Derrick Coleman',12449],['Joe Harris',11620],['Darwin Cook',11593],['Otis Birdsong',11324],['Kendall Gill',11203],['Keith Van Horn',10881],['Albert King',10393],['Jan van Breda Kolff',10155],['Spencer Dinwiddie',10003],['Kenny Anderson',9962],['Nic Claxton',9944]],
+    '3PT%': [['Joe Harris',.440],['Drazen Petrovic',.437],['Seth Curry',.427],['Bobby Simmons',.422],['Keyon Dooling',.403],['Kevin Durant',.400],['Kyrie Irving',.396],['Anthony Morrow',.396],['Patty Mills',.393],['Cameron Johnson',.387],['Landry Shamet',.387],['Bostjan Nachbar',.384],["Royce O'Neale",.380],['Kerry Kittles',.378],['Joe Johnson',.378],['Allen Crabbe',.378],['Kevin Edwards',.377],['Mikal Bridges',.373],['Vince Carter',.370],['Bojan Bogdanovic',.366]]
+  };
+
+  const SEASON_DATA = {
+    PTS:  [['Rick Barry','1971-72',2518],['Julius Erving','1975-76',2462],['Julius Erving','1974-75',2343],['Julius Erving','1973-74',2299],['Vince Carter','2006-07',2070],['Levern Tart','1969-70',1935],['Vince Carter','2005-06',1911],['Bernard King','1977-78',1909],['Richard Jefferson','2007-08',1857],['Kendall Gill','1996-97',1789]],
+    TRB:  [['Billy Paultz','1971-72',1035],['Buck Williams','1982-83',1027],['Buck Williams','1986-87',1023],['Billy Paultz','1972-73',1015],['Buck Williams','1981-82',1005],['Buck Williams','1984-85',1005],['Buck Williams','1983-84',1000],['Buck Williams','1985-86',986],['Larry Kenon','1973-74',962],['Billy Paultz','1970-71',940]],
+    ORB:  [['Jayson Williams','1997-98',443],['Larry Kenon','1973-74',375],['Buck Williams','1982-83',365],['Buck Williams','1983-84',355],['Buck Williams','1981-82',347],['Chris Dudley','1991-92',343],['Jayson Williams','1995-96',342],['Kim Hughes','1975-76',341],['Julius Erving','1975-76',337],['Buck Williams','1985-86',329]],
+    AST:  [['Jason Kidd','2001-02',808],['Kevin Porter','1977-78',801],['Kenny Anderson','1993-94',784],['Jason Kidd','2006-07',736],['Jason Kidd','2002-03',711],['Kenny Anderson','1994-95',680],['Bill Melchionni','1970-71',672],['Jason Kidd','2005-06',672],['Bill Melchionni','1971-72',669],['Michael Ray Richardson','1984-85',669]],
+    STL:  [['Michael Ray Richardson','1984-85',243],['Eddie Jordan','1979-80',223],['Brian Taylor','1974-75',221],['Julius Erving','1975-76',207],['Eddie Jordan','1978-79',201],['Ray Williams','1981-82',199],['Darwin Cook','1982-83',194],['Julius Erving','1973-74',190],['Julius Erving','1974-75',186],['Lester Conner','1988-89',181]],
+    BLK:  [['George Johnson','1977-78',274],['George Johnson','1979-80',258],['George Johnson','1978-79',253],['Shawn Bradley','1995-96',250],['Billy Paultz','1972-73',214],['Julius Erving','1973-74',204],['Nic Claxton','2022-23',189],['Chris Dudley','1991-92',179],['Julius Erving','1975-76',160],['Shawn Bradley','1996-97',160]],
+    FG3M: [["D'Angelo Russell",'2018-19',234],['Patty Mills','2021-22',227],['Mikal Bridges','2023-24',220],['Joe Harris','2020-21',211],['Allen Crabbe','2017-18',201],['Joe Harris','2018-19',183],['Michael Porter Jr.','2025-26',176],['Joe Harris','2019-20',172],['Deron Williams','2012-13',169],["Royce O'Neale",'2022-23',163]],
+    FTM:  [['Rick Barry','1971-72',641],['Richard Jefferson','2007-08',542],['Julius Erving','1975-76',530],['Devin Harris','2008-09',496],['Julius Erving','1974-75',486],['Vince Carter','2005-06',480],['Richard Jefferson','2005-06',471],['Vince Carter','2006-07',462],['Julius Erving','1973-74',454],['Rick Barry','1970-71',451]],
+    MP:   [['Rick Barry','1971-72',3616],['Julius Erving','1974-75',3402],['Julius Erving','1973-74',3398],['Bill Melchionni','1971-72',3326],['Bill Melchionni','1970-71',3284],['Julius Erving','1975-76',3244],['Levern Tart','1969-70',3210],['Richard Jefferson','2007-08',3200],['Kendall Gill','1996-97',3199],['Buck Williams','1984-85',3182]],
+    '3PT%': [['Joe Harris','2020-21',.475],['Joe Harris','2018-19',.474],['Kevin Durant','2020-21',.450],['Drazen Petrovic','1992-93',.449],['Bobby Simmons','2008-09',.447],['Drazen Petrovic','1991-92',.444],['Jordan Farmar','2011-12',.440],['Eddie House','2006-07',.429],['Joe Harris','2022-23',.426],['Vince Carter','2004-05',.425]]
+  };
+
+  const STAT_FULL = {
+    PTS:'Points', TRB:'Total Rebounds', ORB:'Offensive Rebounds', AST:'Assists',
+    STL:'Steals', BLK:'Blocks', FG3M:'3-Pointers Made', FTM:'Free Throws Made',
+    GP:'Games Played', MP:'Minutes Played', '3PT%':'3-Point %'
+  };
+
+  const CAREER_NOTES = {
+    '3PT%': 'Min. 300 3-pointers made',
+    FG3M: 'Sorted by 3PM made',
+    TRB: 'Sorted by total rebounds'
+  };
+
+  function isActive(name) {
+    return ACTIVE_PLAYERS.some(a => a.toLowerCase() === name.toLowerCase());
+  }
+
+  function fmtVal(stat, v) {
+    if (stat === '3PT%') return (v * 100).toFixed(1) + '%';
+    if (stat === 'MP') return v.toLocaleString();
+    return v.toLocaleString();
+  }
+
+  /* ─── MILESTONE LOGIC ─── */
+  let allMilestones = [];
+  let allRoster = [];
+  let PLAYER_NAMES = {};
+  let activeUrgency = 'all';
+  let activePlayer  = 'all';
+  let activeStat    = 'all';
+  let activeView    = 'milestones';
+  let sentAlerts    = new Set(JSON.parse(localStorage.getItem('sentAlerts') || '[]'));
+
+  const URGENCY_ORDER = { urgent:0, close:1, upcoming:2, achieved:3 };
+  const URGENCY_LABEL = { urgent:'🔴 Urgent', close:'🟡 Close', upcoming:'🔵 Upcoming', achieved:'✅ Achieved' };
+
+  const STAT_DISPLAY = {
+    PTS:'PTS', TRB:'REB', ORB:'OREB', AST:'AST',
+    STL:'STL', BLK:'BLK', FG3M:'3PM', FTM:'FTM', GP:'GP'
+  };
+
+  async function loadData() {
+    try {
+      const res = await fetch('public/data/live_stats.json?t=' + Date.now());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      (data.roster || []).forEach(p => { PLAYER_NAMES[p.id] = p.name; });
+      allRoster     = data.roster || [];
+      allMilestones = data.milestones || [];
+
+      const ts = data.meta && data.meta.generated_at;
+      if (ts) {
+        const d = new Date(ts);
+        document.getElementById('data-timestamp').textContent =
+          'Updated ' + d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) +
+          ' ' + d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      }
+      document.getElementById('footer-source').textContent = (data.meta && data.meta.source) || '';
+
+      buildPlayerFilters();
+      updateCounts();
+      checkSlackAlerts();
+    } catch(e) {
+      console.warn('live_stats.json unavailable:', e.message);
+      document.getElementById('data-timestamp').textContent = 'Live data unavailable';
+    } finally {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('grid').style.display = 'grid';
+      renderGrid();
+    }
+  }
+
+  function buildPlayerFilters() {
+    const container = document.getElementById('player-filters');
+    const divider   = container.querySelector('.row-divider');
+    const players   = [...new Set(allRoster.map(p => p.id))];
+    players.forEach(pid => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      const name = PLAYER_NAMES[pid] || pid;
+      btn.textContent = name.split(' ').slice(-1)[0];
+      btn.title = name;
+      btn.onclick = () => setPlayer(pid, btn);
+      container.insertBefore(btn, divider);
+    });
+  }
+
+  function setUrgency(u) {
+    activeUrgency = u;
+    document.querySelectorAll('.summary-tile').forEach(t => t.classList.remove('active'));
+    const sel = u === 'all' ? '.tile-all' : '.tile-' + u;
+    const el = document.querySelector(sel);
+    if (el) el.classList.add('active');
+    renderGrid();
+  }
+
+  function setStat(s, btn) {
+    activeStat = s;
+    document.querySelectorAll('#stat-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  function setPlayer(pid, btn) {
+    activePlayer = pid;
+    document.querySelectorAll('#player-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  function setView(v) {
+    activeView = v;
+    document.getElementById('view-milestones').classList.toggle('active', v === 'milestones');
+    document.getElementById('view-roster').classList.toggle('active', v === 'roster');
+    renderGrid();
+  }
+
+  function getFiltered() {
+    return allMilestones.filter(m => {
+      const uOk = activeUrgency === 'all' || m.urgency === activeUrgency;
+      const pOk = activePlayer  === 'all' || m.player  === activePlayer;
+      const sOk = activeStat    === 'all' || m.category === activeStat;
+      return uOk && pOk && sOk;
+    });
+  }
+
+  function updateCounts() {
+    const c = { urgent:0, close:0, upcoming:0, achieved:0 };
+    allMilestones.forEach(m => { if (c[m.urgency] !== undefined) c[m.urgency]++; });
+    document.getElementById('count-all').textContent     = allMilestones.length;
+    document.getElementById('count-urgent').textContent  = c.urgent;
+    document.getElementById('count-close').textContent   = c.close;
+    document.getElementById('count-upcoming').textContent= c.upcoming;
+    document.getElementById('count-achieved').textContent= c.achieved;
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('grid');
+    if (activeView === 'roster') { renderRoster(grid); return; }
+
+    const list = getFiltered().sort((a,b) =>
+      (URGENCY_ORDER[a.urgency] ?? 4) - (URGENCY_ORDER[b.urgency] ?? 4) ||
+      (a.gamesAway ?? 9999) - (b.gamesAway ?? 9999)
+    );
+
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">◎</div><div>No milestones match this filter.</div></div>';
+      return;
+    }
+
+    grid.innerHTML = list.map(m => {
+      const pct  = Math.min(100, Math.round(m.current / m.target * 100));
+      const gamesTxt = m.urgency === 'achieved'
+        ? 'Already achieved'
+        : m.gamesAway != null ? m.gamesAway + ' games into 2026-27' : '—';
+      return `<div class="card ${m.urgency}" id="card-${m.id}" onclick="toggleCard('${m.id}')">
+        <div class="card-accent"></div>
+        <div class="card-header">
+          <div>
+            <div class="card-player">${m.playerName || m.player}</div>
+            <div class="card-stat-type">${m.statType}</div>
+          </div>
+          <div class="urgency-badge">${URGENCY_LABEL[m.urgency] || m.urgency}</div>
+        </div>
+        <div class="card-progress">
+          <div class="progress-nums">
+            <span class="progress-current">${m.current.toLocaleString()}</span>
+            <span class="progress-target">of ${m.target.toLocaleString()}</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" data-pct="${pct}" style="width:0%"></div>
+          </div>
+          <div class="progress-footer">
+            <span>${m.remaining.toLocaleString()} remaining</span>
+            <span>${gamesTxt}</span>
+          </div>
+        </div>
+        <div class="card-details">
+          <div class="card-actions">
+            <button class="btn-slack" onclick="event.stopPropagation();sendSlackAlert('${m.id}',true)">↗ Test Slack Alert</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.pct + '%';
+      });
+    });
+  }
+
+  function renderRoster(grid) {
+    const filtered = activePlayer === 'all'
+      ? allRoster
+      : allRoster.filter(p => p.id === activePlayer);
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">◎</div><div>No players match.</div></div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const s = p.stats || {};
+      const playerMilestones = allMilestones
+        .filter(m => m.player === p.id && (activeStat === 'all' || m.category === activeStat))
+        .sort((a,b) => (URGENCY_ORDER[a.urgency]??4)-(URGENCY_ORDER[b.urgency]??4) || (a.gamesAway??9999)-(b.gamesAway??9999));
+
+      const statCells = Object.entries(STAT_DISPLAY).map(([key, label]) =>
+        `<div class="stat-cell">
+          <div class="stat-cell-val">${(s[key] || 0).toLocaleString()}</div>
+          <div class="stat-cell-label">${label}</div>
+        </div>`
+      ).join('');
+
+      const milestoneRows = playerMilestones.slice(0, 9).map(m => {
+        const gamesTxt = m.urgency === 'achieved' ? '✅' :
+          m.gamesAway != null ? m.gamesAway + 'g' : '—';
+        const gClass = 'games-' + m.urgency;
+        return `<div class="roster-milestone-row">
+          <span class="roster-milestone-stat">${STAT_DISPLAY[m.statKey] || m.statKey}</span>
+          <span class="roster-milestone-progress">${m.current.toLocaleString()} → ${m.target.toLocaleString()}</span>
+          <span class="roster-milestone-games ${gClass}">${gamesTxt}</span>
+        </div>`;
+      }).join('');
+
+      const noteHtml = p.note ? `<div class="roster-note">${p.note}</div>` : '';
+
+      return `<div class="roster-card">
+        <div class="roster-header">
+          <span class="roster-number">#${p.number}</span>
+          <span class="roster-name">${p.name}</span>
+          <span class="roster-pos">${p.pos}</span>
+        </div>
+        ${noteHtml}
+        <div class="stat-grid">${statCells}</div>
+        ${milestoneRows ? `<div class="roster-milestones">${milestoneRows}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function toggleCard(id) {
+    document.getElementById('card-' + id).classList.toggle('expanded');
+  }
+
+  function toggleSlack() {
+    const panel = document.getElementById('slack-panel');
+    panel.classList.toggle('open');
+    document.getElementById('slack-webhook').value = localStorage.getItem('slackWebhook') || '';
+    document.getElementById('slack-threshold').value = localStorage.getItem('slackThreshold') || '10';
+  }
+
+  function saveSlack() {
+    localStorage.setItem('slackWebhook', document.getElementById('slack-webhook').value.trim());
+    localStorage.setItem('slackThreshold', document.getElementById('slack-threshold').value);
+    const s = document.getElementById('slack-status');
+    s.style.display = 'block';
+    setTimeout(() => s.style.display = 'none', 2500);
+  }
+
+  function testSlack() {
+    const wh = localStorage.getItem('slackWebhook');
+    if (!wh) { alert('Save a webhook URL first.'); return; }
+    postSlack(wh, { text: '🏀 *Nets Milestone Tracker* — test alert. Slack integration is working.' });
+  }
+
+  function checkSlackAlerts() {
+    const wh  = localStorage.getItem('slackWebhook');
+    const thr = parseInt(localStorage.getItem('slackThreshold') || '10');
+    if (!wh) return;
+    allMilestones.forEach(m => {
+      if (sentAlerts.has(m.id) || m.urgency === 'achieved') return;
+      if (m.gamesAway != null && m.gamesAway <= thr) sendSlackAlert(m.id, false);
+    });
+  }
+
+  function sendSlackAlert(id, isTest) {
+    const wh = localStorage.getItem('slackWebhook');
+    if (!wh) { alert('Configure a Slack webhook first.'); return; }
+    const m    = allMilestones.find(x => x.id === id);
+    const name = (m && m.playerName) || (m && m.player) || id;
+    const text = isTest
+      ? `🏀 *TEST — ${name}* | ${m.statType}\n${m.current.toLocaleString()} / ${m.target.toLocaleString()} — ${m.gamesAway ?? '?'} games away`
+      : `🚨 *MILESTONE ALERT — ${name}*\n${m.statType}: ${m.current.toLocaleString()} / ${m.target.toLocaleString()}\n📅 ${m.gamesAway ?? '?'} games into 2026-27`;
+    postSlack(wh, { text });
+    if (!isTest) {
+      sentAlerts.add(id);
+      localStorage.setItem('sentAlerts', JSON.stringify([...sentAlerts]));
+    }
+  }
+
+  function postSlack(url, payload) {
+    fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+      .catch(e => console.warn('Slack error:', e));
+  }
+
+  /* ─── CLIMBING LOGIC ─── */
+  const URGENT_PCT   = 0.05;
+  const CLOSE_PCT    = 0.10;
+  const UPCOMING_PCT = 0.25;
+
+  const STAT_FULL_SHORT = {
+    PTS:'Points', TRB:'Rebounds', ORB:'Off. Rebounds', AST:'Assists',
+    STL:'Steals', BLK:'Blocks', FG3M:'3-Pointers Made', FTM:'Free Throws Made',
+    GP:'Games Played', MP:'Minutes Played', '3PT%':'3PT%'
+  };
+
+  let climbFilter = 'all';
+  let climbPlayer = 'all';
+  let allChases   = [];
+
+  function computeChases() {
+    allChases = [];
+    Object.keys(CAREER_DATA).forEach(stat => {
+      const rows = [...CAREER_DATA[stat]].sort((a,b) => b[1]-a[1]);
+      rows.forEach((row, idx) => {
+        const [name, val] = row;
+        if (!isActive(name)) return;
+        if (idx === 0) return;
+        const [targetName, targetVal] = rows[idx - 1];
+        const gap    = targetVal - val;
+        const pctGap = gap / targetVal;
+        let urgency  = null;
+        if (pctGap <= URGENT_PCT)   urgency = 'urgent';
+        else if (pctGap <= CLOSE_PCT)   urgency = 'close';
+        else if (pctGap <= UPCOMING_PCT) urgency = 'upcoming';
+        if (!urgency) return;
+        allChases.push({ player:name, stat, currentVal:val, currentRank:idx+1, targetVal, targetName, targetRank:idx, gap, pctGap, urgency });
+      });
+    });
+    allChases.sort((a,b) => URGENCY_ORDER[a.urgency]-URGENCY_ORDER[b.urgency] || a.pctGap-b.pctGap);
+  }
+
+  function buildClimbingPlayerFilters() {
+    const container = document.getElementById('climbing-player-filters');
+    [...container.querySelectorAll('.filter-btn:not(:first-child)')].forEach(b => b.remove());
+    const players = [...new Set(allChases.map(c => c.player))];
+    players.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = name.split(' ').slice(-1)[0];
+      btn.title = name;
+      btn.onclick = () => setClimbPlayer(name, btn);
+      container.appendChild(btn);
+    });
+  }
+
+  function setClimbFilter(f, el) {
+    climbFilter = f;
+    document.querySelectorAll('#climbing-strip .summary-tile').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderClimbing();
+  }
+
+  function setClimbPlayer(p, btn) {
+    climbPlayer = p;
+    document.querySelectorAll('#climbing-player-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderClimbing();
+  }
+
+  function updateClimbCounts() {
+    const counts = { urgent:0, close:0, upcoming:0 };
+    allChases.forEach(c => counts[c.urgency]++);
+    const total = allChases.length;
+    document.getElementById('climb-count-all').textContent      = total;
+    document.getElementById('climb-count-urgent').textContent   = counts.urgent;
+    document.getElementById('climb-count-close').textContent    = counts.close;
+    document.getElementById('climb-count-upcoming').textContent = counts.upcoming;
+    const navCount = document.getElementById('climbing-count');
+    if (navCount) navCount.textContent = total ? '(' + total + ')' : '';
+  }
+
+  function fmtClimbVal(stat, v) {
+    if (stat === '3PT%') return (v * 100).toFixed(1) + '%';
+    return v.toLocaleString();
+  }
+
+  function renderClimbing() {
+    const grid = document.getElementById('climbing-grid');
+    let chases = allChases;
+    if (climbFilter !== 'all') chases = chases.filter(c => c.urgency === climbFilter);
+    if (climbPlayer !== 'all') chases = chases.filter(c => c.player === climbPlayer);
+
+    if (!chases.length) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◎</div><div>No active chases match this filter.</div></div>';
+      return;
+    }
+
+    const ordinal = n => { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+
+    grid.innerHTML = chases.map(c => {
+      const rows = [...CAREER_DATA[c.stat]].sort((a,b) => b[1]-a[1]);
+      const belowEntry = rows[c.currentRank];
+      const baseVal  = belowEntry ? belowEntry[1] : 0;
+      const range    = c.targetVal - baseVal;
+      const progress = range > 0 ? Math.min(100, Math.round((c.currentVal - baseVal) / range * 100)) : 99;
+      const gapStr   = c.stat === '3PT%'
+        ? (c.gap * 100).toFixed(1) + ' pct pts behind'
+        : c.gap.toLocaleString() + ' behind';
+      const pctStr   = (c.pctGap * 100).toFixed(1) + '% gap';
+
+      return `<div class="climb-card ${c.urgency}">
+        <div class="card-accent"></div>
+        <div class="climb-header">
+          <div>
+            <div class="climb-player">${c.player}</div>
+            <div class="climb-stat-label">${STAT_FULL_SHORT[c.stat]} · All-Time Franchise</div>
+          </div>
+          <div class="urgency-badge">${URGENCY_LABEL[c.urgency]}</div>
+        </div>
+        <div class="climb-body">
+          <div class="climb-vs">
+            <div>
+              <span class="climb-cur">${fmtClimbVal(c.stat, c.currentVal)}</span>
+              <span class="climb-cur-rank">${ordinal(c.currentRank)} all-time</span>
+            </div>
+            <div class="climb-target-block">
+              <div class="climb-target-val">${fmtClimbVal(c.stat, c.targetVal)}</div>
+              <div class="climb-target-name">${c.targetName}</div>
+              <div class="climb-target-rank">${ordinal(c.targetRank)} all-time</div>
+            </div>
+          </div>
+          <div class="climb-bar-track">
+            <div class="climb-bar-fill" style="width:${progress}%"></div>
+          </div>
+          <div class="climb-footer">
+            <span class="climb-gap-label">${gapStr}</span>
+            <span class="climb-pct">${pctStr}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ─── SECTION SWITCHING ─── */
+  function switchSection(name, btn) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  /* ─── CAREER TABLE (with climbing pips) ─── */
+  let currentCareerStat = 'PTS';
+  function selectCareerStat(stat, btn) {
+    currentCareerStat = stat;
+    document.querySelectorAll('#section-career .lb-stat-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderCareerTable();
+  }
+
+  function renderCareerTable() {
+    const stat = currentCareerStat;
+    const rows = [...CAREER_DATA[stat]].sort((a,b) => b[1]-a[1]);
+    document.getElementById('career-val-header').textContent = STAT_FULL[stat] || stat;
+    const chaseMap = {};
+    allChases.filter(c => c.stat === stat).forEach(c => { chaseMap[c.player] = c.urgency; });
+    document.getElementById('career-tbody').innerHTML = rows.map((r,i) => {
+      const active    = isActive(r[0]);
+      const rankClass = i < 3 ? 'lb-rank top3' : 'lb-rank';
+      const pip       = chaseMap[r[0]]
+        ? `<span class="lb-climb-pip ${chaseMap[r[0]]}"></span>`
+        : '';
+      return `<tr>
+        <td class="${rankClass}">${i+1}</td>
+        <td class="lb-player">${pip}${r[0]}${active ? '<span class="lb-active-badge">Active</span>' : ''}</td>
+        <td class="lb-val">${fmtVal(stat, r[1])}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('career-note').textContent = CAREER_NOTES[stat] || '';
+  }
+
+  let currentSeasonStat = 'PTS';
+  function selectSeasonStat(stat, btn) {
+    currentSeasonStat = stat;
+    document.querySelectorAll('#section-season .lb-stat-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderSeasonTable();
+  }
+
+  function renderSeasonTable() {
+    const stat = currentSeasonStat;
+    const rows = SEASON_DATA[stat];
+    document.getElementById('season-val-header').textContent = STAT_FULL[stat] || stat;
+    document.getElementById('season-tbody').innerHTML = rows.map((r,i) => {
+      const active    = isActive(r[0]);
+      const rankClass = i < 3 ? 'lb-rank top3' : 'lb-rank';
+      return `<tr>
+        <td class="${rankClass}">${i+1}</td>
+        <td class="lb-player">${r[0]}${active ? '<span class="lb-active-badge">Active</span>' : ''}</td>
+        <td class="lb-season">${r[1]}</td>
+        <td class="lb-val">${fmtVal(stat, r[2])}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('season-note').textContent = '';
+  }
+
+  /* ─── PRINT / EXPORT ─── */
+  /* ─── PDF MODAL ─── */
+
+  function openPdfTab() {
+    const EXCLUDED = ['cam thomas'];
+    const w = window.open('pdf-export.html', '_blank');
+    const payload = {
+      type:       'pdfData',
+      milestones: allMilestones.filter(m => !EXCLUDED.includes((m.playerName||m.player).toLowerCase())),
+      chases:     allChases.filter(c => !EXCLUDED.includes(c.player.toLowerCase())),
+      career:     CAREER_DATA,
+      statNames:  STAT_FULL_SHORT,
+      roster:     allRoster
+    };
+    // postMessage once the child window signals it's ready
+    window.addEventListener('message', function onReady(e) {
+      if (e.data && e.data.type === 'pdfReady') {
+        w.postMessage(payload, '*');
+        window.removeEventListener('message', onReady);
+      }
+    });
+  }
+
+  /* ─── INIT ─── */
+  computeChases();
+  buildClimbingPlayerFilters();
+  updateClimbCounts();
+  renderClimbing();
+  renderCareerTable();
+  renderSeasonTable();
+  loadData();
+</script>
+</body>
+</html>
