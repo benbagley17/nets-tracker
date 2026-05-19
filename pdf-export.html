@@ -6,61 +6,98 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;min-height:100vh;}
-.toolbar{background:#0a0a0a;color:#f5f3ee;padding:14px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:10;}
-.toolbar-logo{font-size:16px;font-weight:700;letter-spacing:3px;margin-right:8px;white-space:nowrap;}
-.tb-section{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.tb-divider{width:1px;height:20px;background:rgba(255,255,255,0.15);margin:0 4px;}
-.tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888;white-space:nowrap;}
-.tb-chip{padding:4px 10px;border:1px solid #333;border-radius:3px;font-size:10px;cursor:pointer;color:#aaa;background:transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;}
-.tb-chip:hover{border-color:#666;color:#fff;}
+
+/* ── TOOLBAR ── */
+.toolbar{background:#0a0a0a;color:#f5f3ee;padding:12px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:10;}
+.toolbar-logo{font-size:15px;font-weight:700;letter-spacing:3px;white-space:nowrap;}
+.tb-divider{width:1px;height:18px;background:rgba(255,255,255,0.15);margin:0 2px;flex-shrink:0;}
+.tb-section{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
+.tb-chip{padding:3px 9px;border:1px solid #2a2a2a;border-radius:3px;font-size:10px;cursor:pointer;color:#888;background:transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;line-height:1.6;}
+.tb-chip:hover{border-color:#555;color:#ddd;}
 .tb-chip.on{background:#fff;color:#0a0a0a;border-color:#fff;font-weight:600;}
 .tb-chip.on.urgent{background:#e8473f;border-color:#e8473f;color:#fff;}
 .tb-chip.on.close{background:#e8973f;border-color:#e8973f;color:#fff;}
 .tb-chip.on.upcoming{background:#4a9eff;border-color:#4a9eff;color:#fff;}
 .tb-chip.on.achieved{background:#3fcf8e;border-color:#3fcf8e;color:#fff;}
-.print-btn{margin-left:auto;padding:7px 18px;background:#fff;color:#0a0a0a;border:none;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;font-family:inherit;}
-.print-btn:hover{background:#e0e0e0;}
-.thresh-bar{background:#111;border-bottom:1px solid #222;padding:8px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:38px;}
-.thresh-group{display:flex;align-items:center;gap:5px;}
-.thresh-stat-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-right:2px;}
-.tb-chip.thresh{border-color:#222;color:#666;font-size:9px;padding:3px 8px;}
-.tb-chip.thresh.on{background:#f5f3ee;color:#0a0a0a;border-color:#f5f3ee;}
-.preview{max-width:760px;margin:24px auto;padding:0 24px 60px;}
-.doc{background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:36px 40px;}
-.doc-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:3px solid #0a0a0a;}
+.print-btn{margin-left:auto;padding:6px 16px;background:#fff;color:#0a0a0a;border:none;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;}
+.print-btn:hover{background:#e8e8e8;}
+
+/* ── THRESHOLD BAR ── */
+.thresh-bar{background:#111;border-bottom:1px solid #1e1e1e;padding:7px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:36px;}
+.thresh-group{display:flex;align-items:center;gap:4px;}
+.thresh-stat-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;margin-right:3px;white-space:nowrap;}
+.tb-chip.thresh{border-color:#1e1e1e;color:#555;font-size:9px;padding:2px 7px;}
+.tb-chip.thresh.on{background:#f0ede8;color:#0a0a0a;border-color:#f0ede8;}
+.thresh-divider{width:1px;height:14px;background:#222;margin:0 4px;flex-shrink:0;}
+
+/* ── PREVIEW ── */
+.preview{max-width:780px;margin:24px auto;padding:0 20px 60px;}
+.doc{background:#fff;border-radius:5px;box-shadow:0 2px 16px rgba(0,0,0,0.09);padding:38px 42px;}
+
+/* ── DOC HEADER ── */
+.doc-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;padding-bottom:16px;border-bottom:3px solid #0a0a0a;}
 .doc-title{font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1.1;}
-.doc-meta{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:6px;}
-.doc-sub{font-size:9px;color:#e8473f;letter-spacing:2px;margin-top:5px;text-transform:uppercase;}
+.doc-meta{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;margin-bottom:7px;}
+.doc-sub{font-size:9px;color:#e8473f;letter-spacing:1.5px;margin-top:5px;text-transform:uppercase;}
 .doc-url{text-align:right;font-size:9px;color:#ccc;letter-spacing:1px;}
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 0;padding-bottom:5px;border-bottom:2px solid #0a0a0a;}
-.sec-title{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── SECTION HEADERS ── */
+.sec-block{margin-top:26px;}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:5px;border-bottom:2px solid #0a0a0a;margin-bottom:0;}
+.sec-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
 .sec-count{font-size:10px;color:#aaa;}
-table{width:100%;border-collapse:collapse;margin-top:2px;}
-th{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#aaa;padding:5px 10px;text-align:left;border-bottom:1px solid #e0e0e0;font-weight:400;}
+
+/* ── STAT GROUP (within Franchise Milestones) ── */
+.stat-group{margin-top:14px;}
+.stat-group-head{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f7f5f0;border-left:3px solid #0a0a0a;margin-bottom:0;}
+.stat-group-icon{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#0a0a0a;}
+.stat-group-count{font-size:9px;color:#888;margin-left:auto;}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;}
+th{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#bbb;padding:5px 10px;text-align:left;border-bottom:1px solid #ebebeb;font-weight:400;}
 th.r{text-align:right;}
-td{padding:7px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top;}
-.p-name{font-weight:700;font-size:13px;}
-.p-sub{font-size:10px;color:#888;margin-top:1px;}
-.p-val{font-size:18px;font-weight:700;line-height:1;}
-.p-rem{font-size:10px;color:#888;}
-.p-bar-wrap{display:flex;justify-content:space-between;margin-bottom:3px;}
-.p-bar-label,.p-bar-pct{font-size:10px;}
-.p-bar-pct{font-weight:600;}
-.p-bar-track{height:3px;background:#eee;border-radius:2px;}
+td{padding:8px 10px;border-bottom:1px solid #f4f4f4;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+
+/* ── PLAYER CELL ── */
+.player-cell{display:flex;align-items:center;gap:9px;}
+.player-img{width:32px;height:32px;object-fit:cover;flex-shrink:0;border-radius:2px;}
+.player-img-fallback{width:32px;height:32px;flex-shrink:0;border-radius:2px;background:#f0ede8;display:flex;align-items:center;justify-content:center;}
+.p-name{font-weight:700;font-size:13px;line-height:1.2;}
+.p-sub{font-size:9px;color:#aaa;margin-top:2px;letter-spacing:0.5px;}
+
+/* ── STAT CELL ── */
+.p-val{font-size:17px;font-weight:700;line-height:1;}
+.p-rem{font-size:9px;color:#aaa;margin-top:2px;}
+
+/* ── PROGRESS CELL ── */
+.p-bar-wrap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.p-bar-label{font-size:9px;color:#bbb;}
+.p-bar-pct{font-size:10px;font-weight:700;}
+.p-bar-track{height:3px;background:#f0f0f0;border-radius:2px;}
 .p-bar-fill{height:3px;border-radius:2px;}
-.badge{font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;letter-spacing:0.5px;}
-.no-items{padding:12px 10px;font-size:11px;color:#bbb;font-style:italic;}
-.doc-foot{margin-top:24px;padding-top:8px;border-top:1px solid #e8e6e0;display:flex;justify-content:space-between;font-size:8px;color:#ccc;letter-spacing:1px;}
-.waiting{color:#aaa;font-size:12px;font-style:italic;text-align:center;padding:40px 0;}
+
+/* ── BADGE ── */
+.badge{font-size:9px;padding:3px 7px;border-radius:2px;font-weight:700;letter-spacing:0.5px;white-space:nowrap;}
+
+/* ── MISC ── */
+.no-items{padding:12px 10px;font-size:11px;color:#ccc;font-style:italic;}
+.doc-foot{margin-top:28px;padding-top:10px;border-top:1px solid #ebebeb;display:flex;justify-content:space-between;font-size:8px;color:#ccc;letter-spacing:1px;text-transform:uppercase;}
+.waiting{color:#aaa;font-size:12px;font-style:italic;text-align:center;padding:48px 0;}
+
 @media print{
   .toolbar,.thresh-bar{display:none!important;}
   .preview{margin:0;padding:0;max-width:100%;}
-  .doc{box-shadow:none;border-radius:0;padding:24px 28px;}
-  @page{margin:12mm 14mm;size:A4 portrait;}
+  .doc{box-shadow:none;border-radius:0;padding:22px 26px;}
+  @page{margin:10mm 12mm;size:A4 portrait;}
+  .stat-group{page-break-inside:avoid;}
 }
 </style>
 </head>
 <body>
+
 <div class="toolbar">
   <span class="toolbar-logo">BKN</span>
   <div class="tb-divider"></div>
@@ -85,48 +122,94 @@ td{padding:7px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top;}
   </div>
   <button class="print-btn" onclick="window.print()">&#x2b21; Print / Save as PDF</button>
 </div>
+
 <div class="thresh-bar" id="thresh-bar">
-  <span style="font-size:9px;color:#555;letter-spacing:1px;">Waiting for data...</span>
+  <span style="font-size:9px;color:#444;letter-spacing:1px;">Waiting for data...</span>
 </div>
+
 <div class="preview">
   <div class="doc" id="doc-preview">
-    <div class="waiting">Opening connection to tracker...<br><br>
-      <span style="font-size:10px;">If this message persists, close this tab and click Export PDF again.</span>
+    <div class="waiting">Opening connection to tracker&hellip;<br><br>
+      <span style="font-size:10px;">If this persists, close this tab and click Export PDF again.</span>
     </div>
   </div>
 </div>
 
 <script>
-var MILESTONES=[], CHASES=[], CAREER={}, STAT_NAMES={};
+var MILESTONES=[], CHASES=[], CAREER={}, STAT_NAMES={}, ROSTER=[];
+
 var THRESHOLDS={
-  PTS: [500,1000,2000,3000,4000,5000,6000,7000,8000,10000],
-  TRB: [500,1000,2000,3000,4000,5000],
-  AST: [250,500,1000,2000,3000,4000],
+  PTS: [100,200,300,400,500,1000,2000,3000,4000,5000,6000,7000,8000,10000],
+  TRB: [100,200,300,400,500,1000,2000,3000,4000,5000],
+  AST: [100,300,400,500,1000,2000,3000,4000],
   BLK: [50,100,200,300,500,700,1000],
   STL: [50,100,200,300,500,700],
   FG3M:[50,100,200,300,500,700,1000],
   FTM: [50,100,200,300,500,700,1000,2000],
   GP:  [50,100,200,300,400,500,600]
 };
+
 var PDF_STATS=['PTS','TRB','AST','BLK','STL','FG3M','FTM','GP'];
-var STAT_LABELS={PTS:'PTS',TRB:'REB',AST:'AST',BLK:'BLK',STL:'STL',FG3M:'3PM',FTM:'FTM',GP:'Games'};
+var STAT_LABELS={PTS:'Points',TRB:'Rebounds',AST:'Assists',BLK:'Blocks',STL:'Steals',FG3M:'3-Pointers',FTM:'Free Throws',GP:'Games Played'};
+var STAT_SHORT={PTS:'PTS',TRB:'REB',AST:'AST',BLK:'BLK',STL:'STL',FG3M:'3PM',FTM:'FTM',GP:'GP'};
+var STAT_EMOJI={PTS:'◈ Points',TRB:'◈ Rebounds',AST:'◈ Assists',BLK:'◈ Blocks',STL:'◈ Steals',FG3M:'◈ Three-Pointers',FTM:'◈ Free Throws',GP:'◈ Games Played'};
 var STATUS_COLOR={urgent:'#e8473f',close:'#e8973f',upcoming:'#4a9eff',achieved:'#3fcf8e'};
-var STATUS_LABEL={urgent:'URGENT',close:'CLOSE',upcoming:'UPCOMING',achieved:'ACHIEVED'};
+
 var DATE_STR=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 var statusOn={urgent:true,close:false,upcoming:false,achieved:false};
 var statOn={PTS:true,TRB:true,AST:true,BLK:true,STL:true,FG3M:true,FTM:true,GP:true};
 var threshOn={};
 
+// Roster map: player id -> {name, stats, gamesPlayed}
+var rosterMap={};
+
 function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 function fmtV(stat,v){return stat==='3PT%'?(v*100).toFixed(1)+'%':v.toLocaleString();}
 
-// Signal parent that we're ready to receive data
-window.opener && window.opener.postMessage({type:'pdfReady'}, '*');
+// Derive per-game rate for a player+stat from roster
+function perGameRate(playerId, statKey) {
+  var p = rosterMap[playerId];
+  if (!p) return null;
+  var gp = (p.stats && p.stats.GP) || p.gamesPlayed || 0;
+  var val = p.stats && p.stats[statKey];
+  if (!gp || !val) return null;
+  return val / gp;
+}
 
-// Also try after a short delay in case parent wasn't listening yet
-setTimeout(function(){
-  window.opener && window.opener.postMessage({type:'pdfReady'}, '*');
-}, 500);
+// Games-away badge text: use live_stats.json gamesAway if present, else derive from pace
+function gamesAwayText(m) {
+  // Use live data if present
+  if (m.gamesAway != null && m.gamesAway !== undefined) {
+    return m.gamesAway + (m.gamesAway === 1 ? ' game' : ' games');
+  }
+  // Fall back to pace calc
+  var rate = perGameRate(m.player, m.statKey);
+  if (!rate || rate <= 0) return null;
+  var games = Math.ceil(m.remaining / rate);
+  return '~' + games + (games === 1 ? ' game' : ' games');
+}
+
+// Headshot: try /headshots/{playerId}.png, fallback to SVG silhouette
+var IMG_CACHE={};
+function playerImg(playerId) {
+  if (!playerId) return silhouette();
+  var src = 'headshots/' + playerId + '.png';
+  return '<img class="player-img" src="'+src+'" onerror="this.outerHTML=\''+silhouetteEscaped()+'\'" alt="">';
+}
+function silhouette() {
+  return '<div class="player-img-fallback">'
+    +'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<circle cx="10" cy="7" r="4" fill="#ccc"/>'
+    +'<path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/>'
+    +'</svg></div>';
+}
+function silhouetteEscaped() {
+  return silhouette().replace(/'/g,"\\'");
+}
+
+// Signal parent
+window.opener && window.opener.postMessage({type:'pdfReady'}, '*');
+setTimeout(function(){ window.opener && window.opener.postMessage({type:'pdfReady'}, '*'); }, 600);
 
 window.addEventListener('message', function(e) {
   var d = e.data;
@@ -135,6 +218,10 @@ window.addEventListener('message', function(e) {
   CHASES     = d.chases     || [];
   CAREER     = d.career     || {};
   STAT_NAMES = d.statNames  || {};
+  ROSTER     = d.roster     || [];
+  // Build roster map
+  ROSTER.forEach(function(p){ rosterMap[p.id] = p; });
+  // Init thresholds
   PDF_STATS.forEach(function(s){
     (THRESHOLDS[s]||[]).forEach(function(t){ threshOn[s+'-'+t]=true; });
   });
@@ -142,37 +229,25 @@ window.addEventListener('message', function(e) {
   render();
 });
 
-function toggleStatus(s,btn){
-  statusOn[s]=!statusOn[s];
-  btn.classList.toggle('on',statusOn[s]);
-  render();
-}
-function toggleStat(s,btn){
-  statOn[s]=!statOn[s];
-  btn.classList.toggle('on',statOn[s]);
-  buildThreshBar();
-  render();
-}
-function toggleThresh(key,btn){
-  threshOn[key]=!threshOn[key];
-  btn.classList.toggle('on',threshOn[key]);
-  render();
-}
+function toggleStatus(s,btn){ statusOn[s]=!statusOn[s]; btn.classList.toggle('on',statusOn[s]); render(); }
+function toggleStat(s,btn){ statOn[s]=!statOn[s]; btn.classList.toggle('on',statOn[s]); buildThreshBar(); render(); }
+function toggleThresh(key,btn){ threshOn[key]=!threshOn[key]; btn.classList.toggle('on',threshOn[key]); render(); }
 
 function buildThreshBar(){
   var bar=document.getElementById('thresh-bar');
   var active=PDF_STATS.filter(function(s){return statOn[s];});
   if(!active.length){
-    bar.innerHTML='<span style="font-size:9px;color:#555;letter-spacing:1px;">Select a stat type to see thresholds</span>';
+    bar.innerHTML='<span style="font-size:9px;color:#444;letter-spacing:1px;">Select a stat type above to see thresholds</span>';
     return;
   }
-  bar.innerHTML=active.map(function(stat){
+  bar.innerHTML=active.map(function(stat,i){
     var chips=(THRESHOLDS[stat]||[]).map(function(t){
       var key=stat+'-'+t, on=threshOn[key]!==false;
       return '<button class="tb-chip thresh '+(on?'on':'')+'" onclick="toggleThresh(\''+key+'\',this)">'+t.toLocaleString()+'</button>';
     }).join('');
-    return '<div class="thresh-group"><span class="thresh-stat-lbl">'+STAT_LABELS[stat]+'</span>'+chips+'</div>';
-  }).join('<div style="width:1px;height:16px;background:#222;margin:0 4px;"></div>');
+    return (i>0?'<div class="thresh-divider"></div>':'')
+      +'<div class="thresh-group"><span class="thresh-stat-lbl">'+STAT_SHORT[stat]+'</span>'+chips+'</div>';
+  }).join('');
 }
 
 function msOk(m){
@@ -183,7 +258,7 @@ function msOk(m){
 }
 function chOk(c){
   if(!statusOn[c.urgency]) return false;
-  var mapped=PDF_STATS.indexOf(c.stat)>=0 ? c.stat : null;
+  var mapped=PDF_STATS.indexOf(c.stat)>=0?c.stat:null;
   if(mapped && !statOn[mapped]) return false;
   return true;
 }
@@ -193,53 +268,107 @@ function secHead(title,count){
     +'<span class="sec-count">'+count+' item'+(count!==1?'s':'')+'</span></div>';
 }
 
-var thHead='<thead><tr><th>Player</th><th>Current</th><th>Progress</th><th class="r">Status</th></tr></thead>';
+var thHead='<thead><tr>'
+  +'<th>Player</th>'
+  +'<th>Current</th>'
+  +'<th>Progress to target</th>'
+  +'<th class="r">Est. games</th>'
+  +'</tr></thead>';
+
+var chHead='<thead><tr>'
+  +'<th>Player</th>'
+  +'<th>Current</th>'
+  +'<th>Progress to next rank</th>'
+  +'<th class="r">Gap</th>'
+  +'</tr></thead>';
+
 var noRow='<tr><td colspan="4" class="no-items">No items match the selected filters.</td></tr>';
 
 function buildMsRow(m){
   var col=STATUS_COLOR[m.urgency]||'#888';
-  var lbl=STATUS_LABEL[m.urgency]||m.urgency.toUpperCase();
   var pct=Math.min(100,Math.round(m.current/m.target*100));
   var name=m.playerName||m.player;
+  var gaTxt=gamesAwayText(m);
+  var badge=gaTxt
+    ? '<span class="badge" style="background:'+col+'18;color:'+col+'">'+gaTxt+'</span>'
+    : '';
   return '<tr>'
-    +'<td><div class="p-name">'+name+'</div><div class="p-sub">'+m.statType+'</div></td>'
+    +'<td><div class="player-cell">'+playerImg(m.player)
+      +'<div><div class="p-name">'+name+'</div>'
+      +'<div class="p-sub">→ '+m.target.toLocaleString()+'</div></div>'
+    +'</div></td>'
     +'<td><div class="p-val">'+m.current.toLocaleString()+'</div>'
-    +'<div class="p-rem">'+m.remaining.toLocaleString()+' left</div></td>'
-    +'<td><div class="p-bar-wrap"><span class="p-bar-label">to '+m.target.toLocaleString()+'</span>'
-    +'<span class="p-bar-pct" style="color:'+col+'">'+pct+'%</span></div>'
+    +'<div class="p-rem">'+m.remaining.toLocaleString()+' to go</div></td>'
+    +'<td style="width:38%"><div class="p-bar-wrap">'
+      +'<span class="p-bar-label">'+pct+'% complete</span>'
+      +'<span class="p-bar-pct" style="color:'+col+'">'+(100-pct)+'% left</span>'
+    +'</div>'
     +'<div class="p-bar-track"><div class="p-bar-fill" style="width:'+pct+'%;background:'+col+'"></div></div></td>'
-    +'<td style="text-align:right"><span class="badge" style="background:'+col+'20;color:'+col+'">'+lbl+'</span></td>'
+    +'<td style="text-align:right">'+badge+'</td>'
     +'</tr>';
 }
 
 function buildChRow(c){
   var col=STATUS_COLOR[c.urgency]||'#888';
-  var lbl=STATUS_LABEL[c.urgency]||c.urgency.toUpperCase();
   var pct=(c.pctGap*100).toFixed(1);
   var rows=(CAREER[c.stat]||[]).slice().sort(function(a,b){return b[1]-a[1];});
   var below=rows[c.currentRank], base=below?below[1]:0, range=c.targetVal-base;
   var prog=range>0?Math.min(100,Math.round((c.currentVal-base)/range*100)):99;
   var cv=fmtV(c.stat,c.currentVal), tv=fmtV(c.stat,c.targetVal);
   return '<tr>'
-    +'<td><div class="p-name">'+c.player+'</div><div class="p-sub">'+(STAT_NAMES[c.stat]||c.stat)+'</div></td>'
+    +'<td><div class="player-cell">'+playerImg(c.player)
+      +'<div><div class="p-name">'+c.player+'</div>'
+      +'<div class="p-sub">'+(STAT_NAMES[c.stat]||c.stat)+'</div></div>'
+    +'</div></td>'
     +'<td><div class="p-val">'+cv+'</div><div class="p-rem">'+ordinal(c.currentRank)+' all-time</div></td>'
-    +'<td><div class="p-bar-wrap"><span class="p-bar-label">'+c.targetName+' ('+tv+')</span>'
-    +'<span class="p-bar-pct" style="color:'+col+'">'+pct+'% gap</span></div>'
+    +'<td style="width:38%"><div class="p-bar-wrap">'
+      +'<span class="p-bar-label">'+c.targetName+' ('+tv+')</span>'
+      +'<span class="p-bar-pct" style="color:'+col+'">'+prog+'%</span>'
+    +'</div>'
     +'<div class="p-bar-track"><div class="p-bar-fill" style="width:'+prog+'%;background:'+col+'"></div></div></td>'
-    +'<td style="text-align:right"><span class="badge" style="background:'+col+'20;color:'+col+'">'+lbl+'</span></td>'
+    +'<td style="text-align:right"><span class="badge" style="background:'+col+'18;color:'+col+'">'+pct+'% gap</span></td>'
     +'</tr>';
 }
 
+// Build franchise milestones grouped by stat type, sorted by % progress desc within each group
+function buildMsSection(fms){
+  if(!fms.length) return '<div class="no-items">No milestones match the selected filters.</div>';
+  // Group by statKey
+  var groups={};
+  var order=[];
+  fms.forEach(function(m){
+    var k=m.statKey||'Other';
+    if(!groups[k]){ groups[k]=[]; order.push(k); }
+    groups[k].push(m);
+  });
+  // Sort each group by % progress desc (closest to milestone first)
+  order.forEach(function(k){
+    groups[k].sort(function(a,b){
+      var pa=Math.min(100,a.current/a.target*100);
+      var pb=Math.min(100,b.current/b.target*100);
+      return pb-pa;
+    });
+  });
+  // Render
+  return order.map(function(k){
+    var items=groups[k];
+    var label=STAT_EMOJI[k]||('◈ '+k);
+    return '<div class="stat-group">'
+      +'<div class="stat-group-head">'
+        +'<span class="stat-group-icon">'+label+'</span>'
+        +'<span class="stat-group-count">'+items.length+' milestone'+(items.length!==1?'s':'')+'</span>'
+      +'</div>'
+      +'<table>'+thHead+'<tbody>'+items.map(buildMsRow).join('')+'</tbody></table>'
+    +'</div>';
+  }).join('');
+}
+
 function render(){
-  var fms=MILESTONES.filter(msOk).sort(function(a,b){
-    return (a.playerName||a.player).localeCompare(b.playerName||b.player);
-  });
-  var fch=CHASES.filter(chOk).sort(function(a,b){
-    return a.player.localeCompare(b.player);
-  });
+  var fms=MILESTONES.filter(msOk);
+  var fch=CHASES.filter(chOk).sort(function(a,b){return a.player.localeCompare(b.player);});
   var activeStatuses=['urgent','close','upcoming','achieved']
     .filter(function(s){return statusOn[s];})
-    .map(function(s){return STATUS_LABEL[s];})
+    .map(function(s){return s.charAt(0).toUpperCase()+s.slice(1);})
     .join(', ') || 'None';
 
   document.getElementById('doc-preview').innerHTML=
@@ -247,17 +376,26 @@ function render(){
       +'<div>'
         +'<div class="doc-meta">Brooklyn Nets &middot; Media Intelligence &middot; '+DATE_STR+'</div>'
         +'<div class="doc-title">Upcoming Milestones</div>'
-        +'<div class="doc-sub">'+activeStatuses+' &middot; alphabetical</div>'
+        +'<div class="doc-sub">'+activeStatuses+' &middot; grouped by stat</div>'
       +'</div>'
       +'<div class="doc-url">benbagley17.github.io/nets-tracker</div>'
     +'</div>'
-    +secHead('Franchise Milestones', fms.length)
-    +'<table>'+thHead+'<tbody>'+(fms.length ? fms.map(buildMsRow).join('') : noRow)+'</tbody></table>'
-    +secHead('Climbing the Record Books', fch.length)
-    +'<table>'+thHead+'<tbody>'+(fch.length ? fch.map(buildChRow).join('') : noRow)+'</tbody></table>'
+
+    +'<div class="sec-block">'
+      +secHead('Franchise Milestones', fms.length)
+      +buildMsSection(fms)
+    +'</div>'
+
+    +'<div class="sec-block">'
+      +secHead('Climbing the Record Books', fch.length)
+      +(fch.length
+        ? '<table>'+chHead+'<tbody>'+fch.map(buildChRow).join('')+'</tbody></table>'
+        : '<div class="no-items">No climbing alerts match the selected filters.</div>')
+    +'</div>'
+
     +'<div class="doc-foot">'
-      +'<span>BROOKLYN NETS &middot; MEDIA INTELLIGENCE</span>'
-      +'<span>UPCOMING MILESTONES REPORT</span>'
+      +'<span>Brooklyn Nets &middot; Media Intelligence</span>'
+      +'<span>Upcoming Milestones Report &middot; '+DATE_STR+'</span>'
     +'</div>';
 }
 </script>
