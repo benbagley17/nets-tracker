@@ -1006,7 +1006,8 @@
       milestones: allMilestones.filter(m => !EXCLUDED.includes((m.playerName||m.player).toLowerCase())),
       chases:     allChases.filter(c => !EXCLUDED.includes(c.player.toLowerCase())),
       career:     CAREER_DATA,
-      statNames:  STAT_FULL_SHORT
+      statNames:  STAT_FULL_SHORT,
+      roster:     allRoster
     };
     // postMessage once the child window signals it's ready
     window.addEventListener('message', function onReady(e) {
