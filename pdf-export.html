@@ -194,7 +194,8 @@ function gamesAwayText(m) {
 var IMG_CACHE={};
 function playerImg(playerId) {
   if (!playerId) return silhouette();
-  var src = 'headshots/' + playerId + '.png';
+  // Try lowercase first, fall through to uppercase, then silhouette
+  var src = 'headshots/' + playerId + '.PNG';
   return '<img class="player-img" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="player-img-fallback" style="display:none">'
     +'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">'
