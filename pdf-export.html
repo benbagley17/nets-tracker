@@ -273,20 +273,22 @@ function secHead(title,count){
 }
 
 var thHead='<thead><tr>'
-  +'<th>Player</th>'
-  +'<th>Current</th>'
-  +'<th>Progress to target</th>'
-  +'<th class="r">Est. games</th>'
+  +'<th style="width:26%">Player</th>'
+  +'<th style="width:12%">Current</th>'
+  +'<th style="width:12%">Approaching</th>'
+  +'<th>Progress</th>'
+  +'<th class="r" style="width:13%">Est. games</th>'
   +'</tr></thead>';
 
 var chHead='<thead><tr>'
-  +'<th>Player</th>'
-  +'<th>Current</th>'
+  +'<th style="width:26%">Player</th>'
+  +'<th style="width:12%">Current</th>'
+  +'<th style="width:12%">Chasing</th>'
   +'<th>Progress to next rank</th>'
-  +'<th class="r">Gap</th>'
+  +'<th class="r" style="width:10%">Gap</th>'
   +'</tr></thead>';
 
-var noRow='<tr><td colspan="4" class="no-items">No items match the selected filters.</td></tr>';
+var noRow='<tr><td colspan="5" class="no-items">No items match the selected filters.</td></tr>';
 
 function buildMsRow(m){
   var col=STATUS_COLOR[m.urgency]||'#888';
@@ -298,14 +300,13 @@ function buildMsRow(m){
     : '';
   return '<tr>'
     +'<td><div class="player-cell"><div class="player-img-wrap">'+playerImg(m.player)+'</div>'
-      +'<div><div class="p-name">'+name+'</div>'
-      +'<div class="p-sub">→ '+m.target.toLocaleString()+'</div></div>'
+      +'<div><div class="p-name">'+name+'</div></div>'
     +'</div></td>'
-    +'<td><div class="p-val">'+m.current.toLocaleString()+'</div>'
-    +'<div class="p-rem">'+m.remaining.toLocaleString()+' to go</div></td>'
-    +'<td style="width:38%"><div class="p-bar-wrap">'
+    +'<td><div class="p-val">'+m.current.toLocaleString()+'</div></td>'
+    +'<td><div class="p-val" style="color:#aaa">'+m.target.toLocaleString()+'</div></td>'
+    +'<td><div class="p-bar-wrap">'
       +'<span class="p-bar-label">'+pct+'% complete</span>'
-      +'<span class="p-bar-pct" style="color:'+col+'">'+(100-pct)+'% left</span>'
+      +'<span class="p-bar-pct" style="color:'+col+'">'+m.remaining.toLocaleString()+' left</span>'
     +'</div>'
     +'<div class="p-bar-track"><div class="p-bar-fill" style="width:'+pct+'%;background:'+col+'"></div></div></td>'
     +'<td style="text-align:right">'+badge+'</td>'
@@ -319,42 +320,45 @@ function buildChRow(c){
   var below=rows[c.currentRank], base=below?below[1]:0, range=c.targetVal-base;
   var prog=range>0?Math.min(100,Math.round((c.currentVal-base)/range*100)):99;
   var cv=fmtV(c.stat,c.currentVal), tv=fmtV(c.stat,c.targetVal);
+  var gap=c.targetVal-c.currentVal;
   return '<tr>'
     +'<td><div class="player-cell"><div class="player-img-wrap">'+playerImg(c.player)+'</div>'
       +'<div><div class="p-name">'+c.player+'</div>'
       +'<div class="p-sub">'+(STAT_NAMES[c.stat]||c.stat)+'</div></div>'
     +'</div></td>'
     +'<td><div class="p-val">'+cv+'</div><div class="p-rem">'+ordinal(c.currentRank)+' all-time</div></td>'
-    +'<td style="width:38%"><div class="p-bar-wrap">'
-      +'<span class="p-bar-label">'+c.targetName+' ('+tv+')</span>'
-      +'<span class="p-bar-pct" style="color:'+col+'">'+prog+'%</span>'
+    +'<td><div class="p-val" style="color:#aaa">'+tv+'</div><div class="p-rem">'+c.targetName+'</div></td>'
+    +'<td><div class="p-bar-wrap">'
+      +'<span class="p-bar-label">'+prog+'% of gap closed</span>'
+      +'<span class="p-bar-pct" style="color:'+col+'">'+fmtV(c.stat,gap)+' left</span>'
     +'</div>'
     +'<div class="p-bar-track"><div class="p-bar-fill" style="width:'+prog+'%;background:'+col+'"></div></div></td>'
     +'<td style="text-align:right"><span class="badge" style="background:'+col+'18;color:'+col+'">'+pct+'% gap</span></td>'
     +'</tr>';
 }
+}
 
 // Build franchise milestones grouped by stat type, sorted by % progress desc within each group
 function buildMsSection(fms){
   if(!fms.length) return '<div class="no-items">No milestones match the selected filters.</div>';
-  // Group by statKey
   var groups={};
-  var order=[];
   fms.forEach(function(m){
     var k=m.statKey||'Other';
-    if(!groups[k]){ groups[k]=[]; order.push(k); }
+    if(!groups[k]) groups[k]=[];
     groups[k].push(m);
   });
-  // Sort each group by % progress desc (closest to milestone first)
-  order.forEach(function(k){
+  // Sort within each group by % progress desc
+  Object.keys(groups).forEach(function(k){
     groups[k].sort(function(a,b){
-      var pa=Math.min(100,a.current/a.target*100);
-      var pb=Math.min(100,b.current/b.target*100);
-      return pb-pa;
+      return Math.min(100,b.current/b.target*100) - Math.min(100,a.current/a.target*100);
     });
   });
-  // Render
-  return order.map(function(k){
+  // Render in PDF_STATS order, then any extras
+  var ordered=PDF_STATS.filter(function(k){return groups[k]&&groups[k].length;});
+  Object.keys(groups).forEach(function(k){
+    if(ordered.indexOf(k)<0) ordered.push(k);
+  });
+  return ordered.map(function(k){
     var items=groups[k];
     var label=STAT_EMOJI[k]||('◈ '+k);
     return '<div class="stat-group">'
