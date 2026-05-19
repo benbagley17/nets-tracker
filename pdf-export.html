@@ -49,17 +49,17 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .sec-count{font-size:10px;color:#aaa;}
 
 /* ── STAT GROUP (within Franchise Milestones) ── */
-.stat-group{margin-top:14px;}
-.stat-group-head{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f7f5f0;border-left:3px solid #0a0a0a;margin-bottom:0;}
-.stat-group-icon{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#0a0a0a;}
-.stat-group-count{font-size:9px;color:#888;margin-left:auto;}
+.stat-group{margin-top:0;}
 
 /* ── TABLE ── */
 table{width:100%;border-collapse:collapse;}
 th{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#bbb;padding:5px 10px;text-align:left;border-bottom:1px solid #ebebeb;font-weight:400;}
 th.r{text-align:right;}
-td{padding:8px 10px;border-bottom:1px solid #f4f4f4;vertical-align:middle;}
+td{padding:5px 10px;border-bottom:1px solid #f4f4f4;vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
+.group-divider-row td{padding:8px 10px 3px;border-bottom:none;border-top:1.5px solid #0a0a0a;background:#fff;}
+.group-divider-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0a0a0a;}
+.group-divider-count{font-size:9px;color:#aaa;float:right;font-weight:400;letter-spacing:0;}
 
 /* ── PLAYER CELL ── */
 .player-img-wrap{width:32px;height:32px;flex-shrink:0;position:relative;}
@@ -292,7 +292,7 @@ var noRow='<tr><td colspan="5" class="no-items">No items match the selected filt
 
 function buildMsRow(m){
   var col=STATUS_COLOR[m.urgency]||'#888';
-  var pct=Math.min(100,Math.round(m.current/m.target*100));
+  var pct=Math.min(99,Math.floor(m.current/m.target*100));
   var name=m.playerName||m.player;
   var gaTxt=gamesAwayText(m);
   var badge=gaTxt
@@ -346,28 +346,27 @@ function buildMsSection(fms){
     if(!groups[k]) groups[k]=[];
     groups[k].push(m);
   });
-  // Sort within each group by % progress desc
   Object.keys(groups).forEach(function(k){
     groups[k].sort(function(a,b){
-      return Math.min(100,b.current/b.target*100) - Math.min(100,a.current/a.target*100);
+      return Math.floor(b.current/b.target*100) - Math.floor(a.current/a.target*100);
     });
   });
-  // Render in PDF_STATS order, then any extras
   var ordered=PDF_STATS.filter(function(k){return groups[k]&&groups[k].length;});
   Object.keys(groups).forEach(function(k){
     if(ordered.indexOf(k)<0) ordered.push(k);
   });
-  return ordered.map(function(k){
+  var rows='';
+  ordered.forEach(function(k,gi){
     var items=groups[k];
     var label=STAT_EMOJI[k]||('◈ '+k);
-    return '<div class="stat-group">'
-      +'<div class="stat-group-head">'
-        +'<span class="stat-group-icon">'+label+'</span>'
-        +'<span class="stat-group-count">'+items.length+' milestone'+(items.length!==1?'s':'')+'</span>'
-      +'</div>'
-      +'<table>'+thHead+'<tbody>'+items.map(buildMsRow).join('')+'</tbody></table>'
-    +'</div>';
-  }).join('');
+    // Divider row for each group
+    rows+='<tr class="group-divider-row">'
+      +'<td colspan="5"><span class="group-divider-label">'+label+'</span>'
+      +'<span class="group-divider-count">'+items.length+' milestone'+(items.length!==1?'s':'')+'</span>'
+      +'</td></tr>';
+    rows+=items.map(buildMsRow).join('');
+  });
+  return '<table>'+thHead+'<tbody>'+rows+'</tbody></table>';
 }
 
 function render(){
