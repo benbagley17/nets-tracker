@@ -1,32 +1,27 @@
 name: Fetch Nets Stats & Deploy
-
 on:
-  # Run nightly at 2 AM ET (7 AM UTC) — safely after west coast games end
   schedule:
     - cron: '0 7 * * *'
-
-  # Also run on any push to main (so a manual data refresh is just a git push)
   push:
     branches: [main]
-
-  # Allow manual trigger from the GitHub Actions tab
   workflow_dispatch:
-
 jobs:
   fetch-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # needed to commit live_stats.json back to repo
-
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.3.3'
-          use-public-rspm: true  # fast pre-built binaries, no compilation
+          use-public-rspm: true
 
       - name: Cache R packages
         uses: actions/cache@v4
@@ -58,10 +53,10 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add -f public/data/live_stats.json
           git diff --staged --quiet || git commit -m "chore: update live_stats.json [$(date -u '+%Y-%m-%d %H:%M UTC')]"
-          git pull --rebase
-          git push
+          git push origin main
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -70,4 +65,4 @@ jobs:
           publish_dir: ./public
           publish_branch: gh-pages
           force_orphan: false
-          commit_message: "deploy: ${{ github.sha }} [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          commit_message: "deploy: ${{ github.sha }}"
