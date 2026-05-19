@@ -61,11 +61,19 @@ jobs:
           git merge -s recursive -X ours origin/main --allow-unrelated-histories -m "merge: sync with main"
           git push origin main
 
+      - name: Assemble deploy folder
+        run: |
+          mkdir -p _deploy/public/data
+          cp index.html _deploy/
+          cp pdf-export.html _deploy/
+          cp -r headshots _deploy/
+          cp public/data/live_stats.json _deploy/public/data/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./_deploy
           publish_branch: gh-pages
           force_orphan: false
           commit_message: "deploy: ${{ github.sha }}"
