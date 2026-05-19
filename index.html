@@ -1202,8 +1202,14 @@ function render(){
     +'<table>'+thHead+'<tbody>'+(fch.length?fch.map(buildChRow).join(''):noRow)+'</tbody></table>'
     +'<div class="doc-foot"><span>BROOKLYN NETS · MEDIA INTELLIGENCE</span><span>UPCOMING MILESTONES REPORT</span></div>';
 }
-buildThreshBar();
-render();
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    buildThreshBar();
+    render();
+  } catch(e) {
+    document.getElementById('doc-preview').innerHTML = '<div style="color:#e8473f;padding:20px;font-family:monospace;font-size:12px;">Error rendering preview: ' + e.message + '<br><br>' + e.stack + '</div>';
+  }
+});
 ${scriptClose}
 </body></html>`;
 
