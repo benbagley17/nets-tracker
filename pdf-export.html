@@ -75,7 +75,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
 /* ── CLIMBING SECTION ── */
 .climb-section{margin-top:18px;}
-.climb-banner{background:#fff;color:#0a0a0a;text-align:left;padding:6px 0 10px;border-bottom:2px solid #0a0a0a;margin-bottom:12px;}
+.climb-banner{background:#fff;color:#0a0a0a;text-align:center;padding:6px 0 10px;border-bottom:2px solid #0a0a0a;margin-bottom:12px;}
 .climb-banner-title{font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0a0a0a;}
 .climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
@@ -99,7 +99,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .climb-stack-row.active .climb-pval{font-size:11px;font-weight:700;color:#0a0a0a;}
 
 .climb-games-badge{display:inline-block;font-size:9px;font-weight:700;font-style:italic;padding:2px 8px;border-radius:10px;margin-top:6px;letter-spacing:0.3px;}
-.climb-col-footer{margin-top:6px;min-height:24px;}
+.climb-col-footer{margin-top:6px;min-height:24px;text-align:right;}
 
 /* ── WAITING ── */
 .waiting{color:#aaa;font-size:12px;font-style:italic;text-align:center;padding:60px 0;}
@@ -221,7 +221,7 @@ var THRESHOLDS={
   GP:  [50,100,200,300,400,500,600]
 };
 var PDF_STATS=['PTS','TRB','AST','BLK','STL','FG3M','FTM','GP'];
-var STAT_LABELS={PTS:'Points',TRB:'Rebounds',AST:'Assists',BLK:'Blocks',STL:'Steals',FG3M:'Three-Pointers',FTM:'Free Throws',GP:'Games Played'};
+var STAT_LABELS={PTS:'Points',TRB:'Rebounds',ORB:'Offensive Rebounds',AST:'Assists',BLK:'Blocks',STL:'Steals',FG3M:'Three-Pointers',FTM:'Free Throws',GP:'Games Played',MP:'Minutes Played','3PT%':'3-Point %'};
 var STAT_SHORT={PTS:'PTS',TRB:'REB',AST:'AST',BLK:'BLK',STL:'STL',FG3M:'3PM',FTM:'FTM',GP:'GP'};
 var STATUS_COLOR={urgent:'#e8473f',close:'#e8973f',upcoming:'#4a9eff',achieved:'#3fcf8e'};
 var statusOn={urgent:true,close:false,upcoming:false,achieved:false};
@@ -502,17 +502,13 @@ function render(){
 
   // Climbing section
   var fch=CHASES.filter(chOk);
+  document.getElementById('climb-toolbar-wrap').style.display='block';
   if(fch.length){
-    // Show climb toolbar
-    document.getElementById('climb-toolbar-wrap').style.display='block';
-
     html+='<div class="climb-section">';
     html+='<div class="climb-banner"><div class="climb-banner-title">Climbing the Record Books</div></div>';
     html+='<div class="climb-cols">';
     fch.forEach(function(c){ html+=buildClimbColumn(c); });
     html+='</div></div>';
-  } else {
-    document.getElementById('climb-toolbar-wrap').style.display='block';
   }
 
   root.innerHTML=html;
