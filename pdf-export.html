@@ -69,8 +69,8 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
 /* ── CLIMBING SECTION ── */
 .climb-section{margin-top:18px;}
-.climb-banner{background:#0a0a0a;color:#fff;text-align:center;padding:8px 20px;border-radius:6px;margin-bottom:0;}
-.climb-banner-title{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;}
+.climb-banner{background:#fff;color:#0a0a0a;text-align:left;padding:6px 0 8px;margin-bottom:0;border-bottom:none;}
+.climb-banner-title{font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0a0a0a;}
 .climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
 
@@ -100,7 +100,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .no-items{font-size:11px;color:#ccc;font-style:italic;padding:8px 0;}
 
 @media print{
-  .toolbar,.thresh-bar{display:none!important;}
+  .toolbar,.thresh-bar,#climb-toolbar-wrap{display:none!important;}
   .page{margin:0;padding:12px 14px;max-width:100%;}
   body{background:#fff;}
   @page{margin:8mm 10mm;size:A4 portrait;}
@@ -413,18 +413,15 @@ function buildClimbColumn(c){
     var val=c.stat==='3PT%'?(r[1]*100).toFixed(1)+'%':r[1].toLocaleString();
     var rankNum=i+1;
     if(isActive){
-      // Active player row — bold highlight + headshot + urgency tint
-      var bg='rgba('+hexToRgb(col)+',0.10)';
-      stack+='<div class="climb-stack-row active" style="background:'+bg+';">'
-        +'<span class="climb-rank" style="color:'+col+'">'+rankNum+'.</span>'
-        +climbHeadshot(c.player)
-        +'<span class="climb-pname" style="color:'+col+'">'+name+'</span>'
-        +'<span class="climb-pval" style="color:'+col+'">'+val+'</span>'
+      stack+='<div class="climb-stack-row active">'
+        +'<span class="climb-rank">'+rankNum+'.</span>'
+        +'<span class="climb-pname" style="color:#0a0a0a;font-weight:700;">'+name+'</span>'
+        +'<span class="climb-pval" style="color:#0a0a0a;font-weight:700;">'+val+'</span>'
         +'</div>';
     } else {
       stack+='<div class="climb-stack-row">'
         +'<span class="climb-rank">'+rankNum+'.</span>'
-        +'<span class="climb-pname">'+abbreviateName(name)+'</span>'
+        +'<span class="climb-pname">'+name+'</span>'
         +'<span class="climb-pval">'+val+'</span>'
         +'</div>';
     }
@@ -507,7 +504,7 @@ function render(){
 
     // Group by stat, then render all active players per stat as columns
     // Each chase = one column. Layout up to 5 per row.
-    var COLS_PER_ROW=4;
+    var COLS_PER_ROW=5;
     for(var i=0;i<fch.length;i+=COLS_PER_ROW){
       var rowChases=fch.slice(i,i+COLS_PER_ROW);
       html+='<div class="climb-cols">';
