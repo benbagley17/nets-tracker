@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Upcoming Milestones</title>
+<title>&#8203;</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;min-height:100vh;}
@@ -110,6 +110,8 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
   .page{margin:0;padding:12px 14px;max-width:100%;}
   body{background:#fff;}
   @page{margin:25mm 10mm 8mm 10mm;size:A4 portrait;}
+  /* Suppress browser-generated header/footer text */
+  html{-webkit-print-color-adjust:exact;}
   .stat-box,.climb-box{page-break-inside:avoid;}
   .columns,.climb-grid{page-break-inside:avoid;}
 
@@ -221,7 +223,7 @@ var THRESHOLDS={
   GP:  [50,100,200,300,400,500,600]
 };
 var PDF_STATS=['PTS','TRB','AST','BLK','STL','FG3M','FTM','GP'];
-var STAT_LABELS={PTS:'Points',TRB:'Rebounds',ORB:'Offensive Rebounds',AST:'Assists',BLK:'Blocks',STL:'Steals',FG3M:'Three-Pointers',FTM:'Free Throws',GP:'Games Played',MP:'Minutes Played','3PT%':'3-Point %'};
+var STAT_LABELS={PTS:'Points',TRB:'Rebounds',ORB:'Offensive Reb.',AST:'Assists',BLK:'Blocks',STL:'Steals',FG3M:'Three-Pointers',FTM:'Free Throws',GP:'Games Played',MP:'Minutes Played','3PT%':'3-Point %'};
 var STAT_SHORT={PTS:'PTS',TRB:'REB',AST:'AST',BLK:'BLK',STL:'STL',FG3M:'3PM',FTM:'FTM',GP:'GP'};
 var STATUS_COLOR={urgent:'#e8473f',close:'#e8973f',upcoming:'#4a9eff',achieved:'#3fcf8e'};
 var statusOn={urgent:true,close:false,upcoming:false,achieved:false};
@@ -248,13 +250,30 @@ function gamesAwayText(m){
   return '~'+games+(games===1?' game':' games');
 }
 
-function playerImg(playerId){
+// Map full names to roster IDs for headshot lookup
+var nameToId={};
+function buildNameToId(){
+  ROSTER.forEach(function(p){ nameToId[p.name.toLowerCase()]=p.id; });
+}
+
+function playerImgById(playerId){
   if(!playerId) return silhouette();
   var src='headshots/'+playerId+'.PNG';
   return '<img class="player-img" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="player-img-fallback" style="display:none">'
     +'<svg width="22" height="22" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg>'
     +'</div>';
+}
+
+function playerImg(playerId){
+  // playerId is already a roster id (from milestones)
+  return playerImgById(playerId);
+}
+
+function playerImgByName(fullName){
+  // For climbing section where we only have the full name
+  var id=nameToId[fullName.toLowerCase()];
+  return playerImgById(id||fullName.toLowerCase().split(' ').pop());
 }
 function silhouette(){
   return '<div class="player-img-fallback">'
@@ -274,6 +293,7 @@ window.addEventListener('message',function(e){
   STAT_NAMES=d.statNames||{};
   ROSTER=d.roster||[];
   ROSTER.forEach(function(p){rosterMap[p.id]=p;});
+  buildNameToId();
   PDF_STATS.forEach(function(s){
     (THRESHOLDS[s]||[]).forEach(function(t){threshOn[s+'-'+t]=true;});
   });
@@ -501,7 +521,12 @@ function render(){
   }
 
   // Climbing section
-  var fch=CHASES.filter(chOk);
+  var CLIMB_ORDER=['BLK','TRB','ORB','GP','MP','PTS','AST','STL','FG3M','FTM','3PT%'];
+  var fch=CHASES.filter(chOk).sort(function(a,b){
+    var ai=CLIMB_ORDER.indexOf(a.stat), bi=CLIMB_ORDER.indexOf(b.stat);
+    if(ai===-1) ai=99; if(bi===-1) bi=99;
+    return ai-bi;
+  });
   document.getElementById('climb-toolbar-wrap').style.display='block';
   if(fch.length){
     html+='<div class="climb-section">';
