@@ -68,24 +68,32 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .est-val{font-size:11px;font-weight:700;color:#0a0a0a;line-height:1.2;white-space:nowrap;}
 
 /* ── CLIMBING SECTION ── */
-.climb-section{margin-top:16px;}
-.climb-banner{background:#0a0a0a;color:#fff;text-align:center;padding:8px 20px;border-radius:6px;margin-bottom:10px;}
+.climb-section{margin-top:18px;}
+.climb-banner{background:#0a0a0a;color:#fff;text-align:center;padding:8px 20px;border-radius:6px;margin-bottom:0;}
 .climb-banner-title{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;}
-.climb-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
-.climb-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
-.climb-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
-.climb-row{display:flex;align-items:center;gap:10px;}
-.climb-info{flex:1;min-width:0;}
-.climb-name{font-size:11px;font-weight:700;color:#0a0a0a;}
-.climb-stat-name{font-size:9px;color:#aaa;letter-spacing:0.5px;}
-.climb-vals{display:flex;align-items:baseline;gap:3px;margin-top:2px;}
-.climb-cur{font-size:15px;font-weight:800;color:#0a0a0a;}
-.climb-sep{font-size:12px;color:#aaa;font-weight:300;}
-.climb-tgt{font-size:12px;color:#aaa;font-weight:300;}
-.climb-target-name{font-size:9px;color:#888;margin-top:1px;}
-.climb-progress{flex:1;min-width:70px;}
-.climb-badge{flex-shrink:0;text-align:right;min-width:44px;}
-.climb-gap{font-size:10px;font-weight:700;white-space:nowrap;}
+.climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
+
+/* Leaderboard columns layout — up to 5 across */
+.climb-cols{display:flex;gap:0;align-items:flex-start;border-top:2px solid #0a0a0a;}
+.climb-col{flex:1;min-width:0;padding:10px 12px;border-right:1px solid #e0e0e0;position:relative;}
+.climb-col:last-child{border-right:none;}
+.climb-col-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:8px;text-align:center;}
+
+/* Stack rows */
+.climb-stack{display:flex;flex-direction:column;gap:0;}
+.climb-stack-row{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;}
+.climb-stack-row.active{background:rgba(0,0,0,0.06);font-weight:700;}
+.climb-rank{font-size:10px;color:#aaa;width:16px;flex-shrink:0;text-align:right;}
+.climb-stack-row.active .climb-rank{color:#0a0a0a;font-weight:700;}
+.climb-pname{font-size:10px;color:#555;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.climb-stack-row.active .climb-pname{color:#0a0a0a;font-weight:700;}
+.climb-pval{font-size:10px;color:#888;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;}
+.climb-stack-row.active .climb-pval{color:#0a0a0a;font-weight:700;}
+.climb-active-headshot{width:24px;height:24px;flex-shrink:0;border-radius:2px;object-fit:cover;}
+.climb-active-fallback{width:24px;height:24px;flex-shrink:0;border-radius:2px;background:#e8e6e2;display:flex;align-items:center;justify-content:center;}
+.climb-games-badge{display:inline-block;font-size:9px;font-weight:700;font-style:italic;padding:2px 7px;border-radius:10px;margin-top:6px;letter-spacing:0.3px;}
+.climb-col-footer{margin-top:4px;min-height:22px;}
 
 /* ── WAITING ── */
 .waiting{color:#aaa;font-size:12px;font-style:italic;text-align:center;padding:60px 0;}
@@ -161,6 +169,29 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
 <div class="thresh-bar" id="thresh-bar">
   <span style="font-size:9px;color:#444;letter-spacing:1px;">Waiting for data...</span>
+</div>
+
+<!-- CLIMBING CONTROLS (shown below thresh bar, above page) -->
+<div id="climb-toolbar-wrap" style="max-width:800px;margin:8px auto 0;padding:0 16px;display:none;">
+  <div class="climb-toolbar">
+    <span class="tb-label">Climbing — Status</span>
+    <button class="tb-chip on urgent"  id="cs-urgent"   onclick="toggleClimbStatus('urgent',this)">Urgent</button>
+    <button class="tb-chip on close"   id="cs-close"    onclick="toggleClimbStatus('close',this)">Close</button>
+    <button class="tb-chip on upcoming" id="cs-upcoming" onclick="toggleClimbStatus('upcoming',this)">Upcoming</button>
+    <div class="tb-divider" style="background:#ccc;"></div>
+    <span class="tb-label">Stat</span>
+    <button class="tb-chip on" id="cc-PTS"  onclick="toggleClimbStat('PTS',this)">PTS</button>
+    <button class="tb-chip on" id="cc-TRB"  onclick="toggleClimbStat('TRB',this)">REB</button>
+    <button class="tb-chip on" id="cc-ORB"  onclick="toggleClimbStat('ORB',this)">ORB</button>
+    <button class="tb-chip on" id="cc-AST"  onclick="toggleClimbStat('AST',this)">AST</button>
+    <button class="tb-chip on" id="cc-STL"  onclick="toggleClimbStat('STL',this)">STL</button>
+    <button class="tb-chip on" id="cc-BLK"  onclick="toggleClimbStat('BLK',this)">BLK</button>
+    <button class="tb-chip on" id="cc-FG3M" onclick="toggleClimbStat('FG3M',this)">3PM</button>
+    <button class="tb-chip on" id="cc-FTM"  onclick="toggleClimbStat('FTM',this)">FTM</button>
+    <button class="tb-chip on" id="cc-GP"   onclick="toggleClimbStat('GP',this)">Games</button>
+    <button class="tb-chip on" id="cc-MP"   onclick="toggleClimbStat('MP',this)">Minutes</button>
+    <button class="tb-chip on" id="cc-3PT%"  onclick="toggleClimbStat('3PT%',this)">3PT%</button>
+  </div>
 </div>
 
 <div class="page" id="page-root">
@@ -336,42 +367,98 @@ function balanceColumns(boxes){
   return {left:left, right:right};
 }
 
-function buildClimbRow(c){
+/* ── CLIMBING STATE ── */
+var climbStatusOn={urgent:true,close:true,upcoming:true};
+var climbStatOn={PTS:true,TRB:true,ORB:true,AST:true,STL:true,BLK:true,FG3M:true,FTM:true,GP:true,MP:true,'3PT%':true};
+
+function toggleClimbStatus(s,btn){climbStatusOn[s]=!climbStatusOn[s];btn.classList.toggle('on',climbStatusOn[s]);render();}
+function toggleClimbStat(s,btn){climbStatOn[s]=!climbStatOn[s];btn.classList.toggle('on',climbStatOn[s]);render();}
+
+function chOk(c){
+  if(!climbStatusOn[c.urgency]) return false;
+  if(!climbStatOn[c.stat]) return false;
+  return true;
+}
+
+function climbHeadshot(playerId){
+  if(!playerId) return '<div class="climb-active-fallback"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
+  var src='headshots/'+playerId+'.PNG';
+  return '<img class="climb-active-headshot" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
+    +'<div class="climb-active-fallback" style="display:none"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
+}
+
+function buildClimbColumn(c){
   var col=STATUS_COLOR[c.urgency]||'#888';
-  var pct=(c.pctGap*100).toFixed(1);
-  var rows=(CAREER[c.stat]||[]).slice().sort(function(a,b){return b[1]-a[1];});
-  var below=rows[c.currentRank],base=below?below[1]:0,range=c.targetVal-base;
-  var prog=range>0?Math.min(99,Math.floor((c.currentVal-base)/range*100)):99;
-  var gap=c.targetVal-c.currentVal;
-  var dotLeft='calc('+prog+'% - 8px)';
-  var fillRadius=prog>=98?'20px':'20px 0 0 20px';
-  return '<div class="climb-row">'
-    +'<div class="player-img-wrap">'+playerImg(c.player)+'</div>'
-    +'<div class="climb-info">'
-      +'<div class="climb-name">'+c.player+'</div>'
-      +'<div class="climb-stat-name">'+(STAT_NAMES[c.stat]||c.stat)+'</div>'
-      +'<div class="climb-vals">'
-        +'<span class="climb-cur">'+fmtV(c.stat,c.currentVal)+'</span>'
-        +'<span class="climb-sep">/</span>'
-        +'<span class="climb-tgt">'+fmtV(c.stat,c.targetVal)+'</span>'
-      +'</div>'
-      +'<div class="climb-target-name">chasing '+c.targetName+' ('+ordinal(c.targetRank)+')</div>'
-    +'</div>'
-    +'<div class="player-progress">'
-      +'<div class="pct-label">'+prog+'% closed</div>'
-      +'<div class="bar-track">'
-        +'<div class="bar-fill" style="width:'+prog+'%;background:'+col+';border-radius:'+fillRadius+'"></div>'
-        +'<div class="bar-dot" style="left:'+dotLeft+';background:'+col+'"></div>'
-      +'</div>'
-    +'</div>'
-    +'<div class="player-est"><div class="est-label">Gap</div><div class="climb-gap" style="color:'+col+'">'+pct+'%</div></div>'
+  var rows=[...CAREER[c.stat]].sort(function(a,b){return b[1]-a[1];});
+  var activeIdx=c.currentRank-1; // 0-based in sorted array
+
+  // Show 2 above and 1 below the active player
+  var startIdx=Math.max(0, activeIdx-2);
+  var endIdx=Math.min(rows.length-1, activeIdx+1);
+
+  var stack='';
+  for(var i=startIdx;i<=endIdx;i++){
+    var isActive=(i===activeIdx);
+    var r=rows[i];
+    var name=r[0];
+    var val=c.stat==='3PT%'?(r[1]*100).toFixed(1)+'%':r[1].toLocaleString();
+    var rankNum=i+1;
+    if(isActive){
+      // Active player row — bold highlight + headshot + urgency tint
+      var bg='rgba('+hexToRgb(col)+',0.10)';
+      // Compute games-away text
+      var gaTxt='';
+      if(c.pctGap!=null){
+        gaTxt=(c.pctGap*100).toFixed(1)+'% gap';
+      }
+      stack+='<div class="climb-stack-row active" style="background:'+bg+';">'
+        +'<span class="climb-rank" style="color:'+col+'">'+rankNum+'.</span>'
+        +climbHeadshot(c.player)
+        +'<span class="climb-pname" style="color:'+col+'">'+name+'</span>'
+        +'<span class="climb-pval" style="color:'+col+'">'+val+'</span>'
+        +'</div>';
+    } else {
+      stack+='<div class="climb-stack-row">'
+        +'<span class="climb-rank">'+rankNum+'.</span>'
+        +'<span class="climb-pname">'+name+'</span>'
+        +'<span class="climb-pval">'+val+'</span>'
+        +'</div>';
+    }
+  }
+
+  // Games badge
+  var gaBadge='';
+  if(c.pctGap!=null){
+    var toNext=c.targetVal-c.currentVal;
+    var badgeTxt=toNext.toLocaleString()+' to next rank';
+    gaBadge='<div class="climb-col-footer">'
+      +'<span class="climb-games-badge" style="background:rgba('+hexToRgb(col)+',0.12);color:'+col+'">'+badgeTxt+'</span>'
+      +'</div>';
+  } else {
+    gaBadge='<div class="climb-col-footer"></div>';
+  }
+
+  var label=(STAT_LABELS[c.stat]||c.stat).toUpperCase();
+  return '<div class="climb-col">'
+    +'<div class="climb-col-title">'+label+'</div>'
+    +'<div class="climb-stack">'+stack+'</div>'
+    +gaBadge
   +'</div>';
+}
+
+function hexToRgb(hex){
+  // Simple hex to r,g,b string for rgba()
+  hex=hex.replace('#','');
+  if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  var r=parseInt(hex.substring(0,2),16);
+  var g=parseInt(hex.substring(2,4),16);
+  var b=parseInt(hex.substring(4,6),16);
+  return r+','+g+','+b;
 }
 
 function render(){
   var root=document.getElementById('page-root');
   var fms=MILESTONES.filter(msOk);
-  var fch=CHASES.filter(chOk).sort(function(a,b){return a.player.localeCompare(b.player);});
 
   // Group milestones by stat in PDF_STATS order
   var groups={};
@@ -406,31 +493,30 @@ function render(){
   }
 
   // Climbing section
+  var fch=CHASES.filter(chOk);
   if(fch.length){
-    // Group climbing by stat too
-    var cgroups={};
-    fch.forEach(function(c){
-      var k=c.stat||'Other';
-      if(!cgroups[k]) cgroups[k]=[];
-      cgroups[k].push(c);
-    });
-    var ckeys=PDF_STATS.filter(function(k){return cgroups[k]&&cgroups[k].length;});
-    Object.keys(cgroups).forEach(function(k){if(ckeys.indexOf(k)<0) ckeys.push(k);});
-    var cboxes=ckeys.map(function(k){return {key:k,items:cgroups[k]};});
-    var ccols=balanceColumns(cboxes);
+    // Show climb toolbar
+    document.getElementById('climb-toolbar-wrap').style.display='block';
 
     html+='<div class="climb-section">';
     html+='<div class="climb-banner"><div class="climb-banner-title">Climbing the Record Books</div></div>';
-    html+='<div class="climb-grid">';
-    html+='<div style="display:flex;flex-direction:column;gap:10px;">'+ccols.left.map(function(b){
-      return '<div class="climb-box"><div class="stat-box-header"><div class="stat-box-title">'+(STAT_LABELS[b.key]||b.key)+'</div></div>'
-        +'<div class="climb-box-body">'+b.items.map(buildClimbRow).join('')+'</div></div>';
-    }).join('')+'</div>';
-    html+='<div style="display:flex;flex-direction:column;gap:10px;">'+ccols.right.map(function(b){
-      return '<div class="climb-box"><div class="stat-box-header"><div class="stat-box-title">'+(STAT_LABELS[b.key]||b.key)+'</div></div>'
-        +'<div class="climb-box-body">'+b.items.map(buildClimbRow).join('')+'</div></div>';
-    }).join('')+'</div>';
-    html+='</div></div>';
+
+    // Group by stat, then render all active players per stat as columns
+    // Each chase = one column. Layout up to 5 per row.
+    var COLS_PER_ROW=5;
+    for(var i=0;i<fch.length;i+=COLS_PER_ROW){
+      var rowChases=fch.slice(i,i+COLS_PER_ROW);
+      html+='<div class="climb-cols">';
+      rowChases.forEach(function(c){ html+=buildClimbColumn(c); });
+      // Fill empty slots to maintain alignment
+      for(var j=rowChases.length;j<COLS_PER_ROW;j++){
+        html+='<div class="climb-col"></div>';
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  } else {
+    document.getElementById('climb-toolbar-wrap').style.display='block';
   }
 
   root.innerHTML=html;
