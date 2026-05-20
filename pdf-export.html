@@ -82,14 +82,14 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
 /* Leaderboard columns — compact, fit 4-5 across */
 .climb-cols{display:flex;flex-wrap:nowrap;gap:0;align-items:flex-start;border-top:1px solid #e0e0e0;overflow:visible;}
-.climb-col{flex:1 1 0;min-width:0;padding:8px 10px;border-right:1px solid #e0e0e0;}
+.climb-col{flex:1 1 0;min-width:0;padding:8px 10px 8px 0;border-right:1px solid #e0e0e0;}.climb-col:last-child{border-right:none;}
 .climb-col:last-child{border-right:none;}
 .climb-col-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:6px;text-align:left;}
 
 /* Stack rows */
 .climb-stack{display:flex;flex-direction:column;gap:1px;}
-.climb-stack-row{display:flex;align-items:center;gap:3px;padding:2px 3px;border-radius:3px;}
-.climb-rank{font-size:9px;color:#bbb;flex-shrink:0;text-align:right;min-width:20px;}
+.climb-stack-row{display:flex;align-items:center;gap:3px;padding:2px 0;border-radius:3px;}
+.climb-rank{font-size:9px;color:#bbb;flex-shrink:0;text-align:left;min-width:20px;}
 .climb-pname{font-size:9px;color:#555;white-space:nowrap;overflow:visible;text-overflow:clip;margin-left:2px;}
 .climb-pval{font-size:9px;color:#aaa;flex-shrink:0;padding-left:6px;font-variant-numeric:tabular-nums;margin-left:auto;}
 
@@ -110,7 +110,8 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
   .page{margin:0;padding:12px 14px;max-width:100%;}
   body{background:#fff;}
   @page{margin:25mm 10mm 8mm 10mm;size:A4 portrait;}
-  /* Suppress browser-generated header/footer text */
+  /* Suppress browser header/footer (date, URL, title) */
+  @page{margin-top:25mm;}
   html{-webkit-print-color-adjust:exact;}
   .stat-box,.climb-box{page-break-inside:avoid;}
   .columns,.climb-grid{page-break-inside:avoid;}
