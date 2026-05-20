@@ -86,7 +86,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .climb-stack-row.active{background:rgba(0,0,0,0.06);font-weight:700;}
 .climb-rank{font-size:10px;color:#aaa;width:16px;flex-shrink:0;text-align:right;}
 .climb-stack-row.active .climb-rank{color:#0a0a0a;font-weight:700;}
-.climb-pname{font-size:10px;color:#555;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.climb-pname{font-size:10px;color:#555;flex:1;white-space:nowrap;}
 .climb-stack-row.active .climb-pname{color:#0a0a0a;font-weight:700;}
 .climb-pval{font-size:10px;color:#888;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;}
 .climb-stack-row.active .climb-pval{color:#0a0a0a;font-weight:700;}
@@ -387,6 +387,15 @@ function climbHeadshot(playerId){
     +'<div class="climb-active-fallback" style="display:none"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
 }
 
+function abbreviateName(fullName){
+  var parts=fullName.trim().split(/\s+/);
+  if(parts.length<=1) return fullName;
+  // Handle prefixes like "Jan van Breda Kolff" — just use first initial + last word
+  var first=parts[0];
+  var last=parts[parts.length-1];
+  return first.charAt(0)+'. '+last;
+}
+
 function buildClimbColumn(c){
   var col=STATUS_COLOR[c.urgency]||'#888';
   var rows=[...CAREER[c.stat]].sort(function(a,b){return b[1]-a[1];});
@@ -406,11 +415,6 @@ function buildClimbColumn(c){
     if(isActive){
       // Active player row — bold highlight + headshot + urgency tint
       var bg='rgba('+hexToRgb(col)+',0.10)';
-      // Compute games-away text
-      var gaTxt='';
-      if(c.pctGap!=null){
-        gaTxt=(c.pctGap*100).toFixed(1)+'% gap';
-      }
       stack+='<div class="climb-stack-row active" style="background:'+bg+';">'
         +'<span class="climb-rank" style="color:'+col+'">'+rankNum+'.</span>'
         +climbHeadshot(c.player)
@@ -420,7 +424,7 @@ function buildClimbColumn(c){
     } else {
       stack+='<div class="climb-stack-row">'
         +'<span class="climb-rank">'+rankNum+'.</span>'
-        +'<span class="climb-pname">'+name+'</span>'
+        +'<span class="climb-pname">'+abbreviateName(name)+'</span>'
         +'<span class="climb-pval">'+val+'</span>'
         +'</div>';
     }
@@ -503,7 +507,7 @@ function render(){
 
     // Group by stat, then render all active players per stat as columns
     // Each chase = one column. Layout up to 5 per row.
-    var COLS_PER_ROW=5;
+    var COLS_PER_ROW=4;
     for(var i=0;i<fch.length;i+=COLS_PER_ROW){
       var rowChases=fch.slice(i,i+COLS_PER_ROW);
       html+='<div class="climb-cols">';
