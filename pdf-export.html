@@ -69,7 +69,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
 /* ── STAT BOX ── */
 .stat-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
-.stat-box-header{background:#3a3a3a;color:#fff;text-align:center;padding:8px 12px;}
+.stat-box-header{background:#6b6b6b;color:#fff;text-align:center;padding:8px 12px;}
 .stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
 .stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
 
@@ -89,7 +89,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 /* Stack rows */
 .climb-stack{display:flex;flex-direction:column;gap:1px;}
 .climb-stack-row{display:flex;align-items:center;gap:8px;padding:3px 4px;border-radius:3px;}
-.climb-rank{font-size:10px;color:#bbb;width:20px;flex-shrink:0;text-align:right;}
+.climb-rank{font-size:10px;color:#bbb;flex-shrink:0;text-align:left;min-width:22px;}
 .climb-pname{font-size:10px;color:#555;white-space:nowrap;}
 .climb-pval{font-size:10px;color:#aaa;margin-left:auto;flex-shrink:0;padding-left:8px;font-variant-numeric:tabular-nums;}
 
@@ -122,7 +122,7 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 
   /* Ensure black headers print black — but NOT climb-banner */
   .stat-box-header,.banner{
-    background:#3a3a3a!important;
+    background:#6b6b6b!important;
     color:#fff!important;
   }
   .banner-title,.stat-box-title{
@@ -212,9 +212,9 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 var MILESTONES=[], CHASES=[], CAREER={}, STAT_NAMES={}, ROSTER=[];
 
 var THRESHOLDS={
-  PTS: [100,200,300,400,500,1000,2000,3000,4000,5000,6000,7000,8000,10000],
-  TRB: [100,200,300,400,500,1000,2000,3000,4000,5000],
-  AST: [100,300,400,500,1000,2000,3000,4000],
+  PTS: [100,200,300,400,500,1000,1500,2000,3000,4000,5000,6000,7000,7500,8000,10000],
+  TRB: [100,200,250,300,400,500,1000,2000,3000,4000,5000],
+  AST: [100,200,250,300,400,500,1000,2000,3000,4000],
   BLK: [50,100,200,300,500,700,1000],
   STL: [50,100,200,300,500,700],
   FG3M:[50,100,200,300,500,700,1000],
