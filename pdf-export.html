@@ -67,33 +67,39 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .est-label{font-size:7px;font-weight:700;letter-spacing:1px;color:#aaa;text-transform:uppercase;}
 .est-val{font-size:11px;font-weight:700;color:#0a0a0a;line-height:1.2;white-space:nowrap;}
 
+/* ── STAT BOX ── */
+.stat-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
+.stat-box-header{background:#3a3a3a;color:#fff;text-align:center;padding:8px 12px;}
+.stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
+.stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
+
 /* ── CLIMBING SECTION ── */
 .climb-section{margin-top:18px;}
-.climb-banner{background:#fff;color:#0a0a0a;text-align:left;padding:6px 0 8px;margin-bottom:0;border-bottom:none;}
+.climb-banner{background:#fff;color:#0a0a0a;text-align:left;padding:6px 0 10px;border-bottom:2px solid #0a0a0a;margin-bottom:12px;}
 .climb-banner-title{font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0a0a0a;}
 .climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
 
-/* Leaderboard columns layout — up to 5 across */
-.climb-cols{display:flex;gap:0;align-items:flex-start;border-top:2px solid #0a0a0a;}
-.climb-col{flex:1;min-width:0;padding:10px 12px;border-right:1px solid #e0e0e0;position:relative;}
+/* Leaderboard columns — naturally sized, wrap onto new rows as needed */
+.climb-cols{display:flex;flex-wrap:wrap;gap:0;align-items:flex-start;border-top:1px solid #e0e0e0;}
+.climb-col{flex:0 0 auto;padding:10px 16px;border-right:1px solid #e0e0e0;min-width:140px;}
 .climb-col:last-child{border-right:none;}
-.climb-col-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:8px;text-align:center;}
+.climb-col-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:8px;text-align:left;}
 
 /* Stack rows */
-.climb-stack{display:flex;flex-direction:column;gap:0;}
-.climb-stack-row{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;}
-.climb-stack-row.active{background:rgba(0,0,0,0.06);font-weight:700;}
-.climb-rank{font-size:10px;color:#aaa;width:16px;flex-shrink:0;text-align:right;}
-.climb-stack-row.active .climb-rank{color:#0a0a0a;font-weight:700;}
-.climb-pname{font-size:10px;color:#555;flex:1;white-space:nowrap;}
-.climb-stack-row.active .climb-pname{color:#0a0a0a;font-weight:700;}
-.climb-pval{font-size:10px;color:#888;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;}
-.climb-stack-row.active .climb-pval{color:#0a0a0a;font-weight:700;}
-.climb-active-headshot{width:24px;height:24px;flex-shrink:0;border-radius:2px;object-fit:cover;}
-.climb-active-fallback{width:24px;height:24px;flex-shrink:0;border-radius:2px;background:#e8e6e2;display:flex;align-items:center;justify-content:center;}
-.climb-games-badge{display:inline-block;font-size:9px;font-weight:700;font-style:italic;padding:2px 7px;border-radius:10px;margin-top:6px;letter-spacing:0.3px;}
-.climb-col-footer{margin-top:4px;min-height:22px;}
+.climb-stack{display:flex;flex-direction:column;gap:1px;}
+.climb-stack-row{display:flex;align-items:center;gap:8px;padding:3px 4px;border-radius:3px;}
+.climb-rank{font-size:10px;color:#bbb;width:20px;flex-shrink:0;text-align:right;}
+.climb-pname{font-size:10px;color:#555;white-space:nowrap;}
+.climb-pval{font-size:10px;color:#aaa;margin-left:auto;flex-shrink:0;padding-left:8px;font-variant-numeric:tabular-nums;}
+
+/* Active row — bigger, bolder, black */
+.climb-stack-row.active .climb-rank{font-size:11px;font-weight:700;color:#0a0a0a;}
+.climb-stack-row.active .climb-pname{font-size:12px;font-weight:700;color:#0a0a0a;}
+.climb-stack-row.active .climb-pval{font-size:12px;font-weight:700;color:#0a0a0a;}
+
+.climb-games-badge{display:inline-block;font-size:9px;font-weight:700;font-style:italic;padding:2px 8px;border-radius:10px;margin-top:6px;letter-spacing:0.3px;}
+.climb-col-footer{margin-top:6px;min-height:24px;}
 
 /* ── WAITING ── */
 .waiting{color:#aaa;font-size:12px;font-style:italic;text-align:center;padding:60px 0;}
@@ -114,14 +120,16 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
     color-adjust:exact!important;
   }
 
-  /* Ensure black headers print black */
-  .stat-box-header,.climb-banner,.banner{
-    background:#0a0a0a!important;
+  /* Ensure black headers print black — but NOT climb-banner */
+  .stat-box-header,.banner{
+    background:#3a3a3a!important;
     color:#fff!important;
   }
-  .banner-title,.stat-box-title,.climb-banner-title{
+  .banner-title,.stat-box-title{
     color:#fff!important;
   }
+  .climb-banner{background:#fff!important;border-bottom:2px solid #0a0a0a!important;}
+  .climb-banner-title{color:#0a0a0a!important;}
 
   /* Ensure progress bars print with color */
   .bar-track{background:#e8e6e2!important;}
@@ -501,21 +509,9 @@ function render(){
 
     html+='<div class="climb-section">';
     html+='<div class="climb-banner"><div class="climb-banner-title">Climbing the Record Books</div></div>';
-
-    // Group by stat, then render all active players per stat as columns
-    // Each chase = one column. Layout up to 5 per row.
-    var COLS_PER_ROW=5;
-    for(var i=0;i<fch.length;i+=COLS_PER_ROW){
-      var rowChases=fch.slice(i,i+COLS_PER_ROW);
-      html+='<div class="climb-cols">';
-      rowChases.forEach(function(c){ html+=buildClimbColumn(c); });
-      // Fill empty slots to maintain alignment
-      for(var j=rowChases.length;j<COLS_PER_ROW;j++){
-        html+='<div class="climb-col"></div>';
-      }
-      html+='</div>';
-    }
-    html+='</div>';
+    html+='<div class="climb-cols">';
+    fch.forEach(function(c){ html+=buildClimbColumn(c); });
+    html+='</div></div>';
   } else {
     document.getElementById('climb-toolbar-wrap').style.display='block';
   }
