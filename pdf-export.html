@@ -38,12 +38,9 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .banner{background:#0a0a0a;color:#fff;text-align:center;padding:13px 20px;border-radius:6px;margin-bottom:18px;}
 .banner-title{font-size:20px;font-weight:700;letter-spacing:4px;text-transform:uppercase;}
 
-/* ── TWO COLUMN LAYOUT ── */
-.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
-
 /* ── STAT BOX ── */
-.stat-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
-.stat-box-header{background:#0a0a0a;color:#fff;text-align:center;padding:8px 12px;}
+.stat-box{border:1px solid #d0d0d0;border-radius:10px;overflow:hidden;background:#fff;}
+.stat-box-header{background:#888;color:#fff;text-align:center;padding:8px 12px;}
 .stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
 .stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
 
@@ -73,6 +70,9 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
 .stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
 
+/* ── TWO COLUMN LAYOUT ── */
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
+
 /* ── CLIMBING SECTION ── */
 .climb-section{margin-top:18px;}
 .climb-banner{background:#fff;color:#0a0a0a;text-align:left;padding:6px 0 10px;border-bottom:2px solid #0a0a0a;margin-bottom:12px;}
@@ -80,23 +80,23 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
 
-/* Leaderboard columns — naturally sized, wrap onto new rows as needed */
-.climb-cols{display:flex;flex-wrap:wrap;gap:0;align-items:flex-start;border-top:1px solid #e0e0e0;}
-.climb-col{flex:0 0 auto;padding:10px 16px;border-right:1px solid #e0e0e0;min-width:140px;}
+/* Leaderboard columns — compact, fit 4-5 across */
+.climb-cols{display:flex;flex-wrap:nowrap;gap:0;align-items:flex-start;border-top:1px solid #e0e0e0;overflow:visible;}
+.climb-col{flex:1 1 0;min-width:0;padding:8px 10px;border-right:1px solid #e0e0e0;}
 .climb-col:last-child{border-right:none;}
-.climb-col-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:8px;text-align:left;}
+.climb-col-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:6px;text-align:left;}
 
 /* Stack rows */
 .climb-stack{display:flex;flex-direction:column;gap:1px;}
-.climb-stack-row{display:flex;align-items:center;gap:8px;padding:3px 4px;border-radius:3px;}
-.climb-rank{font-size:10px;color:#bbb;flex-shrink:0;text-align:left;min-width:22px;}
-.climb-pname{font-size:10px;color:#555;white-space:nowrap;}
-.climb-pval{font-size:10px;color:#aaa;margin-left:auto;flex-shrink:0;padding-left:8px;font-variant-numeric:tabular-nums;}
+.climb-stack-row{display:flex;align-items:center;gap:5px;padding:2px 3px;border-radius:3px;}
+.climb-rank{font-size:9px;color:#bbb;flex-shrink:0;text-align:left;min-width:18px;}
+.climb-pname{font-size:9px;color:#555;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.climb-pval{font-size:9px;color:#aaa;flex-shrink:0;padding-left:4px;font-variant-numeric:tabular-nums;}
 
 /* Active row — bigger, bolder, black */
 .climb-stack-row.active .climb-rank{font-size:11px;font-weight:700;color:#0a0a0a;}
-.climb-stack-row.active .climb-pname{font-size:12px;font-weight:700;color:#0a0a0a;}
-.climb-stack-row.active .climb-pval{font-size:12px;font-weight:700;color:#0a0a0a;}
+.climb-stack-row.active .climb-pname{font-size:11px;font-weight:700;color:#0a0a0a;white-space:nowrap;overflow:visible;}
+.climb-stack-row.active .climb-pval{font-size:11px;font-weight:700;color:#0a0a0a;}
 
 .climb-games-badge{display:inline-block;font-size:9px;font-weight:700;font-style:italic;padding:2px 8px;border-radius:10px;margin-top:6px;letter-spacing:0.3px;}
 .climb-col-footer{margin-top:6px;min-height:24px;}
@@ -120,16 +120,15 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
     color-adjust:exact!important;
   }
 
-  /* Ensure black headers print black — but NOT climb-banner */
-  .stat-box-header,.banner{
-    background:#6b6b6b!important;
-    color:#fff!important;
-  }
-  .banner-title,.stat-box-title{
-    color:#fff!important;
-  }
+  /* Keep banner black, box headers lighter grey */
+  .banner{background:#0a0a0a!important;color:#fff!important;}
+  .banner-title{color:#fff!important;}
+  .stat-box-header{background:#888!important;color:#fff!important;}
+  .stat-box-title{color:#fff!important;}
   .climb-banner{background:#fff!important;border-bottom:2px solid #0a0a0a!important;}
   .climb-banner-title{color:#0a0a0a!important;}
+  /* Ensure climbing columns stay on one line in print */
+  .climb-cols{flex-wrap:nowrap!important;}
 
   /* Ensure progress bars print with color */
   .bar-track{background:#e8e6e2!important;}
