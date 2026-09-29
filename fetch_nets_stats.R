@@ -1,276 +1,452 @@
 # ============================================================
-# Brooklyn Nets Milestone & Streak Tracker
-# Data Fetch Script — powered by hoopR
-#
-# Uses nba_leaguedashplayerstats() for season totals (one bulk call)
-# and nba_playercareerstats() with NBA.com player IDs for career totals.
-#
-# RUN:   Rscript r/fetch_nets_stats.R   (from repo root)
+# Brooklyn Nets Milestone & Streak Tracker — Data Fetch
+# Career totals verified from Basketball Reference, Sep 2026
+# 2026-27 roster update — milestone ladders auto-advance
 # ============================================================
 
 suppressPackageStartupMessages({
-  library(hoopR)
-  library(dplyr)
   library(jsonlite)
   library(cli)
   library(tibble)
+  library(dplyr)
+  library(rvest)
 })
+
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+
+# ── CONFIG ────────────────────────────────────────────────────
+# Set FALSE on opening night of 2026-27 season
+OFFSEASON_MODE <- TRUE
+
+BBREF_IDS <- c(
+  clowney    = "c/clownno01",  mann       = "m/mannte01",
+  powell     = "p/poweldr01",  sharpe     = "s/sharpda01",
+  wolf       = "w/wolfda01",   traore     = "t/traorno01",
+  porter     = "p/portemi01",  demin      = "d/demineg01",
+  saraf      = "s/sarafbe01",  johnson    = "j/johnsch06",
+  minott     = "m/minotjo01",  bilodeau   = "b/bilodty01",
+  brown      = "b/brownmi02",  dainja     = "d/dainjda01",
+  ellis      = "e/elliske01",  humrichous = "h/humribe01",
+  jefferson  = "j/jeffejo01",  randle     = "r/randlju01",
+  wagner     = "w/wagnemo01",  nelson     = "n/nelsogr02"
+)
 
 cli_h1("Nets Milestone Tracker — Data Fetch")
 cli_alert_info("Run time: {Sys.time()}")
-
-# ── CONFIG ────────────────────────────────────────────────────
-
-CURRENT_SEASON <- 2026   # hoopR season = year season ENDS (2025-26 = 2026)
+cli_alert_info("Mode: {ifelse(OFFSEASON_MODE, 'OFFSEASON (hardcoded 2025-26 / pre-season)', 'LIVE (BBRef scrape)')}")
 
 OUTPUT_DIR <- "public/data"
 if (!dir.exists(OUTPUT_DIR)) OUTPUT_DIR <- "../public/data"
 if (!dir.exists(OUTPUT_DIR)) dir.create(OUTPUT_DIR, recursive = TRUE)
-cli_alert_info("Output directory: {normalizePath(OUTPUT_DIR)}")
 
-# ── ROSTER — NBA.com player IDs ───────────────────────────────
-# NBA.com IDs (not ESPN IDs) — used by nba_playercareerstats()
-# Source: nba.com/stats, basketball-reference.com
+# ── MILESTONE LADDERS ─────────────────────────────────────────
+LADDERS <- list(
+  PTS  = c(200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 7500, 10000, 15000, 20000),
+  TRB  = c(100, 250, 500, 1000, 2000, 3000, 4000, 5000, 7500, 10000),
+  ORB  = c(50, 100, 200, 300, 500, 750, 1000, 1500, 2000),
+  AST  = c(100, 250, 500, 1000, 1500, 2000, 2500, 3000, 5000),
+  BLK  = c(50, 100, 200, 300, 500, 700, 1000),
+  STL  = c(50, 100, 200, 300, 500, 700, 1000),
+  FG3M = c(50, 100, 200, 300, 400, 500, 600, 700, 750, 1000, 1500),
+  FTM  = c(50, 100, 200, 300, 500, 700, 1000, 1500, 2000),
+  GP   = c(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000)
+)
 
+STAT_LABELS <- list(
+  PTS  = "Career Points",
+  TRB  = "Career Rebounds",
+  ORB  = "Career Offensive Rebounds",
+  AST  = "Career Assists",
+  BLK  = "Career Blocks",
+  STL  = "Career Steals",
+  FG3M = "Career 3-Pointers Made",
+  FTM  = "Career Free Throws Made",
+  GP   = "Career Games Played"
+)
+
+STAT_CATEGORIES <- list(
+  PTS  = "Points",
+  TRB  = "Rebounding",
+  ORB  = "Rebounding",
+  AST  = "Assists",
+  BLK  = "Blocks",
+  STL  = "Steals",
+  FG3M = "Three-Pointers",
+  FTM  = "Free Throws",
+  GP   = "Games"
+)
+
+# ── VERIFIED CAREER TOTALS (Basketball Reference, Sep 2026) ───
+# Returning players: end-of-2025-26 season totals carried over
+# New veterans: career totals through 2025-26 season
+# Rookies (Bilodeau, Brown, Dainja, Humrichous, Jefferson): 0 NBA games
+CAREER_TOTALS <- list(
+
+  # ── RETURNING PLAYERS (from 2025-26) ──────────────────────
+  clowney = list(
+    GP=135L, PTS=1362L, TRB=535L, ORB=121L, AST=166L, STL=82L, BLK=82L, FG3M=228L, FTM=268L,
+    GP_season=66L, season_PTS=809L, season_TRB=273L, season_ORB=52L, season_AST=108L,
+    season_STL=50L, season_BLK=45L, season_FG3M=129L, season_FTM=180L,
+    PPG=12.3, RPG=4.1, APG=1.6, BPG=0.7
+  ),
+
+  mann = list(
+    GP=475L, PTS=3786L, TRB=1651L, ORB=472L, AST=980L, STL=268L, BLK=106L, FG3M=385L, FTM=505L,
+    GP_season=63L, season_PTS=455L, season_TRB=200L, season_ORB=70L, season_AST=190L,
+    season_STL=41L, season_BLK=15L, season_FG3M=56L, season_FTM=63L,
+    PPG=7.2, RPG=3.2, APG=3.0, BPG=0.2
+  ),
+
+  powell = list(
+    GP=63L, PTS=408L, TRB=111L, ORB=21L, AST=91L, STL=36L, BLK=14L, FG3M=51L, FTM=69L,
+    GP_season=63L, season_PTS=408L, season_TRB=111L, season_ORB=21L, season_AST=91L,
+    season_STL=36L, season_BLK=14L, season_FG3M=51L, season_FTM=69L,
+    PPG=6.5, RPG=1.8, APG=1.4, BPG=0.2
+  ),
+
+  sharpe = list(
+    GP=253L, PTS=1777L, TRB=1492L, ORB=661L, AST=375L, STL=157L, BLK=159L, FG3M=32L, FTM=293L,
+    GP_season=62L, season_PTS=540L, season_TRB=413L, season_ORB=171L, season_AST=145L,
+    season_STL=67L, season_BLK=26L, season_FG3M=9L, season_FTM=103L,
+    PPG=8.7, RPG=6.7, APG=2.3, BPG=0.4
+  ),
+
+  wolf = list(
+    GP=57L, PTS=508L, TRB=281L, ORB=57L, AST=127L, STL=30L, BLK=32L, FG3M=68L, FTM=84L,
+    GP_season=57L, season_PTS=508L, season_TRB=281L, season_ORB=57L, season_AST=127L,
+    season_STL=30L, season_BLK=32L, season_FG3M=68L, season_FTM=84L,
+    PPG=8.9, RPG=4.9, APG=2.2, BPG=0.6
+  ),
+
+  traore = list(
+    GP=56L, PTS=499L, TRB=99L, ORB=14L, AST=213L, STL=45L, BLK=23L, FG3M=61L, FTM=74L,
+    GP_season=56L, season_PTS=499L, season_TRB=99L, season_ORB=14L, season_AST=213L,
+    season_STL=45L, season_BLK=23L, season_FG3M=61L, season_FTM=74L,
+    PPG=8.9, RPG=1.8, APG=3.8, BPG=0.4
+  ),
+
+  porter = list(
+    GP=397L, PTS=6856L, TRB=2576L, ORB=543L, AST=643L, STL=261L, BLK=214L, FG3M=1019L, FTM=703L,
+    GP_season=52L, season_PTS=1259L, season_TRB=367L, season_ORB=69L, season_AST=158L,
+    season_STL=55L, season_BLK=13L, season_FG3M=176L, season_FTM=195L,
+    PPG=24.2, RPG=7.1, APG=3.0, BPG=0.3
+  ),
+
+  demin = list(
+    GP=52L, PTS=536L, TRB=165L, ORB=21L, AST=173L, STL=42L, BLK=17L, FG3M=124L, FTM=54L,
+    GP_season=52L, season_PTS=536L, season_TRB=165L, season_ORB=21L, season_AST=173L,
+    season_STL=42L, season_BLK=17L, season_FG3M=124L, season_FTM=54L,
+    PPG=10.3, RPG=3.2, APG=3.3, BPG=0.3
+  ),
+
+  saraf = list(
+    GP=44L, PTS=332L, TRB=92L, ORB=20L, AST=145L, STL=38L, BLK=8L, FG3M=19L, FTM=73L,
+    GP_season=44L, season_PTS=332L, season_TRB=92L, season_ORB=20L, season_AST=145L,
+    season_STL=38L, season_BLK=8L, season_FG3M=19L, season_FTM=73L,
+    PPG=7.5, RPG=2.1, APG=3.3, BPG=0.2
+  ),
+
+  johnson = list(
+    GP=17L, PTS=139L, TRB=79L, ORB=33L, AST=36L, STL=15L, BLK=9L, FG3M=9L, FTM=28L,
+    GP_season=17L, season_PTS=139L, season_TRB=79L, season_ORB=33L, season_AST=36L,
+    season_STL=15L, season_BLK=9L, season_FG3M=9L, season_FTM=28L,
+    PPG=8.2, RPG=4.6, APG=2.1, BPG=0.5
+  ),
+
+  minott = list(
+    GP=142L, PTS=579L, TRB=247L, ORB=69L, AST=77L, STL=68L, BLK=47L, FG3M=84L, FTM=85L,
+    GP_season=16L, season_PTS=172L, season_TRB=40L, season_ORB=8L, season_AST=13L,
+    season_STL=20L, season_BLK=12L, season_FG3M=30L, season_FTM=28L,
+    PPG=10.8, RPG=2.5, APG=0.8, BPG=0.8,
+    note="16 GP with BRK in 2025-26 (33 with BOS earlier)"
+  ),
+
+  # ── NEW VETERANS ──────────────────────────────────────────
+  # Julius Randle — career totals through 2025-26 (MIN)
+  randle = list(
+    GP=789L, PTS=15184L, TRB=7023L, ORB=NA_integer_, AST=3108L, STL=572L, BLK=302L, FG3M=959L, FTM=3273L,
+    GP_season=79L, season_PTS=1667L, season_TRB=532L, season_ORB=NA_integer_, season_AST=395L,
+    season_STL=NA_integer_, season_BLK=NA_integer_, season_FG3M=109L, season_FTM=398L,
+    PPG=21.1, RPG=6.7, APG=5.0, BPG=0.2
+  ),
+
+  # Moritz Wagner — career totals through 2025-26 (ORL partial)
+  wagner = list(
+    GP=399L, PTS=3575L, TRB=1551L, ORB=NA_integer_, AST=466L, STL=200L, BLK=111L, FG3M=282L, FTM=753L,
+    GP_season=36L, season_PTS=248L, season_TRB=115L, season_ORB=NA_integer_, season_AST=29L,
+    season_STL=NA_integer_, season_BLK=NA_integer_, season_FG3M=22L, season_FTM=59L,
+    PPG=6.9, RPG=3.2, APG=0.8, BPG=0.3
+  ),
+
+  # Keon Ellis — career totals through 2025-26 (SAC/CLE)
+  ellis = list(
+    GP=225L, PTS=1480L, TRB=479L, ORB=NA_integer_, AST=283L, STL=260L, BLK=139L, FG3M=306L, FTM=154L,
+    GP_season=72L, season_PTS=480L, season_TRB=135L, season_ORB=NA_integer_, season_AST=72L,
+    season_STL=83L, season_BLK=46L, season_FG3M=91L, season_FTM=51L,
+    PPG=6.7, RPG=1.9, APG=1.0, BPG=0.6
+  ),
+
+  # Grant Nelson — career totals through 2025-26 (4 GP with BRK)
+  nelson = list(
+    GP=4L, PTS=17L, TRB=6L, ORB=NA_integer_, AST=5L, STL=1L, BLK=5L, FG3M=0L, FTM=7L,
+    GP_season=4L, season_PTS=17L, season_TRB=6L, season_ORB=NA_integer_, season_AST=5L,
+    season_STL=1L, season_BLK=5L, season_FG3M=0L, season_FTM=7L,
+    PPG=4.3, RPG=1.5, APG=1.3, BPG=1.3
+  ),
+
+  # ── 2026 ROOKIES (0 NBA games) ─────────────────────────────
+  # Tyler Bilodeau — 2026 Draft, 2nd round #43 (BRK)
+  bilodeau = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Mikel Brown Jr. — 2026 Draft, 1st round #6 (BRK)
+  brown = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Dain Dainja — undrafted FA (BRK training camp)
+  dainja = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Ben Humrichous — undrafted FA (BRK training camp)
+  humrichous = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Joshua Jefferson — 2026 Draft, 1st round #28 (MIN → BRK)
+  jefferson = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  )
+)
+
+# ── 2026-27 NETS ROSTER ───────────────────────────────────────
 NETS_ROSTER <- tribble(
-  ~player_id,   ~full_name,             ~number, ~pos,  ~nba_id,
-  "claxton",    "Nic Claxton",          "33",    "C",   "1630567",
-  "porter",     "Michael Porter Jr.",   "1",     "SF",  "1629008",
-  "demin",      "Egor Dëmin",           "8",     "PG",  "1642355",
-  "traore",     "Nolan Traoré",         "19",    "PG",  "1642356",
-  "sharpe",     "Day'Ron Sharpe",       "20",    "C",   "1630549",
-  "williams",   "Ziaire Williams",      "26",    "SF",  "1630533",
-  "wilson",     "Jalen Wilson",         "22",    "SF",  "1641706",
-  "mann",       "Terance Mann",         "14",    "SG",  "1629611",
-  "highsmith",  "Haywood Highsmith",    "24",    "SF",  "1629754",
-  "clowney",    "Noah Clowney",         "21",    "PF",  "1641724",
-  "powell",     "Drake Powell",         "10",    "SF",  "1642361",
-  "saraf",      "Ben Saraf",            "26",    "PG",  "1642362",
-  "wolf",       "Danny Wolf",           "27",    "C",   "1642363",
-  "agbaji",     "Ochai Agbaji",         "30",    "SG",  "1630534",
-  "liddell",    "E.J. Liddell",         "4",     "PF",  "1630551"
+  ~player_id,    ~full_name,              ~number, ~pos,
+  "clowney",     "Noah Clowney",          "21",    "PF",
+  "mann",        "Terance Mann",          "14",    "SG",
+  "powell",      "Drake Powell",          "4",     "SG",
+  "sharpe",      "Day'Ron Sharpe",        "20",    "C",
+  "wolf",        "Danny Wolf",            "2",     "PF",
+  "traore",      "Nolan Traore",          "10",    "PG",
+  "porter",      "Michael Porter Jr.",    "17",    "SF",
+  "demin",       "Egor Demin",            "8",     "PG",
+  "saraf",       "Ben Saraf",             "77",    "SG",
+  "johnson",     "Chaney Johnson",        "31",    "SF",
+  "minott",      "Josh Minott",           "00",    "SF",
+  "bilodeau",    "Tyler Bilodeau",        "43",    "PF",
+  "brown",       "Mikel Brown Jr.",       "6",     "PG",
+  "dainja",      "Dain Dainja",           "11",    "PF",
+  "ellis",       "Keon Ellis",            "15",    "SG",
+  "humrichous",  "Ben Humrichous",        "28",    "SF",
+  "jefferson",   "Joshua Jefferson",      "29",    "PF",
+  "randle",      "Julius Randle",         "30",    "PF",
+  "wagner",      "Moritz Wagner",         "21",    "C",
+  "nelson",      "Grant Nelson",          "35",    "PF"
 )
 
-# ── MILESTONE DEFINITIONS ─────────────────────────────────────
-# career_prior = verified career total BEFORE 2025-26 season
-# These are the fallback values if the API returns nothing
-
-MILESTONE_DEFS <- tribble(
-  ~id,                            ~player_id,  ~type,       ~category,        ~stat_label,                  ~stat_col,   ~career_prior, ~target, ~unit,
-  "claxton-500-blocks",           "claxton",   "milestone", "Blocks",         "Career Blocks",              "BLK",       418L,          500L,    "BLK",
-  "claxton-franchise-blk-record", "claxton",   "record",    "Blocks",         "Franchise All-Time Blocks",  "BLK",       418L,          522L,    "BLK",
-  "porter-1000-career-3pm",       "porter",    "milestone", "Three-Pointers", "Career 3-Pointers Made",     "FG3M",      742L,          1000L,   "3PM",
-  "porter-5000-career-pts",       "porter",    "milestone", "Points",         "Career Points",              "PTS",       3613L,         5000L,   "PTS",
-  "williams-300-career-3pm",      "williams",  "milestone", "Three-Pointers", "Career 3-Pointers Made",     "FG3M",      218L,          300L,    "3PM",
-  "sharpe-50-double-doubles",     "sharpe",    "milestone", "Rebounding",     "Career Double-Doubles",      "DD2",       32L,           50L,     "DDs",
-  "mann-500-career-games",        "mann",      "milestone", "Games",          "Career Games Played",        "GP",        438L,          500L,    "GP",
-  "wilson-1000-career-pts",       "wilson",    "milestone", "Points",         "Career Points",              "PTS",       784L,          1000L,   "PTS",
-  "clowney-500-career-pts",       "clowney",   "milestone", "Points",         "Career Points",              "PTS",       312L,          500L,    "PTS",
-  "agbaji-500-career-3pm",        "agbaji",    "milestone", "Three-Pointers", "Career 3-Pointers Made",     "FG3M",      198L,          300L,    "3PM"
-)
-
-MEDIA_ALERTS <- list(
-  "claxton-500-blocks"           = "Prepare a '500-block club' historical comparison — Mourning, Mutombo, and elite rim protectors. Claxton will be one of the youngest Nets to reach this mark.",
-  "claxton-franchise-blk-record" = "FRANCHISE ALL-TIME RECORD. Coordinate with Nets PR. Reach out to Brook Lopez for a potential tribute. Pull Lopez footage for B-roll.",
-  "porter-1000-career-3pm"       = "Only ~200 NBA players have made 1,000 career threes. Porter averaged 3.4 per game in 2025-26 before his hamstring. Pre-write now for early 2026-27.",
-  "porter-5000-career-pts"       = "5,000 career points is a star-level benchmark. Porter averaged a career-high 24.2 ppg in 2025-26. Feature: his evolution from Denver role player to Brooklyn's franchise cornerstone.",
-  "williams-300-career-3pm"      = "Drafted 10th overall, now a reliable floor spacer. 300 career threes marks his establishment as a perimeter threat.",
-  "sharpe-50-double-doubles"     = "Sharpe's 50th career double-double is a durability milestone at 24 years old. His role grew significantly in 2025-26 (career-high 2.3 APG).",
-  "mann-500-career-games"        = "500 NBA games is a longevity milestone. Mann went from a 2019 Clippers role player to a key two-way veteran. Great human interest retrospective.",
-  "wilson-1000-career-pts"       = "Wilson appeared in a league-high 79 games in 2025-26. His 1,000th career point marks his establishment in the league.",
-  "clowney-500-career-pts"       = "Clowney is quietly approaching 500 career points in only his third NBA season. Good young-player development feature.",
-  "agbaji-500-career-3pm"        = "Agbaji is a reliable 3-point shooter who has quietly built a strong career resume. 300 career threes is a shooter's milestone."
-)
-
-# ── SAFE FETCH ────────────────────────────────────────────────
-
-safe_fetch <- function(expr, label = "") {
-  tryCatch(expr, error = function(e) {
-    cli_alert_warning("{label}: {conditionMessage(e)}")
+# ── LIVE BBRef SCRAPER ────────────────────────────────────────
+scrape_bbref_player <- function(pid, bbref_path) {
+  url <- paste0("https://www.basketball-reference.com/players/", bbref_path, ".html")
+  cli_alert("  Scraping {pid}...")
+  tryCatch({
+    page <- rvest::read_html(url)
+    extract_row <- function(row) {
+      cells <- rvest::html_elements(row, "td[data-stat]")
+      vals  <- suppressWarnings(as.integer(gsub(",", "", rvest::html_text(cells))))
+      setNames(vals, rvest::html_attr(cells, "data-stat"))
+    }
+    tfoot_row <- rvest::html_element(page, "#totals_stats tfoot tr:first-child")
+    if (is.na(tfoot_row)) { cli_alert_warning("  No tfoot for {pid}"); return(NULL) }
+    career <- extract_row(tfoot_row)
+    result <- list(
+      GP   = career[["g"]]   %||% NA_integer_,
+      PTS  = career[["pts"]] %||% NA_integer_,
+      TRB  = career[["trb"]] %||% NA_integer_,
+      ORB  = career[["orb"]] %||% NA_integer_,
+      AST  = career[["ast"]] %||% NA_integer_,
+      STL  = career[["stl"]] %||% NA_integer_,
+      BLK  = career[["blk"]] %||% NA_integer_,
+      FG3M = career[["fg3"]] %||% NA_integer_,
+      FTM  = career[["ft"]]  %||% NA_integer_
+    )
+    tbody_rows <- rvest::html_elements(page, "#totals_stats tbody tr:not(.thead)")
+    if (length(tbody_rows) > 0) {
+      szn  <- extract_row(tbody_rows[[length(tbody_rows)]])
+      gp_s <- szn[["g"]] %||% 0L
+      result$GP_season   <- gp_s
+      result$season_PTS  <- szn[["pts"]] %||% 0L
+      result$season_TRB  <- szn[["trb"]] %||% 0L
+      result$season_ORB  <- szn[["orb"]] %||% 0L
+      result$season_AST  <- szn[["ast"]] %||% 0L
+      result$season_STL  <- szn[["stl"]] %||% 0L
+      result$season_BLK  <- szn[["blk"]] %||% 0L
+      result$season_FG3M <- szn[["fg3"]] %||% 0L
+      result$season_FTM  <- szn[["ft"]]  %||% 0L
+      if (!is.na(gp_s) && gp_s > 0) {
+        result$PPG <- round(result$season_PTS / gp_s, 1)
+        result$RPG <- round(result$season_TRB / gp_s, 1)
+        result$APG <- round(result$season_AST / gp_s, 1)
+        result$BPG <- round(result$season_BLK / gp_s, 1)
+      }
+    }
+    cli_alert_success("  {pid}: GP={result$GP} PTS={result$PTS} BLK={result$BLK}")
+    Sys.sleep(3.5)
+    result
+  }, error = function(e) {
+    cli_alert_warning("  {pid} failed: {conditionMessage(e)}")
     NULL
   })
 }
 
-# ── FETCH ALL SEASON STATS IN ONE CALL ───────────────────────
-# nba_leaguedashplayerstats pulls all NBA players for the season at once
-# This is far more reliable than per-player calls
-
-cli_h2("Fetching 2025-26 season totals (all NBA players, one call)")
-
-season_totals <- safe_fetch(
-  hoopR::nba_leaguedashplayerstats(
-    season      = CURRENT_SEASON,
-    season_type = "Regular Season",
-    per_mode    = "Totals"
-  ),
-  label = "nba_leaguedashplayerstats"
-)
-
-# hoopR wraps results in a list — extract the data frame
-if (!is.null(season_totals)) {
-  if (is.list(season_totals) && !is.data.frame(season_totals)) {
-    season_totals <- season_totals[[1]]
+# ── FETCH LIVE DATA ───────────────────────────────────────────
+if (!OFFSEASON_MODE) {
+  cli_h2("LIVE MODE — Scraping Basketball Reference")
+  for (pid in names(BBREF_IDS)) {
+    fresh <- scrape_bbref_player(pid, BBREF_IDS[[pid]])
+    if (!is.null(fresh)) {
+      existing <- CAREER_TOTALS[[pid]]
+      for (field in names(fresh)) {
+        if (!is.null(fresh[[field]]) && !is.na(fresh[[field]])) {
+          existing[[field]] <- fresh[[field]]
+        }
+      }
+      CAREER_TOTALS[[pid]] <- existing
+    }
   }
-  cli_alert_success("Season totals: {nrow(season_totals)} players fetched")
+  cli_alert_success("Scrape complete")
 } else {
-  cli_alert_warning("Season totals unavailable — will use career_prior fallbacks")
+  cli_alert_info("Offseason — using hardcoded 2025-26 / pre-season totals")
 }
 
-# ── FETCH CAREER TOTALS PER PLAYER ────────────────────────────
-# nba_playercareerstats uses NBA.com player IDs
+# ── COMPUTE MILESTONES (LADDER SYSTEM) ───────────────────────
+cli_h2("Computing milestones from ladders")
 
-cli_h2("Fetching career stats per player")
-
-career_data <- list()
-
-for (i in seq_len(nrow(NETS_ROSTER))) {
-  p <- NETS_ROSTER[i, ]
-  cli_alert("  {p$full_name} (NBA ID: {p$nba_id})...")
-
-  result <- safe_fetch(
-    hoopR::nba_playercareerstats(
-      player_id = p$nba_id,
-      per_mode  = "Totals"
-    ),
-    label = p$full_name
-  )
-
-  career_data[[p$player_id]] <- result
-
-  if (!is.null(result)) {
-    cli_alert_success("    Got career data")
-  } else {
-    cli_alert_warning("    No career data — using fallback")
-  }
-
-  Sys.sleep(0.3)
+next_rung <- function(current, ladder) {
+  above <- ladder[ladder > current]
+  if (length(above) == 0) return(NULL)
+  min(above)
 }
-
-# ── HELPER: extract a stat from season totals ─────────────────
-
-get_season_stat <- function(season_df, nba_id, col) {
-  if (is.null(season_df)) return(NA_integer_)
-  row <- season_df |> filter(as.character(PLAYER_ID) == as.character(nba_id))
-  if (nrow(row) == 0 || !col %in% names(row)) return(NA_integer_)
-  as.integer(row[[col]][1])
-}
-
-# ── HELPER: extract career total from career endpoint ─────────
-
-get_career_total <- function(career, col) {
-  if (is.null(career)) return(NA_integer_)
-  # Career totals live in different list elements depending on hoopR version
-  totals <- career$CareerTotalsRegularSeason %||%
-            career[[grep("CareerTotals", names(career), value = TRUE)[1]]]
-  if (is.null(totals) || nrow(totals) == 0) return(NA_integer_)
-  if (!col %in% names(totals)) return(NA_integer_)
-  as.integer(totals[[col]][1])
-}
-
-`%||%` <- function(a, b) if (!is.null(a)) a else b
-
-# ── COMPUTE MILESTONES ────────────────────────────────────────
-
-cli_h2("Computing milestone proximity")
 
 milestone_results <- list()
 
-for (i in seq_len(nrow(MILESTONE_DEFS))) {
-  m   <- MILESTONE_DEFS[i, ]
-  ros <- NETS_ROSTER |> filter(player_id == m$player_id)
-  car <- career_data[[m$player_id]]
+for (pid in names(CAREER_TOTALS)) {
+  totals <- CAREER_TOTALS[[pid]]
+  name   <- NETS_ROSTER$full_name[NETS_ROSTER$player_id == pid]
+  if (length(name) == 0) name <- pid
 
-  # 1. Try career endpoint for career total
-  career_total <- get_career_total(car, m$stat_col)
+  for (stat in names(LADDERS)) {
+    current <- totals[[stat]]
+    if (is.null(current) || is.na(current)) next
 
-  # 2. Try season totals endpoint
-  season_val <- get_season_stat(season_totals, ros$nba_id, m$stat_col)
-  gp         <- get_season_stat(season_totals, ros$nba_id, "GP")
-  if (is.na(gp)) gp <- 0L
+    # Skip milestones for rookies with 0 career GP — nothing to track yet
+    if (!is.null(totals$GP) && !is.na(totals$GP) && totals$GP == 0L) next
 
-  # 3. Determine current value
-  current <- if (!is.na(career_total)) {
-    career_total  # career endpoint is authoritative
-  } else if (!is.na(season_val)) {
-    m$career_prior + season_val  # prior + this season
-  } else {
-    m$career_prior  # hardcoded fallback
+    target <- next_rung(as.integer(current), LADDERS[[stat]])
+    if (is.null(target)) next
+
+    remaining   <- as.integer(target) - as.integer(current)
+    season_stat <- totals[[paste0("season_", stat)]] %||% 0L
+    gp_s        <- totals$GP_season %||% 0L
+    pace        <- if (!is.null(gp_s) && !is.na(gp_s) && gp_s > 0 && !is.null(season_stat) && !is.na(season_stat) && season_stat > 0) season_stat / gp_s else NA_real_
+
+    games_away <- if (!is.na(pace) && pace > 0 && remaining > 0) {
+      as.integer(ceiling(remaining / pace))
+    } else NA_integer_
+
+    urgency <- if (remaining == 0L) {
+      "achieved"
+    } else if (!is.na(games_away) && games_away <= 10) {
+      "urgent"
+    } else if (!is.na(games_away) && games_away <= 30) {
+      "close"
+    } else {
+      "upcoming"
+    }
+
+    mid <- paste0(pid, "-", tolower(stat), "-", target)
+
+    milestone_results[[length(milestone_results) + 1]] <- list(
+      id         = mid,
+      player     = pid,
+      playerName = name,
+      category   = STAT_CATEGORIES[[stat]],
+      statType   = STAT_LABELS[[stat]],
+      statKey    = stat,
+      current    = as.integer(current),
+      target     = as.integer(target),
+      remaining  = remaining,
+      pace       = if (is.na(pace)) NULL else round(pace, 2),
+      gamesAway  = if (is.na(games_away)) NULL else games_away,
+      urgency    = urgency,
+      gp_season  = gp_s,
+      data_source = ifelse(OFFSEASON_MODE, "verified_bbref_2025_26", "live_bbref_scrape")
+    )
   }
-
-  # 4. Pace & games away
-  pace <- if (!is.na(season_val) && gp > 0) round(season_val / gp, 2) else 0
-  remaining  <- max(0L, as.integer(m$target) - as.integer(current))
-  games_away <- if (pace > 0 && remaining > 0) ceiling(remaining / pace) else NA_integer_
-
-  urgency <- case_when(
-    is.na(games_away)    ~ "upcoming",
-    games_away <= 5      ~ "urgent",
-    games_away <= 15     ~ "close",
-    TRUE                 ~ "upcoming"
-  )
-
-  data_source <- case_when(
-    !is.na(career_total) ~ "career_endpoint",
-    !is.na(season_val)   ~ "season_totals",
-    TRUE                 ~ "fallback"
-  )
-
-  milestone_results[[i]] <- list(
-    id         = m$id,
-    player     = m$player_id,
-    type       = m$type,
-    category   = m$category,
-    statType   = m$stat_label,
-    current    = as.integer(current),
-    target     = as.integer(m$target),
-    unit       = m$unit,
-    remaining  = remaining,
-    pace       = pace,
-    gamesAway  = if (is.na(games_away)) NULL else as.integer(games_away),
-    urgency    = urgency,
-    mediaAlert = MEDIA_ALERTS[[m$id]] %||% "",
-    gp_season  = gp,
-    data_source = data_source
-  )
-
-  cli_alert_success("  {m$id}: {current}/{m$target} ({urgency}) [{data_source}]")
 }
 
-milestone_results <- Filter(Negate(is.null), milestone_results)
+cli_alert_success("Generated {length(milestone_results)} milestones across {length(CAREER_TOTALS)} players")
 
-# ── ROSTER SUMMARY ────────────────────────────────────────────
-
+# ── ROSTER OUTPUT ─────────────────────────────────────────────
 roster_out <- lapply(seq_len(nrow(NETS_ROSTER)), function(i) {
-  p  <- NETS_ROSTER[i, ]
-  gp <- get_season_stat(season_totals, p$nba_id, "GP")
-  pts <- get_season_stat(season_totals, p$nba_id, "PTS")
-  reb <- get_season_stat(season_totals, p$nba_id, "REB")
-  ast <- get_season_stat(season_totals, p$nba_id, "AST")
+  p <- NETS_ROSTER[i, ]
+  t <- CAREER_TOTALS[[p$player_id]]
   list(
-    id     = p$player_id,
-    name   = p$full_name,
-    number = p$number,
-    pos    = p$pos,
-    nba_id = p$nba_id,
-    gp     = if (is.na(gp))  NULL else as.integer(gp),
-    season_ppg = if (!is.na(pts) && !is.na(gp) && gp > 0) round(pts/gp, 1) else NULL,
-    season_rpg = if (!is.na(reb) && !is.na(gp) && gp > 0) round(reb/gp, 1) else NULL,
-    season_apg = if (!is.na(ast) && !is.na(gp) && gp > 0) round(ast/gp, 1) else NULL
+    id         = p$player_id,
+    name       = p$full_name,
+    number     = p$number,
+    pos        = p$pos,
+    gp         = t$GP_season %||% NULL,
+    career_gp  = t$GP %||% NULL,
+    season_ppg = t$PPG %||% NULL,
+    season_rpg = t$RPG %||% NULL,
+    season_apg = t$APG %||% NULL,
+    note       = t$note %||% NULL,
+    stats = list(
+      GP   = t$GP   %||% 0L,
+      PTS  = t$PTS  %||% 0L,
+      TRB  = t$TRB  %||% 0L,
+      ORB  = t$ORB  %||% 0L,
+      AST  = t$AST  %||% 0L,
+      STL  = t$STL  %||% 0L,
+      BLK  = t$BLK  %||% 0L,
+      FG3M = t$FG3M %||% 0L,
+      FTM  = t$FTM  %||% 0L
+    )
   )
 })
 
 # ── WRITE JSON ────────────────────────────────────────────────
-
-cli_h2("Writing output JSON")
+cli_h2("Writing JSON")
 
 output <- list(
   meta = list(
     generated_at     = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-    season           = CURRENT_SEASON,
-    source           = "hoopR / NBA.com Stats API",
+    season           = 2027L,
+    source           = ifelse(OFFSEASON_MODE,
+      "Verified career totals — Basketball Reference (Sep 2026, 2026-27 pre-season)",
+      paste0("Live BBRef scrape — ", format(Sys.time(), "%Y-%m-%d"))),
+    offseason_mode   = OFFSEASON_MODE,
     total_milestones = length(milestone_results),
     total_streaks    = 0L
   ),
+  ladders    = LADDERS,
   roster     = roster_out,
   milestones = milestone_results,
   streaks    = list()
@@ -280,5 +456,5 @@ out_path <- file.path(OUTPUT_DIR, "live_stats.json")
 writeLines(toJSON(output, auto_unbox = TRUE, pretty = TRUE, null = "null"), out_path)
 
 cli_alert_success("Written: {out_path}")
-cli_alert_info("Milestones: {length(milestone_results)}")
+cli_alert_info("Total milestones: {length(milestone_results)}")
 cli_h1("Done — {format(Sys.time())}")
