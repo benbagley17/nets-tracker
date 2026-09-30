@@ -39,15 +39,15 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .banner-title{font-size:20px;font-weight:700;letter-spacing:4px;text-transform:uppercase;}
 
 /* ── STAT BOX ── */
-.stat-box{border:1px solid #d0d0d0;border-radius:10px;overflow:hidden;background:#fff;}
-.stat-box-header{background:#888;color:#fff;text-align:center;padding:8px 12px;}
+.stat-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
+.stat-box-header{background:#6b6b6b;color:#fff;text-align:center;padding:8px 12px;}
 .stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
 .stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
 
 /* ── PLAYER ROW ── */
 .player-row{display:flex;align-items:center;gap:10px;}
-.player-img-wrap{width:38px;height:38px;flex-shrink:0;}
-.player-img{width:38px;height:38px;object-fit:cover;border-radius:3px;}
+.player-img-wrap{width:38px;height:38px;flex-shrink:0;overflow:hidden;border-radius:3px;}
+.player-img{width:38px;height:46px;object-fit:cover;object-position:center top;border-radius:3px;margin-top:-4px;}
 .player-img-fallback{width:38px;height:38px;border-radius:3px;background:#e8e6e2;display:flex;align-items:center;justify-content:center;}
 .player-info{flex:1;min-width:0;}
 .player-name{font-size:11px;font-weight:400;color:#222;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -64,12 +64,6 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .est-label{font-size:7px;font-weight:700;letter-spacing:1px;color:#aaa;text-transform:uppercase;}
 .est-val{font-size:11px;font-weight:700;color:#0a0a0a;line-height:1.2;white-space:nowrap;}
 
-/* ── STAT BOX ── */
-.stat-box{border:2px solid #0a0a0a;border-radius:10px;overflow:hidden;background:#fff;}
-.stat-box-header{background:#6b6b6b;color:#fff;text-align:center;padding:8px 12px;}
-.stat-box-title{font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;}
-.stat-box-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
-
 /* ── TWO COLUMN LAYOUT ── */
 .columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 
@@ -80,20 +74,17 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
 .climb-toolbar{background:#f0ede8;border:1px solid #ddd;border-radius:6px;padding:7px 14px;margin:8px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .climb-toolbar .tb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;white-space:nowrap;}
 
-/* Leaderboard columns — compact, fit 4-5 across */
 .climb-cols{display:flex;flex-wrap:nowrap;gap:0;align-items:flex-start;border-top:1px solid #e0e0e0;overflow:visible;}
-.climb-col{flex:1 1 0;min-width:0;padding:8px 10px 8px 0;border-right:1px solid #e0e0e0;}.climb-col:last-child{border-right:none;}
+.climb-col{flex:1 1 0;min-width:0;padding:8px 10px 8px 0;border-right:1px solid #e0e0e0;}
 .climb-col:last-child{border-right:none;}
 .climb-col-title{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a0a;margin-bottom:6px;text-align:left;}
 
-/* Stack rows */
 .climb-stack{display:flex;flex-direction:column;gap:1px;}
 .climb-stack-row{display:flex;align-items:center;gap:3px;padding:2px 0;border-radius:3px;}
 .climb-rank{font-size:9px;color:#bbb;flex-shrink:0;text-align:left;min-width:20px;}
 .climb-pname{font-size:9px;color:#555;white-space:nowrap;overflow:visible;text-overflow:clip;margin-left:2px;}
 .climb-pval{font-size:9px;color:#aaa;flex-shrink:0;padding-left:6px;font-variant-numeric:tabular-nums;margin-left:auto;}
 
-/* Active row — bigger, bolder, black */
 .climb-stack-row.active .climb-rank{font-size:11px;font-weight:700;color:#0a0a0a;}
 .climb-stack-row.active .climb-pname{font-size:11px;font-weight:700;color:#0a0a0a;white-space:nowrap;overflow:visible;}
 .climb-stack-row.active .climb-pval{font-size:11px;font-weight:700;color:#0a0a0a;}
@@ -110,35 +101,25 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
   .page{margin:0;padding:12px 14px;max-width:100%;}
   body{background:#fff;}
   @page{margin:25mm 10mm 8mm 10mm;size:A4 portrait;}
-  /* Suppress browser header/footer (date, URL, title) */
   @page{margin-top:25mm;}
   html{-webkit-print-color-adjust:exact;}
   .stat-box,.climb-box{page-break-inside:avoid;}
   .columns,.climb-grid{page-break-inside:avoid;}
-
-  /* Force all colors and backgrounds to print */
   *{
     -webkit-print-color-adjust:exact!important;
     print-color-adjust:exact!important;
     color-adjust:exact!important;
   }
-
-  /* Keep banner black, box headers lighter grey */
   .banner{background:#0a0a0a!important;color:#fff!important;}
   .banner-title{color:#fff!important;}
   .stat-box-header{background:#888!important;color:#fff!important;}
   .stat-box-title{color:#fff!important;}
   .climb-banner{background:#fff!important;}
   .climb-banner-title{color:#0a0a0a!important;}
-  /* Ensure climbing columns stay on one line in print */
   .climb-cols{flex-wrap:nowrap!important;}
-
-  /* Ensure progress bars print with color */
   .bar-track{background:#e8e6e2!important;}
   .bar-fill{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
   .bar-dot{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;border:2px solid #fff!important;}
-
-  /* Ensure box borders print */
   .stat-box,.climb-box{border:2px solid #0a0a0a!important;}
 }
 </style>
@@ -181,7 +162,6 @@ body{background:#f5f5f3;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;fo
   <span style="font-size:9px;color:#444;letter-spacing:1px;">Waiting for data...</span>
 </div>
 
-<!-- CLIMBING CONTROLS (shown below thresh bar, above page) -->
 <div id="climb-toolbar-wrap" style="max-width:800px;margin:8px auto 0;padding:0 16px;display:none;">
   <div class="climb-toolbar">
     <span class="tb-label">Climbing — Status</span>
@@ -251,7 +231,6 @@ function gamesAwayText(m){
   return '~'+games+(games===1?' game':' games');
 }
 
-// Map full names to roster IDs for headshot lookup
 var nameToId={};
 function buildNameToId(){
   ROSTER.forEach(function(p){ nameToId[p.name.toLowerCase()]=p.id; });
@@ -259,7 +238,7 @@ function buildNameToId(){
 
 function playerImgById(playerId){
   if(!playerId) return silhouette();
-  var src='headshots/'+playerId+'.png';
+  var src='headshots/'+playerId+'.PNG';
   return '<img class="player-img" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="player-img-fallback" style="display:none">'
     +'<svg width="22" height="22" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg>'
@@ -267,12 +246,10 @@ function playerImgById(playerId){
 }
 
 function playerImg(playerId){
-  // playerId is already a roster id (from milestones)
   return playerImgById(playerId);
 }
 
 function playerImgByName(fullName){
-  // For climbing section where we only have the full name
   var id=nameToId[fullName.toLowerCase()];
   return playerImgById(id||fullName.toLowerCase().split(' ').pop());
 }
@@ -338,19 +315,12 @@ function msOk(m){
   }
   return true;
 }
-function chOk(c){
-  if(!statusOn[c.urgency]) return false;
-  var mapped=PDF_STATS.indexOf(c.stat)>=0?c.stat:null;
-  if(mapped&&!statOn[mapped]) return false;
-  return true;
-}
 
 function buildPlayerRow(m){
   var col=STATUS_COLOR[m.urgency]||'#e8473f';
   var pct=Math.min(99,Math.floor(m.current/m.target*100));
   var gaTxt=gamesAwayText(m);
   var dotLeft='calc('+pct+'% - 8px)';
-  // bar fill needs radius adjustment when nearly full
   var fillRadius=pct>=98?'20px':'20px 0 0 20px';
   return '<div class="player-row">'
     +'<div class="player-img-wrap">'+playerImg(m.player)+'</div>'
@@ -381,9 +351,7 @@ function buildStatBox(statKey, items){
   +'</div>';
 }
 
-// Balance two columns by estimated height (each player row ~52px, header ~36px)
 function balanceColumns(boxes){
-  // boxes = [{key, items}]
   var ROW_H=52, HEAD_H=52, PAD=20;
   function boxH(b){ return HEAD_H + b.items.length*ROW_H + PAD; }
   var left=[], right=[], lh=0, rh=0;
@@ -395,7 +363,6 @@ function balanceColumns(boxes){
   return {left:left, right:right};
 }
 
-/* ── CLIMBING STATE ── */
 var climbStatusOn={urgent:true,close:true,upcoming:true};
 var climbStatOn={PTS:true,TRB:true,ORB:true,AST:true,STL:true,BLK:true,FG3M:true,FTM:true,GP:true,MP:true,'3PT%':true};
 
@@ -410,7 +377,7 @@ function chOk(c){
 
 function climbHeadshot(playerId){
   if(!playerId) return '<div class="climb-active-fallback"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
-  var src='headshots/'+playerId+'.png';
+  var src='headshots/'+playerId+'.PNG';
   return '<img class="climb-active-headshot" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="climb-active-fallback" style="display:none"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
 }
@@ -418,7 +385,6 @@ function climbHeadshot(playerId){
 function abbreviateName(fullName){
   var parts=fullName.trim().split(/\s+/);
   if(parts.length<=1) return fullName;
-  // Handle prefixes like "Jan van Breda Kolff" — just use first initial + last word
   var first=parts[0];
   var last=parts[parts.length-1];
   return first.charAt(0)+'. '+last;
@@ -427,9 +393,8 @@ function abbreviateName(fullName){
 function buildClimbColumn(c){
   var col=STATUS_COLOR[c.urgency]||'#888';
   var rows=[...CAREER[c.stat]].sort(function(a,b){return b[1]-a[1];});
-  var activeIdx=c.currentRank-1; // 0-based in sorted array
+  var activeIdx=c.currentRank-1;
 
-  // Show 2 above and 1 below the active player
   var startIdx=Math.max(0, activeIdx-2);
   var endIdx=Math.min(rows.length-1, activeIdx+1);
 
@@ -455,7 +420,6 @@ function buildClimbColumn(c){
     }
   }
 
-  // Games badge
   var gaBadge='';
   if(c.pctGap!=null){
     var toNext=c.targetVal-c.currentVal;
@@ -476,7 +440,6 @@ function buildClimbColumn(c){
 }
 
 function hexToRgb(hex){
-  // Simple hex to r,g,b string for rgba()
   hex=hex.replace('#','');
   if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
   var r=parseInt(hex.substring(0,2),16);
@@ -489,7 +452,6 @@ function render(){
   var root=document.getElementById('page-root');
   var fms=MILESTONES.filter(msOk);
 
-  // Group milestones by stat in PDF_STATS order
   var groups={};
   fms.forEach(function(m){
     var k=m.statKey||'Other';
@@ -507,10 +469,9 @@ function render(){
 
   var html='';
 
-  // Banner
-  html+='<div class="banner"><div class="banner-title">Upcoming Milestones</div></div>';
+  // Banner — UPCOMING CAREER MILESTONES
+  html+='<div class="banner"><div class="banner-title">Upcoming Career Milestones</div></div>';
 
-  // Milestone boxes
   if(boxes.length){
     var cols=balanceColumns(boxes);
     html+='<div class="columns">';
@@ -521,7 +482,6 @@ function render(){
     html+='<div class="no-items" style="text-align:center;padding:24px 0;">No milestones match the selected filters.</div>';
   }
 
-  // Climbing section
   var CLIMB_ORDER=['BLK','TRB','ORB','GP','MP','PTS','AST','STL','FG3M','FTM','3PT%'];
   var fch=CHASES.filter(chOk).sort(function(a,b){
     var ai=CLIMB_ORDER.indexOf(a.stat), bi=CLIMB_ORDER.indexOf(b.stat);
