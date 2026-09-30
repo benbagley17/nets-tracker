@@ -238,7 +238,7 @@ function buildNameToId(){
 
 function playerImgById(playerId){
   if(!playerId) return silhouette();
-  var src='headshots/'+playerId+'.PNG';
+  var src='headshots/'+playerId+'.png';
   return '<img class="player-img" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="player-img-fallback" style="display:none">'
     +'<svg width="22" height="22" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg>'
@@ -377,7 +377,7 @@ function chOk(c){
 
 function climbHeadshot(playerId){
   if(!playerId) return '<div class="climb-active-fallback"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
-  var src='headshots/'+playerId+'.PNG';
+  var src='headshots/'+playerId+'.png';
   return '<img class="climb-active-headshot" src="'+src+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" alt="">'
     +'<div class="climb-active-fallback" style="display:none"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" fill="#ccc"/><path d="M2 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>';
 }
