@@ -1,7 +1,7 @@
 # ============================================================
 # Brooklyn Nets Milestone & Streak Tracker — Data Fetch
-# Career totals verified from Basketball Reference, May 11 2026
-# Milestone ladders auto-advance — no manual updates needed
+# Career totals verified from Basketball Reference, Sep 2026
+# 2026-27 roster update — milestone ladders auto-advance
 # ============================================================
 
 suppressPackageStartupMessages({
@@ -19,20 +19,21 @@ suppressPackageStartupMessages({
 OFFSEASON_MODE <- TRUE
 
 BBREF_IDS <- c(
-  claxton  = "c/claxtni01",  clowney  = "c/clownno01",
-  mann     = "m/mannte01",   powell   = "p/poweldr01",
-  sharpe   = "s/sharpda01",  wolf     = "w/wolfda01",
-  williams = "w/willizi02",  traore   = "t/traorno01",
-  wilson   = "w/wilsoja03",  porter   = "p/portemi01",
-  demin    = "d/demineg01",  saraf    = "s/sarafbe01",
-  liddell  = "l/liddeej01",  etienne  = "e/etienty01",
-  agbaji   = "a/agbajoc01",  johnson  = "j/johnsch06",
-  minott   = "m/minotjo01",  smith    = "s/smithma02"
+  clowney    = "c/clownno01",  mann       = "m/mannte01",
+  powell     = "p/poweldr01",  sharpe     = "s/sharpda01",
+  wolf       = "w/wolfda01",   traore     = "t/traorno01",
+  porter     = "p/portemi01",  demin      = "d/demineg01",
+  saraf      = "s/sarafbe01",  johnson    = "j/johnsch06",
+  minott     = "m/minotjo01",  bilodeau   = "b/bilodty01",
+  brown      = "b/brownmi02",  dainja     = "d/dainjda01",
+  ellis      = "e/elliske01",  humrichous = "h/humribe01",
+  jefferson  = "j/jeffejo01",  randle     = "r/randlju01",
+  wagner     = "w/wagnemo01",  nelson     = "n/nelsogr02"
 )
 
 cli_h1("Nets Milestone Tracker — Data Fetch")
 cli_alert_info("Run time: {Sys.time()}")
-cli_alert_info("Mode: {ifelse(OFFSEASON_MODE, 'OFFSEASON (hardcoded 2025-26)', 'LIVE (BBRef scrape)')}")
+cli_alert_info("Mode: {ifelse(OFFSEASON_MODE, 'OFFSEASON (hardcoded 2025-26 / pre-season)', 'LIVE (BBRef scrape)')}")
 
 OUTPUT_DIR <- "public/data"
 if (!dir.exists(OUTPUT_DIR)) OUTPUT_DIR <- "../public/data"
@@ -75,16 +76,13 @@ STAT_CATEGORIES <- list(
   GP   = "Games"
 )
 
-# ── VERIFIED CAREER TOTALS (Basketball Reference, May 11 2026) ─
+# ── VERIFIED CAREER TOTALS (Basketball Reference, Sep 2026) ───
+# Returning players: end-of-2025-26 season totals carried over
+# New veterans: career totals through 2025-26 season
+# Rookies (Bilodeau, Brown, Dainja, Humrichous, Jefferson): 0 NBA games
 CAREER_TOTALS <- list(
 
-  claxton = list(
-    GP=380L, PTS=4024L, TRB=2875L, ORB=855L, AST=788L, STL=266L, BLK=611L, FG3M=11L, FTM=557L,
-    GP_season=69L, season_PTS=810L, season_TRB=478L, season_ORB=168L, season_AST=253L,
-    season_STL=62L, season_BLK=77L, season_FG3M=3L, season_FTM=141L,
-    PPG=11.7, RPG=6.9, APG=3.7, BPG=1.1
-  ),
-
+  # ── RETURNING PLAYERS (from 2025-26) ──────────────────────
   clowney = list(
     GP=135L, PTS=1362L, TRB=535L, ORB=121L, AST=166L, STL=82L, BLK=82L, FG3M=228L, FTM=268L,
     GP_season=66L, season_PTS=809L, season_TRB=273L, season_ORB=52L, season_AST=108L,
@@ -120,13 +118,6 @@ CAREER_TOTALS <- list(
     PPG=8.9, RPG=4.9, APG=2.2, BPG=0.6
   ),
 
-  williams = list(
-    GP=269L, PTS=2336L, TRB=809L, ORB=168L, AST=319L, STL=223L, BLK=76L, FG3M=348L, FTM=342L,
-    GP_season=56L, season_PTS=573L, season_TRB=134L, season_ORB=30L, season_AST=60L,
-    season_STL=76L, season_BLK=21L, season_FG3M=86L, season_FTM=119L,
-    PPG=10.2, RPG=2.4, APG=1.1, BPG=0.4
-  ),
-
   traore = list(
     GP=56L, PTS=499L, TRB=99L, ORB=14L, AST=213L, STL=45L, BLK=23L, FG3M=61L, FTM=74L,
     GP_season=56L, season_PTS=499L, season_TRB=99L, season_ORB=14L, season_AST=213L,
@@ -134,19 +125,11 @@ CAREER_TOTALS <- list(
     PPG=8.9, RPG=1.8, APG=3.8, BPG=0.4
   ),
 
-  wilson = list(
-    GP=176L, PTS=1306L, TRB=515L, ORB=139L, AST=240L, STL=73L, BLK=11L, FG3M=200L, FTM=242L,
-    GP_season=54L, season_PTS=343L, season_TRB=114L, season_ORB=17L, season_AST=50L,
-    season_STL=22L, season_BLK=2L, season_FG3M=54L, season_FTM=69L,
-    PPG=6.4, RPG=2.1, APG=0.9, BPG=0.0
-  ),
-
   porter = list(
     GP=397L, PTS=6856L, TRB=2576L, ORB=543L, AST=643L, STL=261L, BLK=214L, FG3M=1019L, FTM=703L,
     GP_season=52L, season_PTS=1259L, season_TRB=367L, season_ORB=69L, season_AST=158L,
     season_STL=55L, season_BLK=13L, season_FG3M=176L, season_FTM=195L,
-    PPG=24.2, RPG=7.1, APG=3.0, BPG=0.3,
-    note="Out for season (hamstring)"
+    PPG=24.2, RPG=7.1, APG=3.0, BPG=0.3
   ),
 
   demin = list(
@@ -161,28 +144,6 @@ CAREER_TOTALS <- list(
     GP_season=44L, season_PTS=332L, season_TRB=92L, season_ORB=20L, season_AST=145L,
     season_STL=38L, season_BLK=8L, season_FG3M=19L, season_FTM=73L,
     PPG=7.5, RPG=2.1, APG=3.3, BPG=0.2
-  ),
-
-  liddell = list(
-    GP=46L, PTS=172L, TRB=83L, ORB=17L, AST=28L, STL=9L, BLK=13L, FG3M=21L, FTM=25L,
-    GP_season=26L, season_PTS=147L, season_TRB=69L, season_ORB=14L, season_AST=24L,
-    season_STL=6L, season_BLK=10L, season_FG3M=18L, season_FTM=21L,
-    PPG=5.7, RPG=2.7, APG=0.9, BPG=0.4
-  ),
-
-  etienne = list(
-    GP=31L, PTS=244L, TRB=36L, ORB=8L, AST=52L, STL=14L, BLK=1L, FG3M=56L, FTM=38L,
-    GP_season=24L, season_PTS=189L, season_TRB=27L, season_ORB=5L, season_AST=40L,
-    season_STL=11L, season_BLK=0L, season_FG3M=43L, season_FTM=30L,
-    PPG=7.9, RPG=1.1, APG=1.7, BPG=0.0
-  ),
-
-  agbaji = list(
-    GP=263L, PTS=1903L, TRB=720L, ORB=224L, AST=295L, STL=145L, BLK=106L, FG3M=278L, FTM=163L,
-    GP_season=20L, season_PTS=133L, season_TRB=46L, season_ORB=13L, season_AST=17L,
-    season_STL=7L, season_BLK=6L, season_FG3M=22L, season_FTM=11L,
-    PPG=5.1, RPG=2.3, APG=0.8, BPG=0.2,
-    note="Joined BRK late (20 GP with BRK, 42 with TOR)"
   ),
 
   johnson = list(
@@ -200,35 +161,104 @@ CAREER_TOTALS <- list(
     note="16 GP with BRK in 2025-26 (33 with BOS earlier)"
   ),
 
-  smith = list(
-    GP=15L, PTS=124L, TRB=51L, ORB=12L, AST=49L, STL=12L, BLK=4L, FG3M=20L, FTM=8L,
-    GP_season=15L, season_PTS=124L, season_TRB=51L, season_ORB=12L, season_AST=49L,
-    season_STL=12L, season_BLK=4L, season_FG3M=20L, season_FTM=8L,
-    PPG=8.3, RPG=3.4, APG=3.3, BPG=0.3
+  # ── NEW VETERANS ──────────────────────────────────────────
+  # Julius Randle — career totals through 2025-26 (MIN)
+  randle = list(
+    GP=789L, PTS=15184L, TRB=7023L, ORB=NA_integer_, AST=3108L, STL=572L, BLK=302L, FG3M=959L, FTM=3273L,
+    GP_season=79L, season_PTS=1667L, season_TRB=532L, season_ORB=NA_integer_, season_AST=395L,
+    season_STL=NA_integer_, season_BLK=NA_integer_, season_FG3M=109L, season_FTM=398L,
+    PPG=21.1, RPG=6.7, APG=5.0, BPG=0.2
+  ),
+
+  # Moritz Wagner — career totals through 2025-26 (ORL partial)
+  wagner = list(
+    GP=399L, PTS=3575L, TRB=1551L, ORB=NA_integer_, AST=466L, STL=200L, BLK=111L, FG3M=282L, FTM=753L,
+    GP_season=36L, season_PTS=248L, season_TRB=115L, season_ORB=NA_integer_, season_AST=29L,
+    season_STL=NA_integer_, season_BLK=NA_integer_, season_FG3M=22L, season_FTM=59L,
+    PPG=6.9, RPG=3.2, APG=0.8, BPG=0.3
+  ),
+
+  # Keon Ellis — career totals through 2025-26 (SAC/CLE)
+  ellis = list(
+    GP=225L, PTS=1480L, TRB=479L, ORB=NA_integer_, AST=283L, STL=260L, BLK=139L, FG3M=306L, FTM=154L,
+    GP_season=72L, season_PTS=480L, season_TRB=135L, season_ORB=NA_integer_, season_AST=72L,
+    season_STL=83L, season_BLK=46L, season_FG3M=91L, season_FTM=51L,
+    PPG=6.7, RPG=1.9, APG=1.0, BPG=0.6
+  ),
+
+  # Grant Nelson — career totals through 2025-26 (4 GP with BRK)
+  nelson = list(
+    GP=4L, PTS=17L, TRB=6L, ORB=NA_integer_, AST=5L, STL=1L, BLK=5L, FG3M=0L, FTM=7L,
+    GP_season=4L, season_PTS=17L, season_TRB=6L, season_ORB=NA_integer_, season_AST=5L,
+    season_STL=1L, season_BLK=5L, season_FG3M=0L, season_FTM=7L,
+    PPG=4.3, RPG=1.5, APG=1.3, BPG=1.3
+  ),
+
+  # ── 2026 ROOKIES (0 NBA games) ─────────────────────────────
+  # Tyler Bilodeau — 2026 Draft, 2nd round #43 (BRK)
+  bilodeau = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Mikel Brown Jr. — 2026 Draft, 1st round #6 (BRK)
+  brown = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Dain Dainja — undrafted FA (BRK training camp)
+  dainja = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Ben Humrichous — undrafted FA (BRK training camp)
+  humrichous = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
+  ),
+
+  # Joshua Jefferson — 2026 Draft, 1st round #28 (MIN → BRK)
+  jefferson = list(
+    GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
+    GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
+    season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+    PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
   )
 )
 
-# ── ROSTER ────────────────────────────────────────────────────
+# ── 2026-27 NETS ROSTER ───────────────────────────────────────
 NETS_ROSTER <- tribble(
-  ~player_id,  ~full_name,            ~number, ~pos,
-  "claxton",   "Nic Claxton",         "33",    "C",
-  "clowney",   "Noah Clowney",        "21",    "PF",
-  "mann",      "Terance Mann",        "14",    "SG",
-  "powell",    "Drake Powell",        "4",     "SG",
-  "sharpe",    "Day'Ron Sharpe",      "20",    "C",
-  "wolf",      "Danny Wolf",          "2",     "PF",
-  "williams",  "Ziaire Williams",     "1",     "SF",
-  "traore",    "Nolan Traore",        "88",    "PG",
-  "wilson",    "Jalen Wilson",        "22",    "PF",
-  "porter",    "Michael Porter Jr.",  "17",    "SF",
-  "demin",     "Egor Demin",          "8",     "PG",
-  "saraf",     "Ben Saraf",           "77",    "SG",
-  "liddell",   "E.J. Liddell",        "9",     "PF",
-  "etienne",   "Tyson Etienne",       "10",    "PG",
-  "agbaji",    "Ochai Agbaji",        "30",    "SG",
-  "johnson",   "Chaney Johnson",      "31",    "SF",
-  "minott",    "Josh Minott",         "00",    "SF",
-  "smith",     "Malachi Smith",       "18",    "SG"
+  ~player_id,    ~full_name,              ~number, ~pos,
+  "clowney",     "Noah Clowney",          "21",    "PF",
+  "mann",        "Terance Mann",          "14",    "SG",
+  "powell",      "Drake Powell",          "4",     "SG",
+  "sharpe",      "Day'Ron Sharpe",        "20",    "C",
+  "wolf",        "Danny Wolf",            "2",     "PF",
+  "traore",      "Nolan Traore",          "10",    "PG",
+  "porter",      "Michael Porter Jr.",    "17",    "SF",
+  "demin",       "Egor Demin",            "8",     "PG",
+  "saraf",       "Ben Saraf",             "77",    "SG",
+  "johnson",     "Chaney Johnson",        "31",    "SF",
+  "minott",      "Josh Minott",           "00",    "SF",
+  "bilodeau",    "Tyler Bilodeau",        "43",    "PF",
+  "brown",       "Mikel Brown Jr.",       "6",     "PG",
+  "dainja",      "Dain Dainja",           "11",    "PF",
+  "ellis",       "Keon Ellis",            "15",    "SG",
+  "humrichous",  "Ben Humrichous",        "28",    "SF",
+  "jefferson",   "Joshua Jefferson",      "29",    "PF",
+  "randle",      "Julius Randle",         "30",    "PF",
+  "wagner",      "Moritz Wagner",         "21",    "C",
+  "nelson",      "Grant Nelson",          "35",    "PF"
 )
 
 # ── LIVE BBRef SCRAPER ────────────────────────────────────────
@@ -302,7 +332,7 @@ if (!OFFSEASON_MODE) {
   }
   cli_alert_success("Scrape complete")
 } else {
-  cli_alert_info("Offseason — using hardcoded 2025-26 totals")
+  cli_alert_info("Offseason — using hardcoded 2025-26 / pre-season totals")
 }
 
 # ── COMPUTE MILESTONES (LADDER SYSTEM) ───────────────────────
@@ -325,13 +355,16 @@ for (pid in names(CAREER_TOTALS)) {
     current <- totals[[stat]]
     if (is.null(current) || is.na(current)) next
 
+    # Skip milestones for rookies with 0 career GP — nothing to track yet
+    if (!is.null(totals$GP) && !is.na(totals$GP) && totals$GP == 0L) next
+
     target <- next_rung(as.integer(current), LADDERS[[stat]])
     if (is.null(target)) next
 
     remaining   <- as.integer(target) - as.integer(current)
     season_stat <- totals[[paste0("season_", stat)]] %||% 0L
     gp_s        <- totals$GP_season %||% 0L
-    pace        <- if (gp_s > 0 && season_stat > 0) season_stat / gp_s else NA_real_
+    pace        <- if (!is.null(gp_s) && !is.na(gp_s) && gp_s > 0 && !is.null(season_stat) && !is.na(season_stat) && season_stat > 0) season_stat / gp_s else NA_real_
 
     games_away <- if (!is.na(pace) && pace > 0 && remaining > 0) {
       as.integer(ceiling(remaining / pace))
@@ -407,7 +440,7 @@ output <- list(
     generated_at     = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     season           = 2027L,
     source           = ifelse(OFFSEASON_MODE,
-      "Verified career totals — Basketball Reference (May 11, 2026)",
+      "Verified career totals — Basketball Reference (Sep 2026, 2026-27 pre-season)",
       paste0("Live BBRef scrape — ", format(Sys.time(), "%Y-%m-%d"))),
     offseason_mode   = OFFSEASON_MODE,
     total_milestones = length(milestone_results),
