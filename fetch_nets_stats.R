@@ -1,6 +1,6 @@
 # ============================================================
 # Brooklyn Nets Milestone & Streak Tracker — Data Fetch
-# Career totals verified from Basketball Reference, Sep 2026
+# Career totals verified from Basketball Reference, Sep 2026 v2
 # 2026-27 roster update — milestone ladders auto-advance
 # ============================================================
 
