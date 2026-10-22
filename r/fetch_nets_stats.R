@@ -2,6 +2,7 @@
 # Brooklyn Nets Milestone & Streak Tracker — Data Fetch
 # Career totals verified from Basketball Reference, Sep 2026
 # 2026-27 roster update — milestone ladders auto-advance
+# Live stats via stats.nba.com API (replaces BBRef scraper)
 # ============================================================
 
 suppressPackageStartupMessages({
@@ -9,31 +10,41 @@ suppressPackageStartupMessages({
   library(cli)
   library(tibble)
   library(dplyr)
-  library(rvest)
+  library(hoopR)
 })
 
 `%||%` <- function(a, b) if (!is.null(a)) a else b
 
 # ── CONFIG ────────────────────────────────────────────────────
-# Set FALSE on opening night of 2026-27 season
 OFFSEASON_MODE <- FALSE
 
-BBREF_IDS <- c(
-  clowney    = "c/clownno01",  mann       = "m/mannte01",
-  powell     = "p/poweldr01",  sharpe     = "s/sharpda01",
-  wolf       = "w/wolfda01",   traore     = "t/traorno01",
-  porter     = "p/portemi01",  demin      = "d/demineg01",
-  saraf      = "s/sarafbe01",  johnson    = "j/johnsch06",
-  minott     = "m/minotjo01",  bilodeau   = "b/bilodty01",
-  brown      = "b/brownmi02",  dainja     = "d/dainjda01",
-  ellis      = "e/elliske01",  humrichous = "h/humribe01",
-  jefferson  = "j/jeffejo01",  randle     = "r/randlju01",
-  wagner     = "w/wagnemo01",  nelson     = "n/nelsogr02"
+# NBA.com player IDs (from stats.nba.com)
+NBA_IDS <- c(
+  clowney    = "1641711",
+  mann       = "1629611",
+  powell     = "1642260",
+  sharpe     = "1630549",
+  wolf       = "1642261",
+  traore     = "1642262",
+  porter     = "1629029",
+  demin      = "1642263",
+  saraf      = "1642264",
+  johnson    = "1641730",
+  minott     = "1631098",
+  bilodeau   = "1642265",
+  brown      = "1642266",
+  dainja     = "1631219",
+  ellis      = "1630589",
+  humrichous = "1642267",
+  jefferson  = "1642268",
+  randle     = "203944",
+  wagner     = "1629021",
+  nelson     = "1631112"
 )
 
 cli_h1("Nets Milestone Tracker — Data Fetch")
 cli_alert_info("Run time: {Sys.time()}")
-cli_alert_info("Mode: {ifelse(OFFSEASON_MODE, 'OFFSEASON (hardcoded 2025-26 / pre-season)', 'LIVE (BBRef scrape)')}")
+cli_alert_info("Mode: {ifelse(OFFSEASON_MODE, 'OFFSEASON (hardcoded 2025-26 / pre-season)', 'LIVE (NBA.com API)')}")
 
 OUTPUT_DIR <- "public/data"
 if (!dir.exists(OUTPUT_DIR)) OUTPUT_DIR <- "../public/data"
@@ -162,7 +173,6 @@ CAREER_TOTALS <- list(
   ),
 
   # ── NEW VETERANS ──────────────────────────────────────────
-  # Julius Randle — career totals through 2025-26 (MIN)
   randle = list(
     GP=789L, PTS=15184L, TRB=7023L, ORB=NA_integer_, AST=3108L, STL=572L, BLK=302L, FG3M=959L, FTM=3273L,
     GP_season=79L, season_PTS=1667L, season_TRB=532L, season_ORB=NA_integer_, season_AST=395L,
@@ -170,7 +180,6 @@ CAREER_TOTALS <- list(
     PPG=21.1, RPG=6.7, APG=5.0, BPG=0.2
   ),
 
-  # Moritz Wagner — career totals through 2025-26 (ORL partial)
   wagner = list(
     GP=399L, PTS=3575L, TRB=1551L, ORB=NA_integer_, AST=466L, STL=200L, BLK=111L, FG3M=282L, FTM=753L,
     GP_season=36L, season_PTS=248L, season_TRB=115L, season_ORB=NA_integer_, season_AST=29L,
@@ -178,7 +187,6 @@ CAREER_TOTALS <- list(
     PPG=6.9, RPG=3.2, APG=0.8, BPG=0.3
   ),
 
-  # Keon Ellis — career totals through 2025-26 (SAC/CLE)
   ellis = list(
     GP=225L, PTS=1480L, TRB=479L, ORB=NA_integer_, AST=283L, STL=260L, BLK=139L, FG3M=306L, FTM=154L,
     GP_season=72L, season_PTS=480L, season_TRB=135L, season_ORB=NA_integer_, season_AST=72L,
@@ -186,7 +194,6 @@ CAREER_TOTALS <- list(
     PPG=6.7, RPG=1.9, APG=1.0, BPG=0.6
   ),
 
-  # Grant Nelson — career totals through 2025-26 (4 GP with BRK)
   nelson = list(
     GP=4L, PTS=17L, TRB=6L, ORB=NA_integer_, AST=5L, STL=1L, BLK=5L, FG3M=0L, FTM=7L,
     GP_season=4L, season_PTS=17L, season_TRB=6L, season_ORB=NA_integer_, season_AST=5L,
@@ -195,7 +202,6 @@ CAREER_TOTALS <- list(
   ),
 
   # ── 2026 ROOKIES (0 NBA games) ─────────────────────────────
-  # Tyler Bilodeau — 2026 Draft, 2nd round #43 (BRK)
   bilodeau = list(
     GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
     GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
@@ -203,7 +209,6 @@ CAREER_TOTALS <- list(
     PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
   ),
 
-  # Mikel Brown Jr. — 2026 Draft, 1st round #6 (BRK)
   brown = list(
     GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
     GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
@@ -211,7 +216,6 @@ CAREER_TOTALS <- list(
     PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
   ),
 
-  # Dain Dainja — undrafted FA (BRK training camp)
   dainja = list(
     GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
     GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
@@ -219,7 +223,6 @@ CAREER_TOTALS <- list(
     PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
   ),
 
-  # Ben Humrichous — undrafted FA (BRK training camp)
   humrichous = list(
     GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
     GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
@@ -227,7 +230,6 @@ CAREER_TOTALS <- list(
     PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
   ),
 
-  # Joshua Jefferson — 2026 Draft, 1st round #28 (MIN → BRK)
   jefferson = list(
     GP=0L, PTS=0L, TRB=0L, ORB=0L, AST=0L, STL=0L, BLK=0L, FG3M=0L, FTM=0L,
     GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L, season_AST=0L,
@@ -261,54 +263,80 @@ NETS_ROSTER <- tribble(
   "nelson",      "Grant Nelson",          "35",    "PF"
 )
 
-# ── LIVE BBRef SCRAPER ────────────────────────────────────────
-scrape_bbref_player <- function(pid, bbref_path) {
-  url <- paste0("https://www.basketball-reference.com/players/", bbref_path, ".html")
-  cli_alert("  Scraping {pid}...")
+# ── NBA.COM API SCRAPER (via hoopR) ───────────────────────────
+# hoopR::nba_playercareerstats() handles all NBA.com headers automatically
+
+fetch_nba_career <- function(pid, nba_id) {
+  cli_alert("  Fetching {pid} (NBA ID: {nba_id})...")
   tryCatch({
-    page <- rvest::read_html(url)
-    extract_row <- function(row) {
-      cells <- rvest::html_elements(row, "td[data-stat]")
-      vals  <- suppressWarnings(as.integer(gsub(",", "", rvest::html_text(cells))))
-      setNames(vals, rvest::html_attr(cells, "data-stat"))
+    raw <- hoopR::nba_playercareerstats(player_id = nba_id, per_mode = "Totals")
+
+    # Career totals
+    career <- raw$CareerTotalsRegularSeason
+    if (is.null(career) || nrow(career) == 0) {
+      cli_alert_warning("  {pid}: No career totals (rookie with 0 GP — skipping)")
+      return(NULL)
     }
-    tfoot_row <- rvest::html_element(page, "#totals_stats tfoot tr:first-child")
-    if (is.na(tfoot_row)) { cli_alert_warning("  No tfoot for {pid}"); return(NULL) }
-    career <- extract_row(tfoot_row)
-    result <- list(
-      GP   = career[["g"]]   %||% NA_integer_,
-      PTS  = career[["pts"]] %||% NA_integer_,
-      TRB  = career[["trb"]] %||% NA_integer_,
-      ORB  = career[["orb"]] %||% NA_integer_,
-      AST  = career[["ast"]] %||% NA_integer_,
-      STL  = career[["stl"]] %||% NA_integer_,
-      BLK  = career[["blk"]] %||% NA_integer_,
-      FG3M = career[["fg3"]] %||% NA_integer_,
-      FTM  = career[["ft"]]  %||% NA_integer_
+    cr <- career[nrow(career), ]
+
+    g   <- as.integer(cr$GP)
+    pts <- as.integer(cr$PTS)
+    trb <- as.integer(cr$REB)
+    orb <- as.integer(cr$OREB)  %||% NA_integer_
+    ast <- as.integer(cr$AST)
+    stl <- as.integer(cr$STL)
+    blk <- as.integer(cr$BLK)
+    fg3 <- as.integer(cr$FG3M)
+    ftm <- as.integer(cr$FTM)
+
+    # Season totals — prefer BRK row for current season
+    season_result <- list(
+      GP_season=0L, season_PTS=0L, season_TRB=0L, season_ORB=0L,
+      season_AST=0L, season_STL=0L, season_BLK=0L, season_FG3M=0L, season_FTM=0L,
+      PPG=0.0, RPG=0.0, APG=0.0, BPG=0.0
     )
-    tbody_rows <- rvest::html_elements(page, "#totals_stats tbody tr:not(.thead)")
-    if (length(tbody_rows) > 0) {
-      szn  <- extract_row(tbody_rows[[length(tbody_rows)]])
-      gp_s <- szn[["g"]] %||% 0L
-      result$GP_season   <- gp_s
-      result$season_PTS  <- szn[["pts"]] %||% 0L
-      result$season_TRB  <- szn[["trb"]] %||% 0L
-      result$season_ORB  <- szn[["orb"]] %||% 0L
-      result$season_AST  <- szn[["ast"]] %||% 0L
-      result$season_STL  <- szn[["stl"]] %||% 0L
-      result$season_BLK  <- szn[["blk"]] %||% 0L
-      result$season_FG3M <- szn[["fg3"]] %||% 0L
-      result$season_FTM  <- szn[["ft"]]  %||% 0L
-      if (!is.na(gp_s) && gp_s > 0) {
-        result$PPG <- round(result$season_PTS / gp_s, 1)
-        result$RPG <- round(result$season_TRB / gp_s, 1)
-        result$APG <- round(result$season_AST / gp_s, 1)
-        result$BPG <- round(result$season_BLK / gp_s, 1)
-      }
+
+    seasons <- raw$SeasonTotalsRegularSeason
+    if (!is.null(seasons) && nrow(seasons) > 0) {
+      brk_rows <- seasons[seasons$TEAM_ABBREVIATION == "BRK", ]
+      s_row <- if (nrow(brk_rows) > 0) brk_rows[nrow(brk_rows), ] else seasons[nrow(seasons), ]
+
+      gp_s  <- as.integer(s_row$GP)  %||% 0L
+      s_pts <- as.integer(s_row$PTS) %||% 0L
+      s_trb <- as.integer(s_row$REB) %||% 0L
+      s_orb <- as.integer(s_row$OREB) %||% 0L
+      s_ast <- as.integer(s_row$AST) %||% 0L
+      s_stl <- as.integer(s_row$STL) %||% 0L
+      s_blk <- as.integer(s_row$BLK) %||% 0L
+      s_fg3 <- as.integer(s_row$FG3M) %||% 0L
+      s_ftm <- as.integer(s_row$FTM)  %||% 0L
+
+      season_result <- list(
+        GP_season   = gp_s,
+        season_PTS  = s_pts,
+        season_TRB  = s_trb,
+        season_ORB  = s_orb,
+        season_AST  = s_ast,
+        season_STL  = s_stl,
+        season_BLK  = s_blk,
+        season_FG3M = s_fg3,
+        season_FTM  = s_ftm,
+        PPG = if (!is.na(gp_s) && gp_s > 0) round(s_pts / gp_s, 1) else 0.0,
+        RPG = if (!is.na(gp_s) && gp_s > 0) round(s_trb / gp_s, 1) else 0.0,
+        APG = if (!is.na(gp_s) && gp_s > 0) round(s_ast / gp_s, 1) else 0.0,
+        BPG = if (!is.na(gp_s) && gp_s > 0) round(s_blk / gp_s, 1) else 0.0
+      )
     }
-    cli_alert_success("  {pid}: GP={result$GP} PTS={result$PTS} BLK={result$BLK}")
-    Sys.sleep(3.5)
+
+    result <- c(
+      list(GP=g, PTS=pts, TRB=trb, ORB=orb, AST=ast, STL=stl, BLK=blk, FG3M=fg3, FTM=ftm),
+      season_result
+    )
+
+    cli_alert_success("  {pid}: GP={g} PTS={pts} AST={ast}")
+    Sys.sleep(1)
     result
+
   }, error = function(e) {
     cli_alert_warning("  {pid} failed: {conditionMessage(e)}")
     NULL
@@ -317,9 +345,9 @@ scrape_bbref_player <- function(pid, bbref_path) {
 
 # ── FETCH LIVE DATA ───────────────────────────────────────────
 if (!OFFSEASON_MODE) {
-  cli_h2("LIVE MODE — Scraping Basketball Reference")
-  for (pid in names(BBREF_IDS)) {
-    fresh <- scrape_bbref_player(pid, BBREF_IDS[[pid]])
+  cli_h2("LIVE MODE — Fetching from stats.nba.com")
+  for (pid in names(NBA_IDS)) {
+    fresh <- fetch_nba_career(pid, NBA_IDS[[pid]])
     if (!is.null(fresh)) {
       existing <- CAREER_TOTALS[[pid]]
       for (field in names(fresh)) {
@@ -330,7 +358,7 @@ if (!OFFSEASON_MODE) {
       CAREER_TOTALS[[pid]] <- existing
     }
   }
-  cli_alert_success("Scrape complete")
+  cli_alert_success("Fetch complete")
 } else {
   cli_alert_info("Offseason — using hardcoded 2025-26 / pre-season totals")
 }
@@ -396,7 +424,7 @@ for (pid in names(CAREER_TOTALS)) {
       gamesAway  = if (is.na(games_away)) NULL else games_away,
       urgency    = urgency,
       gp_season  = gp_s,
-      data_source = ifelse(OFFSEASON_MODE, "verified_bbref_2025_26", "live_bbref_scrape")
+      data_source = ifelse(OFFSEASON_MODE, "verified_bbref_2025_26", "live_nba_api")
     )
   }
 }
@@ -441,7 +469,7 @@ output <- list(
     season           = 2027L,
     source           = ifelse(OFFSEASON_MODE,
       "Verified career totals — Basketball Reference (Sep 2026, 2026-27 pre-season)",
-      paste0("Live BBRef scrape — ", format(Sys.time(), "%Y-%m-%d"))),
+      paste0("Live NBA.com API — ", format(Sys.time(), "%Y-%m-%d"))),
     offseason_mode   = OFFSEASON_MODE,
     total_milestones = length(milestone_results),
     total_streaks    = 0L
