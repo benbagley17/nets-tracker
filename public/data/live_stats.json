@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-10-22T14:34:07Z",
+    "generated_at": "2026-10-22T15:55:19Z",
     "season": 2027,
-    "source": "Live BBRef scrape — 2026-10-22",
+    "source": "Live NBA.com API — 2026-10-22",
     "offseason_mode": false,
     "total_milestones": 130,
     "total_streaks": 0
@@ -495,7 +495,7 @@
       "gamesAway": 12,
       "urgency": "close",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-trb-1000",
@@ -511,7 +511,7 @@
       "gamesAway": 113,
       "urgency": "upcoming",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-orb-200",
@@ -527,7 +527,7 @@
       "gamesAway": 101,
       "urgency": "upcoming",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-ast-250",
@@ -543,7 +543,7 @@
       "gamesAway": 52,
       "urgency": "upcoming",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-blk-100",
@@ -559,7 +559,7 @@
       "gamesAway": 27,
       "urgency": "close",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-stl-100",
@@ -575,7 +575,7 @@
       "gamesAway": 24,
       "urgency": "close",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-fg3m-300",
@@ -591,7 +591,7 @@
       "gamesAway": 37,
       "urgency": "upcoming",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-ftm-300",
@@ -607,7 +607,7 @@
       "gamesAway": 12,
       "urgency": "close",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "clowney-gp-200",
@@ -623,7 +623,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 66,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-pts-4000",
@@ -639,7 +639,7 @@
       "gamesAway": 30,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-trb-2000",
@@ -655,7 +655,7 @@
       "gamesAway": 110,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-orb-500",
@@ -671,7 +671,7 @@
       "gamesAway": 26,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-ast-1000",
@@ -687,7 +687,7 @@
       "gamesAway": 7,
       "urgency": "urgent",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-blk-200",
@@ -703,7 +703,7 @@
       "gamesAway": 395,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-stl-300",
@@ -719,7 +719,7 @@
       "gamesAway": 50,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-fg3m-400",
@@ -735,7 +735,7 @@
       "gamesAway": 17,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-ftm-700",
@@ -751,7 +751,7 @@
       "gamesAway": 195,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "mann-gp-500",
@@ -767,7 +767,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-pts-500",
@@ -783,7 +783,7 @@
       "gamesAway": 15,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-trb-250",
@@ -799,7 +799,7 @@
       "gamesAway": 79,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-orb-50",
@@ -815,7 +815,7 @@
       "gamesAway": 87,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-ast-100",
@@ -831,7 +831,7 @@
       "gamesAway": 7,
       "urgency": "urgent",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-blk-50",
@@ -847,7 +847,7 @@
       "gamesAway": 162,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-stl-50",
@@ -863,7 +863,7 @@
       "gamesAway": 25,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-fg3m-100",
@@ -879,7 +879,7 @@
       "gamesAway": 61,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-ftm-100",
@@ -895,7 +895,7 @@
       "gamesAway": 29,
       "urgency": "close",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "powell-gp-100",
@@ -911,7 +911,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 63,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-pts-2000",
@@ -927,7 +927,7 @@
       "gamesAway": 26,
       "urgency": "close",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-trb-2000",
@@ -943,7 +943,7 @@
       "gamesAway": 77,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-orb-750",
@@ -959,7 +959,7 @@
       "gamesAway": 33,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-ast-500",
@@ -975,7 +975,7 @@
       "gamesAway": 54,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-blk-200",
@@ -991,7 +991,7 @@
       "gamesAway": 98,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-stl-200",
@@ -1007,7 +1007,7 @@
       "gamesAway": 40,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-fg3m-50",
@@ -1023,7 +1023,7 @@
       "gamesAway": 124,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-ftm-300",
@@ -1039,7 +1039,7 @@
       "gamesAway": 5,
       "urgency": "urgent",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "sharpe-gp-300",
@@ -1055,7 +1055,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 62,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-pts-1000",
@@ -1071,7 +1071,7 @@
       "gamesAway": 56,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-trb-500",
@@ -1087,7 +1087,7 @@
       "gamesAway": 45,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-orb-100",
@@ -1103,7 +1103,7 @@
       "gamesAway": 43,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-ast-250",
@@ -1119,7 +1119,7 @@
       "gamesAway": 56,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-blk-50",
@@ -1135,7 +1135,7 @@
       "gamesAway": 33,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-stl-50",
@@ -1151,7 +1151,7 @@
       "gamesAway": 38,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-fg3m-100",
@@ -1167,7 +1167,7 @@
       "gamesAway": 27,
       "urgency": "close",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-ftm-100",
@@ -1183,7 +1183,7 @@
       "gamesAway": 11,
       "urgency": "close",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wolf-gp-100",
@@ -1199,7 +1199,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 57,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-pts-500",
@@ -1215,7 +1215,7 @@
       "gamesAway": 1,
       "urgency": "urgent",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-trb-100",
@@ -1231,7 +1231,7 @@
       "gamesAway": 1,
       "urgency": "urgent",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-orb-50",
@@ -1247,7 +1247,7 @@
       "gamesAway": 144,
       "urgency": "upcoming",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-ast-250",
@@ -1263,7 +1263,7 @@
       "gamesAway": 10,
       "urgency": "urgent",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-blk-50",
@@ -1279,7 +1279,7 @@
       "gamesAway": 66,
       "urgency": "upcoming",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-stl-50",
@@ -1295,7 +1295,7 @@
       "gamesAway": 7,
       "urgency": "urgent",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-fg3m-100",
@@ -1311,7 +1311,7 @@
       "gamesAway": 36,
       "urgency": "upcoming",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-ftm-100",
@@ -1327,7 +1327,7 @@
       "gamesAway": 20,
       "urgency": "close",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "traore-gp-100",
@@ -1343,7 +1343,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 56,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-pts-7500",
@@ -1359,7 +1359,7 @@
       "gamesAway": 27,
       "urgency": "close",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-trb-3000",
@@ -1375,7 +1375,7 @@
       "gamesAway": 61,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-orb-750",
@@ -1391,7 +1391,7 @@
       "gamesAway": 156,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-ast-1000",
@@ -1407,7 +1407,7 @@
       "gamesAway": 118,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-blk-300",
@@ -1423,7 +1423,7 @@
       "gamesAway": 344,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-stl-300",
@@ -1439,7 +1439,7 @@
       "gamesAway": 37,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-fg3m-1500",
@@ -1455,7 +1455,7 @@
       "gamesAway": 143,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-ftm-1000",
@@ -1471,7 +1471,7 @@
       "gamesAway": 80,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "porter-gp-400",
@@ -1487,7 +1487,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-pts-1000",
@@ -1503,7 +1503,7 @@
       "gamesAway": 46,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-trb-250",
@@ -1519,7 +1519,7 @@
       "gamesAway": 27,
       "urgency": "close",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-orb-50",
@@ -1535,7 +1535,7 @@
       "gamesAway": 72,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-ast-250",
@@ -1551,7 +1551,7 @@
       "gamesAway": 24,
       "urgency": "close",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-blk-50",
@@ -1567,7 +1567,7 @@
       "gamesAway": 101,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-stl-50",
@@ -1583,7 +1583,7 @@
       "gamesAway": 10,
       "urgency": "urgent",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-fg3m-200",
@@ -1599,7 +1599,7 @@
       "gamesAway": 32,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-ftm-100",
@@ -1615,7 +1615,7 @@
       "gamesAway": 45,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "demin-gp-100",
@@ -1631,7 +1631,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 52,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-pts-500",
@@ -1647,7 +1647,7 @@
       "gamesAway": 23,
       "urgency": "close",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-trb-100",
@@ -1663,7 +1663,7 @@
       "gamesAway": 4,
       "urgency": "urgent",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-orb-50",
@@ -1679,7 +1679,7 @@
       "gamesAway": 66,
       "urgency": "upcoming",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-ast-250",
@@ -1695,7 +1695,7 @@
       "gamesAway": 32,
       "urgency": "upcoming",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-blk-50",
@@ -1711,7 +1711,7 @@
       "gamesAway": 231,
       "urgency": "upcoming",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-stl-50",
@@ -1727,7 +1727,7 @@
       "gamesAway": 14,
       "urgency": "close",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-fg3m-50",
@@ -1743,7 +1743,7 @@
       "gamesAway": 72,
       "urgency": "upcoming",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-ftm-100",
@@ -1759,7 +1759,7 @@
       "gamesAway": 17,
       "urgency": "close",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "saraf-gp-100",
@@ -1775,7 +1775,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 44,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-pts-200",
@@ -1791,7 +1791,7 @@
       "gamesAway": 8,
       "urgency": "urgent",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-trb-100",
@@ -1807,7 +1807,7 @@
       "gamesAway": 5,
       "urgency": "urgent",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-orb-50",
@@ -1823,7 +1823,7 @@
       "gamesAway": 9,
       "urgency": "urgent",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-ast-100",
@@ -1839,7 +1839,7 @@
       "gamesAway": 31,
       "urgency": "upcoming",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-blk-50",
@@ -1855,7 +1855,7 @@
       "gamesAway": 78,
       "urgency": "upcoming",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-stl-50",
@@ -1871,7 +1871,7 @@
       "gamesAway": 40,
       "urgency": "upcoming",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-fg3m-50",
@@ -1887,7 +1887,7 @@
       "gamesAway": 78,
       "urgency": "upcoming",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-ftm-50",
@@ -1903,7 +1903,7 @@
       "gamesAway": 14,
       "urgency": "close",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "johnson-gp-100",
@@ -1919,7 +1919,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 17,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-pts-1000",
@@ -1935,7 +1935,7 @@
       "gamesAway": 40,
       "urgency": "upcoming",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-trb-250",
@@ -1951,7 +1951,7 @@
       "gamesAway": 2,
       "urgency": "urgent",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-orb-100",
@@ -1967,7 +1967,7 @@
       "gamesAway": 62,
       "urgency": "upcoming",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-ast-100",
@@ -1983,7 +1983,7 @@
       "gamesAway": 29,
       "urgency": "close",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-blk-50",
@@ -1999,7 +1999,7 @@
       "gamesAway": 4,
       "urgency": "urgent",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-stl-100",
@@ -2015,7 +2015,7 @@
       "gamesAway": 26,
       "urgency": "close",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-fg3m-100",
@@ -2031,7 +2031,7 @@
       "gamesAway": 9,
       "urgency": "urgent",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-ftm-100",
@@ -2047,7 +2047,7 @@
       "gamesAway": 9,
       "urgency": "urgent",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "minott-gp-200",
@@ -2063,7 +2063,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 16,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-pts-20000",
@@ -2079,7 +2079,7 @@
       "gamesAway": 229,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-trb-7500",
@@ -2095,7 +2095,7 @@
       "gamesAway": 71,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-ast-5000",
@@ -2111,7 +2111,7 @@
       "gamesAway": 379,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-blk-500",
@@ -2127,7 +2127,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-stl-700",
@@ -2143,7 +2143,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-fg3m-1000",
@@ -2159,7 +2159,7 @@
       "gamesAway": 30,
       "urgency": "close",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "randle-gp-800",
@@ -2175,7 +2175,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 79,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-pts-4000",
@@ -2191,7 +2191,7 @@
       "gamesAway": 62,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-trb-2000",
@@ -2207,7 +2207,7 @@
       "gamesAway": 141,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-ast-500",
@@ -2223,7 +2223,7 @@
       "gamesAway": 43,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-blk-200",
@@ -2239,7 +2239,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-stl-300",
@@ -2255,7 +2255,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-fg3m-300",
@@ -2271,7 +2271,7 @@
       "gamesAway": 30,
       "urgency": "close",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-ftm-1000",
@@ -2287,7 +2287,7 @@
       "gamesAway": 151,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "wagner-gp-400",
@@ -2303,7 +2303,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 36,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-pts-1500",
@@ -2319,7 +2319,7 @@
       "gamesAway": 3,
       "urgency": "urgent",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-trb-500",
@@ -2335,7 +2335,7 @@
       "gamesAway": 12,
       "urgency": "close",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-ast-500",
@@ -2351,7 +2351,7 @@
       "gamesAway": 217,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-blk-200",
@@ -2367,7 +2367,7 @@
       "gamesAway": 96,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-stl-300",
@@ -2383,7 +2383,7 @@
       "gamesAway": 35,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-fg3m-400",
@@ -2399,7 +2399,7 @@
       "gamesAway": 75,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-ftm-200",
@@ -2415,7 +2415,7 @@
       "gamesAway": 65,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "ellis-gp-300",
@@ -2431,7 +2431,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 72,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-pts-200",
@@ -2447,7 +2447,7 @@
       "gamesAway": 44,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-trb-100",
@@ -2463,7 +2463,7 @@
       "gamesAway": 63,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-ast-100",
@@ -2479,7 +2479,7 @@
       "gamesAway": 76,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-blk-50",
@@ -2495,7 +2495,7 @@
       "gamesAway": 36,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-stl-50",
@@ -2511,7 +2511,7 @@
       "gamesAway": 196,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-fg3m-50",
@@ -2527,7 +2527,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-ftm-50",
@@ -2543,7 +2543,7 @@
       "gamesAway": 25,
       "urgency": "close",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     },
     {
       "id": "nelson-gp-100",
@@ -2559,7 +2559,7 @@
       "gamesAway": null,
       "urgency": "upcoming",
       "gp_season": 4,
-      "data_source": "live_bbref_scrape"
+      "data_source": "live_nba_api"
     }
   ],
   "streaks": []
