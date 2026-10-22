@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
 
 # ── CONFIG ────────────────────────────────────────────────────
 # Set FALSE on opening night of 2026-27 season
-OFFSEASON_MODE <- TRUE
+OFFSEASON_MODE <- FALSE
 
 BBREF_IDS <- c(
   clowney    = "c/clownno01",  mann       = "m/mannte01",
